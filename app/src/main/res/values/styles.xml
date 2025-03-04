@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ToolbarStyle" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:colorBackground">@color/yellow</item>
+        <item name="android:textColor">@color/darkgrey</item>
+    </style>
+
+
+</resources>
