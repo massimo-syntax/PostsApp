@@ -1,10 +1,16 @@
 package com.example.postsapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import com.example.postsapp.databinding.FragmentCreateBinding
+import com.example.postsapp.databinding.FragmentProfileBinding
+import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.SharedViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,21 +27,61 @@ class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+
+    private lateinit var binding : FragmentProfileBinding
+    private lateinit var viewModel: SharedViewModel
+    private lateinit var ctx : Context
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        ctx = requireContext()
+        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        binding = FragmentProfileBinding.inflate(layoutInflater, container,false)
+        return binding.root
+
     }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // instanciate database
+        // setup variables , get user
+        // fill model
+        // send
+         viewModel.userId.observe(viewLifecycleOwner){ uid ->
+             binding.tvLog.text = uid
+         }
+
+        val pr = Profile(
+            userId = "nothing , val",
+            userName = "new user name : val",
+            firstSentence = "here we cannot val change the id"
+        )
+
+        binding.btnSend.setOnClickListener {
+            viewModel.userInfo(pr)
+
+            binding.etUserName.setText(pr.userId)
+        }
+
+
+    }
+
+
+
 
     companion object {
         /**

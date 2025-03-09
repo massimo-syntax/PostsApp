@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
 
-        viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
+        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
             "",
         )
 
-        viewModel.addDraft(d)
+        //viewModel.addDraft(d)
 
         viewModel.allDrafts.observe(viewLifecycleOwner, { draftList ->
             binding.title.text = draftList.first().title
