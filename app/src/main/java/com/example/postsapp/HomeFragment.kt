@@ -53,7 +53,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val d = Draft(
             0,
             "title",
@@ -63,11 +62,13 @@ class HomeFragment : Fragment() {
             "",
         )
 
-        //viewModel.addDraft(d)
+        /*
+        viewModel.addDraft(d)
 
         viewModel.allDrafts.observe(viewLifecycleOwner, { draftList ->
             binding.title.text = draftList.first().title
         })
+        */
 
     }
 

@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.google.gms.google.services)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -47,13 +47,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     
-    implementation(libs.firebase.auth)
     //    coroutines support for firebase operations
     implementation(libs.kotlinx.coroutines.play.services)
     //    Lifecycle-aware coroutine scopes
@@ -75,32 +76,7 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    /*
-    *
-    *
-    *
-    *
-    * This operation requires the libraries androidx.navigation:navigation-fragment-ktx:+,
-    *  androidx.navigation:navigation-ui-ktx:+.
-    *   Problem: Inconsistencies in the existing project dependencies found.
-    *  Version incompatibility between:
-    * - androidx.appcompat:appcompat:1.7.0 and: - androidx.lifecycle:lifecycle-runtime-android:2.8.7
-    * With the dependency:
-    * - androidx.lifecycle:lifecycle-common:2.3.1 versus: - androidx.lifecycle:lifecycle-common:[2.8.7]
-    * The project may not compile after adding these libraries. Would you like to add them anyway?
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *  */
+
 
 
 

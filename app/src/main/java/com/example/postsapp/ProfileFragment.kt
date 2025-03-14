@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import com.example.postsapp.databinding.FragmentCreateBinding
 import com.example.postsapp.databinding.FragmentProfileBinding
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.SharedViewModel
@@ -26,7 +25,6 @@ class ProfileFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
 
     private lateinit var binding : FragmentProfileBinding
     private lateinit var viewModel: SharedViewModel
@@ -53,17 +51,12 @@ class ProfileFragment : Fragment() {
 
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // instanciate database
-        // setup variables , get user
-        // fill model
-        // send
-         viewModel.userId.observe(viewLifecycleOwner){ uid ->
-             binding.tvLog.text = uid
-         }
+        viewModel.userId.observe(viewLifecycleOwner){ uid ->
+            binding.tvLog.text = uid
+        }
 
         val pr = Profile(
             userId = "nothing , val",
@@ -73,8 +66,18 @@ class ProfileFragment : Fragment() {
 
         binding.btnSend.setOnClickListener {
             viewModel.userInfo(pr)
-
             binding.etUserName.setText(pr.userId)
+        }
+
+
+        viewModel.firebaseMessage.observe(viewLifecycleOwner){ message ->
+            binding.tvFirebaseLog.text = message
+        }
+
+        binding.btnFirebaseMessage.setOnClickListener {
+            val text:String = binding.etFirebaseMessage.text.toString()
+            //Toast.makeText( ctx , text , Toast.LENGTH_SHORT ).show()
+            viewModel.messageToFirebase(text)
         }
 
 
