@@ -1,6 +1,7 @@
 package com.example.postsapp.viewModels
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,39 +24,39 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     // FIREBASE AUTH                                                        FIREBASE AUTH
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val _userId = MutableLiveData<String>("userid now")
+    private val currentUID = firebaseAuth.currentUser?.uid!!
+
+    private val _userId = MutableLiveData<String>(currentUID)
     val userId : LiveData<String>
         get() = _userId
 
-    fun getUserId() {
-        _userId.value = firebaseAuth.currentUser?.uid !!
-    }
-
-    fun userInfo(pr: Profile){
-        getUserId()
-        viewModelScope.launch {
-            // send profile
-            // update profile livedata
-        }
-    }
     // FIREBASE AUTH    /END
 
 
 
 
-    // FIREBASE REALTIME DATABASE                                            FIREBASE REALTIME DATABASE
-    private val _firebaseMessage = MutableLiveData<String>("firebase message now")
-    val firebaseMessage : LiveData<String>
-        get() = _firebaseMessage
+    // FIREBASE REALTIME DATABASE
+    val firebaseRTDB = Firebase.database        // FIREBASE INSTANCE
+    val firebaseRTDBReference = Firebase.database.reference
+
+
+
 
     // Write a message to the database
-    val database = Firebase.database
-    val myRef = database.getReference("message")
+    val prifileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
-    fun messageToFirebase(s:String){
-        myRef.setValue(s)
+    private val _dbProfileChangeListener = MutableLiveData<Profile>(null)
+    val dbProfileChangeListener : LiveData<Profile>
+        get() = _dbProfileChangeListener
+
+    fun updateProfile(p:Profile){
+        prifileRef.setValue(p)
+        // same as
+        //firebaseRTDBReference.child("profiles").child(currentUID).setValue(p)
     }
+
     // FIREBASE REALTIME DATABASE   / END
+
 
 
 
@@ -63,25 +64,28 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val allDrafts : LiveData<List<Draft>>
     private val repository : DraftsRepository
 
-    val _profile = MutableLiveData<Profile>()
-    val profile : LiveData<Profile>
-        get() = _profile
-
     // drafts room
     fun deleteDraft (d: Draft) = viewModelScope.launch {
         repository.delete(d)
     }
-
     fun updateDraft(d: Draft) = viewModelScope.launch {
         repository.update(d)
     }
-
     fun addDraft(d: Draft) = viewModelScope.launch {
         repository.insert(d)
     }
     //  ROOM    / END
 
 
+    /*      just in case...
+    val myRef = firebaseRTDB.getReference("message")
+    private val _firebaseMessage = MutableLiveData<String>("firebase message now")
+    val firebaseMessage : LiveData<String>
+        get() = _firebaseMessage
+    fun messageToFirebase(s:String){
+        myRef.setValue(s)
+    }
+    */
 
     init{
         // INIT ROOM
@@ -89,6 +93,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         repository = DraftsRepository(_dao)
         allDrafts = repository.allDrafts
 
+        /* just in case
         // FIREBASE WRITE LISTENER to myRef
         myRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -98,10 +103,30 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                 if(value != null) _firebaseMessage.value = value!!
             }
             override fun onCancelled(error: DatabaseError) {
-                _firebaseMessage.value = error.toException().message
+                Toast.makeText(application , "firebase error: ${error.message}" , Toast.LENGTH_SHORT).show()
             }
         })
+        */
+
+
+        // PROFILE LISTENER FIREBASE REALTIME
+        prifileRef.addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val profile = snapshot.getValue<Profile>()
+                if(profile != null) _dbProfileChangeListener.value = profile!!
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(application , "firebase error: ${error.message}" , Toast.LENGTH_SHORT).show()
+            }
+        })
+
     }
+
+
+
+
+
+
 
 
 }

@@ -12,8 +12,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentCreateBinding
+import com.example.postsapp.viewModels.SharedViewModel
+import com.google.android.gms.dynamic.SupportFragmentWrapper
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,6 +37,7 @@ class CreateFragment : Fragment() {
 
 
     private lateinit var binding : FragmentCreateBinding
+    private lateinit var viewModel: SharedViewModel
 
     private lateinit var ctx : Context
 
@@ -41,31 +47,46 @@ class CreateFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
         ctx = requireContext()
+        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-
         binding = FragmentCreateBinding.inflate(layoutInflater,container,false)
         return binding.root
-
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // easiest way to upload picture for now
-        binding.btnUploadScreen.setOnClickListener {
+        // go to profile fragment if profile is not created yet
+        if(viewModel.dbProfileChangeListener.value == null){
+            AlertDialog.Builder(ctx)
+                .setMessage("no profile yet, create a profile")
+                .setPositiveButton("create profile"){_,_ ->
+                    //
 
+                    findNavController().navigate(R.id.profileFragment, null, NavOptions.Builder()
+                        .setPopUpTo(R.id.createFragment, true)
+                        .build())
+
+
+                    //
+                    //
+                }
+                .show()
+        }
+
+
+        // easiest way to upload picture for now
+        binding.btnSelectImg .setOnClickListener {
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
-                .setMessage("1) Upload pictures\n2) Scroll to COPY ALL\n3) Come back, click done! ")
+                .setMessage("Scroll to COPY ALL after uploading\nCome back, click done! ")
                 .setPositiveButton("go!"){_,_ ->
                     val openURL = Intent(Intent.ACTION_VIEW)
                     openURL.data = Uri.parse("https://uploadimgur.com/")
@@ -74,19 +95,14 @@ class CreateFragment : Fragment() {
         }
 
 
-        binding.btnSetUploadedPictures.setOnClickListener {
-
+        binding.btnConfirmImg.setOnClickListener {
             val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
             val abc = clipboard.primaryClip
             val item = abc?.getItemAt(0)
-
-            val url = item?.text.toString()
-
+            val url = item?.text.toString().split("\n").first()
             Glide.with(ctx)
                 .load(url)
-                .into(binding.imageView)
-
+                .into(binding.iv)
             Toast.makeText(ctx , item?.text.toString() , Toast.LENGTH_LONG).show()
 
         }

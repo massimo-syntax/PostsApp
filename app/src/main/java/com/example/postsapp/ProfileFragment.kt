@@ -48,7 +48,6 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(layoutInflater, container,false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,27 +56,27 @@ class ProfileFragment : Fragment() {
         viewModel.userId.observe(viewLifecycleOwner){ uid ->
             binding.tvLog.text = uid
         }
+        viewModel.dbProfileChangeListener.observe(viewLifecycleOwner){profile ->
+            if (profile == null){
+                binding.tvLog.text = "no profile yet"
+            } else {
+                binding.tvLog.text = profile.name
+            }
+        }
 
-        val pr = Profile(
-            userId = "nothing , val",
-            userName = "new user name : val",
-            firstSentence = "here we cannot val change the id"
+        val p = Profile(
+            uid = viewModel.userId.value,
+            name = "new user",
+            picture = "www.pictures.net",
+            followers = listOf("1234567890", "099843579"),
+            followed = listOf()
         )
 
+        // viewModel.updateProfile(p)
+
         binding.btnSend.setOnClickListener {
-            viewModel.userInfo(pr)
-            binding.etUserName.setText(pr.userId)
-        }
-
-
-        viewModel.firebaseMessage.observe(viewLifecycleOwner){ message ->
-            binding.tvFirebaseLog.text = message
-        }
-
-        binding.btnFirebaseMessage.setOnClickListener {
-            val text:String = binding.etFirebaseMessage.text.toString()
-            //Toast.makeText( ctx , text , Toast.LENGTH_SHORT ).show()
-            viewModel.messageToFirebase(text)
+            //viewModel.userInfo(pr)
+            //binding.etUserName.setText(pr.userId)
         }
 
 
