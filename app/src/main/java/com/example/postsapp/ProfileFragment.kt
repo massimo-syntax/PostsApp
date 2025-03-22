@@ -56,27 +56,30 @@ class ProfileFragment : Fragment() {
         viewModel.userId.observe(viewLifecycleOwner){ uid ->
             binding.tvLog.text = uid
         }
-        viewModel.dbProfileChangeListener.observe(viewLifecycleOwner){profile ->
+
+        var p = Profile(
+            uid = viewModel.userId.value,
+            name = "",
+            say = "",
+            picture = "",
+            followers = listOf(),
+            followed = listOf()
+        )
+
+        viewModel.dbProfileChangeListener.observe(viewLifecycleOwner){ profile ->
             if (profile == null){
                 binding.tvLog.text = "no profile yet"
             } else {
                 binding.tvLog.text = profile.name
+                p = profile
             }
         }
 
-        val p = Profile(
-            uid = viewModel.userId.value,
-            name = "new user",
-            picture = "www.pictures.net",
-            followers = listOf("1234567890", "099843579"),
-            followed = listOf()
-        )
-
-        // viewModel.updateProfile(p)
 
         binding.btnSend.setOnClickListener {
-            //viewModel.userInfo(pr)
-            //binding.etUserName.setText(pr.userId)
+            p.name = binding.etUserName.text.toString()
+            p.say = binding.etSay.text.toString()
+            viewModel.updateProfile(p)
         }
 
 
