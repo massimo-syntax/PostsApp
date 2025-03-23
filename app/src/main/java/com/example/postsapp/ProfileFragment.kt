@@ -1,15 +1,23 @@
 package com.example.postsapp
 
+import android.R
+import android.app.Activity
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentProfileBinding
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.SharedViewModel
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,38 +61,73 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.userId.observe(viewLifecycleOwner){ uid ->
-            binding.tvLog.text = uid
-        }
-
         var p = Profile(
+            // login is required to access the app
             uid = viewModel.userId.value,
             name = "",
             say = "",
-            picture = "",
+            image = "",
             followers = listOf(),
             followed = listOf()
         )
 
-        viewModel.dbProfileChangeListener.observe(viewLifecycleOwner){ profile ->
+        // load fields of current profile in ui
+        viewModel.dbProfile.observe(viewLifecycleOwner){ profile ->
             if (profile == null){
-                binding.tvLog.text = "no profile yet"
+                binding.tvTitle.text = "no profile yet"
             } else {
-                binding.tvLog.text = profile.name
                 p = profile
+                binding.tvTitle.text = p.name
+                binding.etUserName.setText(p.name)
+                binding.etSay.setText(p.say)
+
+                if( ! p.image.isNullOrEmpty() ){
+                    Glide.with(ctx)
+                        .load(p.image)
+                        .into(binding.iv)
+                    binding.tvImage.text = p.image
+                }
             }
         }
 
+        // easiest way to upload picture for now
+        // UPLOAD
+        binding.btnSelectImg .setOnClickListener {
+            AlertDialog.Builder( ctx )
+                .setTitle("Upload Pictures")
+                .setMessage("SCROLL to ->COPY ALL<- after uploading\nCome back, click CONFIRM! ")
+                .setPositiveButton("go!"){_,_ ->
+                    val openURL = Intent(Intent.ACTION_VIEW)
+                    openURL.data = Uri.parse("https://uploadimgur.com/")
+                    startActivity(openURL)
+                }.show()
+        }
+        // CONFIRM UPLOADING SUCCESS
+        binding.btnConfirmImg.setOnClickListener {
+            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val abc = clipboard.primaryClip
+            val item = abc?.getItemAt(0)
+            val url = item?.text.toString().split("\n").first()
+            Glide.with(ctx)
+                .load(url)
+                .into(binding.iv)
+            binding.tvImage.text = url
 
+        }
+
+        // UPDATE !
         binding.btnSend.setOnClickListener {
+            if(binding.etUserName.text.isEmpty() ){
+                binding.etUserName.setText("PROFILE NAME IS REQUIRED")
+                return@setOnClickListener
+            }
             p.name = binding.etUserName.text.toString()
             p.say = binding.etSay.text.toString()
+            p.image = binding.tvImage.text.toString()
             viewModel.updateProfile(p)
         }
 
-
     }
-
 
 
 

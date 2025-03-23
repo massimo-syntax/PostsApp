@@ -11,14 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentCreateBinding
 import com.example.postsapp.viewModels.SharedViewModel
-import com.google.android.gms.dynamic.SupportFragmentWrapper
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,7 +62,7 @@ class CreateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // go to profile fragment if profile is not created yet
-        if(viewModel.dbProfileChangeListener.value == null){
+        if(viewModel.dbProfile.value == null){
             AlertDialog.Builder(ctx)
                 .setMessage("no profile yet, create a profile")
                 .setPositiveButton("create profile"){_,_ ->

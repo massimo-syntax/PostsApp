@@ -45,9 +45,10 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     // Write a message to the database
     val prifileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
-    private val _dbProfileChangeListener = MutableLiveData<Profile>(null)
-    val dbProfileChangeListener : LiveData<Profile>
-        get() = _dbProfileChangeListener
+    // profile status when no profile
+    private val _dbProfile = MutableLiveData<Profile>(null)
+    val dbProfile : LiveData<Profile>
+        get() = _dbProfile
 
     fun updateProfile(p:Profile){
         prifileRef.setValue(p)
@@ -113,7 +114,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         prifileRef.addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
-                if(profile != null) _dbProfileChangeListener.value = profile!!
+                if(profile != null) _dbProfile.value = profile!!
             }
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(application , "firebase error: ${error.message}" , Toast.LENGTH_SHORT).show()

@@ -9,7 +9,7 @@ data class Profile(
     var uid: String? = "",
     var name: String? = "",
     var say: String? = "",
-    var picture: String? = "",
+    var image: String? = "",
     var followers: List<String>? = listOf(),
     var followed: List<String>? = listOf(),
 ) {
@@ -20,7 +20,7 @@ data class Profile(
             "uid" to uid,
             "name" to name,
             "say" to say,
-            "picture" to picture,
+            "image" to image,
             "followers" to followers,
             "followed" to followed,
         )
