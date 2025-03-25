@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.postsapp.models.Draft
+import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
 import com.example.postsapp.repositories.DraftsRepository
 import com.example.postsapp.room.DraftsDB
@@ -42,18 +43,28 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
 
-    // Write a message to the database
+    // P R O F I L E
     val prifileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
     // profile status when no profile
-    private val _dbProfile = MutableLiveData<Profile>(null)
-    val dbProfile : LiveData<Profile>
+    private val _dbProfile = MutableLiveData<Profile?>(null)
+    val dbProfile : LiveData<Profile?>
         get() = _dbProfile
 
     fun updateProfile(p:Profile){
         prifileRef.setValue(p)
         // same as
         //firebaseRTDBReference.child("profiles").child(currentUID).setValue(p)
+    }
+
+    // P O S T
+    val postRef = firebaseRTDB.getReference("posts")
+    private val _dbPosted = MutableLiveData<Post?>(null)
+    val dbPosted : LiveData<Post?>
+        get() = _dbPosted
+
+    fun post(p:Post){
+        postRef.child(p.uid.toString()).setValue(p)
     }
 
     // FIREBASE REALTIME DATABASE   / END
@@ -118,6 +129,17 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             }
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(application , "firebase error: ${error.message}" , Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        // POST LISTENER
+        postRef.addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val post = snapshot.getValue<Post>()
+                if(post != null) _dbPosted.value = post!!
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(application , "firebase error, post not sent: ${error.message}" , Toast.LENGTH_SHORT).show()
             }
         })
 

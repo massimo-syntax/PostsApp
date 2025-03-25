@@ -61,6 +61,8 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var image = ""
+
         var p = Profile(
             // login is required to access the app
             uid = viewModel.userId.value,
@@ -85,7 +87,7 @@ class ProfileFragment : Fragment() {
                     Glide.with(ctx)
                         .load(p.image)
                         .into(binding.iv)
-                    binding.tvImage.text = p.image
+                    image = p.image!!
                 }
             }
         }
@@ -111,7 +113,7 @@ class ProfileFragment : Fragment() {
             Glide.with(ctx)
                 .load(url)
                 .into(binding.iv)
-            binding.tvImage.text = url
+            image = url
 
         }
 
@@ -123,7 +125,7 @@ class ProfileFragment : Fragment() {
             }
             p.name = binding.etUserName.text.toString()
             p.say = binding.etSay.text.toString()
-            p.image = binding.tvImage.text.toString()
+            p.image = image
             viewModel.updateProfile(p)
         }
 

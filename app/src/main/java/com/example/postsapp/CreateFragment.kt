@@ -16,7 +16,11 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentCreateBinding
+import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.SharedViewModel
+import java.util.Date
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,25 +62,17 @@ class CreateFragment : Fragment() {
     }
 
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var profile: Profile? = null
+        var id:Long = Date().time
+        var image:String = ""
+
         // go to profile fragment if profile is not created yet
-        if(viewModel.dbProfile.value == null){
-            AlertDialog.Builder(ctx)
-                .setMessage("no profile yet, create a profile")
-                .setPositiveButton("create profile"){_,_ ->
-                    //
-
-                    findNavController().navigate(R.id.profileFragment, null, NavOptions.Builder()
-                        .setPopUpTo(R.id.createFragment, true)
-                        .build())
-
-
-                    //
-                    //
-                }
-                .show()
+        viewModel.dbProfile.observe(viewLifecycleOwner){ p ->
+            profile = p
         }
 
 
@@ -85,7 +81,7 @@ class CreateFragment : Fragment() {
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
                 .setMessage("Scroll to COPY ALL after uploading\nCome back, click done! ")
-                .setPositiveButton("go!"){_,_ ->
+                .setPositiveButton("start!"){_,_ ->
                     val openURL = Intent(Intent.ACTION_VIEW)
                     openURL.data = Uri.parse("https://uploadimgur.com/")
                     startActivity(openURL)
@@ -102,8 +98,56 @@ class CreateFragment : Fragment() {
                 .load(url)
                 .into(binding.iv)
             Toast.makeText(ctx , item?.text.toString() , Toast.LENGTH_LONG).show()
+            if(url.isNotEmpty()) image = url
+        }
+
+
+
+        viewModel.dbPosted.observe(viewLifecycleOwner){post->
+            if(post != null) binding.title.text = "post ${post.title} seent successfully"
+        }
+
+
+        binding.btnSend.setOnClickListener {
+            if( profile == null){
+                AlertDialog.Builder(ctx)
+                    .setMessage("no profile yet, create a profile")
+                    .setPositiveButton("create profile"){_,_ ->
+                        //
+                        findNavController().navigate(R.id.profileFragment, null, NavOptions.Builder()
+                            .setPopUpTo(R.id.createFragment, true)
+                            .build())
+                        //
+                        //
+                    }
+                    .show()
+            }else{
+                // title and body are required
+                if(binding.etTitle.text.isEmpty()){
+                    binding.etTitle.setText("required")
+                    return@setOnClickListener
+                }
+                if(binding.etBody.text.isEmpty()){
+                    binding.etBody.setText("required")
+                    return@setOnClickListener
+                }
+                // generate unique id
+                id += Date().time
+                val post = Post(
+                    uid = id.toString(),
+                    title = binding.etTitle.text.toString(),
+                    body = binding.etBody.text.toString(),
+                    image = image,
+                    tags = binding.etTags.text.split(" "),
+                    likes = 0,
+                    comments = listOf()
+                )
+                viewModel.post(post)
+            }
 
         }
+
+
 
 
     }
