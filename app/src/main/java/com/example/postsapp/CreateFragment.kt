@@ -66,13 +66,17 @@ class CreateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var profile: Profile? = null
+        var profile : Profile? =  null
         var id:Long = Date().time
         var image:String = ""
 
-        // go to profile fragment if profile is not created yet
         viewModel.dbProfile.observe(viewLifecycleOwner){ p ->
-            profile = p
+            if(p != null){
+                profile = p
+                binding.title.text = p.name
+            } else {
+                binding.title.text = "you need a profile first"
+            }
         }
 
 
@@ -103,8 +107,8 @@ class CreateFragment : Fragment() {
 
 
 
-        viewModel.dbPosted.observe(viewLifecycleOwner){post->
-            if(post != null) binding.title.text = "post ${post.title} seent successfully"
+        viewModel.dbPosted.observe(viewLifecycleOwner){ post ->
+            if(post != null) Toast.makeText(ctx, "post sent succesfully", Toast.LENGTH_SHORT).show()
         }
 
 

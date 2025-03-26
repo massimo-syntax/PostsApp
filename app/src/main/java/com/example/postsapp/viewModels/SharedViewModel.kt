@@ -1,6 +1,7 @@
 package com.example.postsapp.viewModels
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -41,8 +42,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val firebaseRTDBReference = Firebase.database.reference
 
 
-
-
     // P R O F I L E
     val prifileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
@@ -51,6 +50,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val dbProfile : LiveData<Profile?>
         get() = _dbProfile
 
+
     fun updateProfile(p:Profile){
         prifileRef.setValue(p)
         // same as
@@ -58,13 +58,30 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     // P O S T
-    val postRef = firebaseRTDB.getReference("posts")
+    // just the dbReference, to create queries .child(id).setValue(obj)
+    val postsRef = firebaseRTDB.getReference("posts")
+
+    // query for listeners
+    val postsQuery = postsRef.orderByChild("uid").limitToFirst(100)
+
+
     private val _dbPosted = MutableLiveData<Post?>(null)
     val dbPosted : LiveData<Post?>
         get() = _dbPosted
 
-    fun post(p:Post){
-        postRef.child(p.uid.toString()).setValue(p)
+
+    private val _allPosts = MutableLiveData<List<Post>> (listOf())
+    val allPosts : LiveData<List<Post>>
+        get() = _allPosts
+
+
+    fun post( p:Post ){
+        postsRef.child(p.uid.toString()).setValue(p).addOnSuccessListener {
+            _dbPosted.value = p
+        }.addOnFailureListener {
+            // failure
+            _dbPosted.value = null
+        }
     }
 
     // FIREBASE REALTIME DATABASE   / END
@@ -132,16 +149,28 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             }
         })
 
-        // POST LISTENER
-        postRef.addValueEventListener(object:ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val post = snapshot.getValue<Post>()
-                if(post != null) _dbPosted.value = post!!
+
+        // My top posts by number of stars
+        postsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val l = mutableListOf<Post>()
+                var post : Post? = null
+                for (postSnapshot in dataSnapshot.children) {
+                    post = postSnapshot.getValue(Post::class.java)
+                    // waiting for firebase returning null as part of a list
+                    l.add(post!!)
+                    Log.e("tag tag" , post.title.toString())
+                }
+                _allPosts.value = l
             }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(application , "firebase error, post not sent: ${error.message}" , Toast.LENGTH_SHORT).show()
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                //
+                // ...
             }
         })
+
+
 
     }
 
