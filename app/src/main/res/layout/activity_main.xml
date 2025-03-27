@@ -17,7 +17,7 @@
         app:title="Posts App"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="20sp"
+        android:paddingTop="20dp"
         />
 
 

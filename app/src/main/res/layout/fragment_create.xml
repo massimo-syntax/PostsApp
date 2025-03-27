@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="10sp"
+    android:paddingHorizontal="10dp"
     tools:context=".CreateFragment">
 
 
@@ -20,8 +20,8 @@
     <EditText
         android:id="@+id/et_title"
         android:layout_width="match_parent"
-        android:layout_height="46sp"
-        android:layout_marginTop="10sp"
+        android:layout_height="46dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/et_borders"
         android:hint="Title"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,8 +31,8 @@
     <EditText
         android:id="@+id/et_body"
         android:layout_width="match_parent"
-        android:layout_height="46sp"
-        android:layout_marginTop="10sp"
+        android:layout_height="46dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/et_borders"
         android:hint="Write your post here"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,8 +42,8 @@
     <EditText
         android:id="@+id/et_tags"
         android:layout_width="match_parent"
-        android:layout_height="46sp"
-        android:layout_marginTop="10sp"
+        android:layout_height="46dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/et_borders"
         android:hint="tags separated by space"
         app:layout_constraintEnd_toEndOf="parent"

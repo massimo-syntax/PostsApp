@@ -10,6 +10,7 @@ data class Profile(
     var name: String? = "",
     var say: String? = "",
     var image: String? = "",
+    var nPosts: Int = 0,
     var followers: List<String>? = listOf(),
     var followed: List<String>? = listOf(),
 ) {
@@ -21,6 +22,7 @@ data class Profile(
             "name" to name,
             "say" to say,
             "image" to image,
+            "nPosts" to nPosts,
             "followers" to followers,
             "followed" to followed,
         )

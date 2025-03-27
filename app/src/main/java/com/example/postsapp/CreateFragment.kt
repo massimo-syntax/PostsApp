@@ -138,7 +138,8 @@ class CreateFragment : Fragment() {
                 // generate unique id
                 id += Date().time
                 val post = Post(
-                    uid = id.toString(),
+                    id = id.toString(),
+                    user = profile!!.name,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
                     image = image,

@@ -43,7 +43,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
     // P R O F I L E
-    val prifileRef = firebaseRTDB.getReference("profiles/$currentUID")
+    val profileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
     // profile status when no profile
     private val _dbProfile = MutableLiveData<Profile?>(null)
@@ -52,7 +52,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
     fun updateProfile(p:Profile){
-        prifileRef.setValue(p)
+        profileRef.setValue(p)
         // same as
         //firebaseRTDBReference.child("profiles").child(currentUID).setValue(p)
     }
@@ -62,7 +62,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val postsRef = firebaseRTDB.getReference("posts")
 
     // query for listeners
-    val postsQuery = postsRef.orderByChild("uid").limitToFirst(100)
+    val postsQuery = postsRef.orderByChild("id").limitToFirst(100)//.equalTo("queryparameter")
 
 
     private val _dbPosted = MutableLiveData<Post?>(null)
@@ -70,14 +70,19 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         get() = _dbPosted
 
 
-    private val _allPosts = MutableLiveData<List<Post>> (listOf())
-    val allPosts : LiveData<List<Post>>
+    private val _allPosts = MutableLiveData<List<Post>?> (null)
+    val allPosts : LiveData<List<Post>?>
         get() = _allPosts
 
-
+    // for now there is no userid in the post, when user changes profile name all other posts of himself do not appear on his profile
+    // query the profilename in posts for now is nice
     fun post( p:Post ){
-        postsRef.child(p.uid.toString()).setValue(p).addOnSuccessListener {
+        postsRef.child(p.id.toString()).setValue(p).addOnSuccessListener {
             _dbPosted.value = p
+            var nPosts:Int = _dbProfile.value!!.nPosts
+            nPosts++
+            _dbProfile.value!!.nPosts = nPosts
+            profileRef.child("nPosts").setValue( nPosts )
         }.addOnFailureListener {
             // failure
             _dbPosted.value = null
@@ -133,13 +138,14 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             }
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(application , "firebase error: ${error.message}" , Toast.LENGTH_SHORT).show()
+                // no internet
             }
         })
         */
 
 
         // PROFILE LISTENER FIREBASE REALTIME
-        prifileRef.addValueEventListener(object:ValueEventListener{
+        profileRef.addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
                 if(profile != null) _dbProfile.value = profile!!
@@ -151,7 +157,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
         // My top posts by number of stars
-        postsRef.addValueEventListener(object : ValueEventListener {
+        postsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val l = mutableListOf<Post>()
                 var post : Post? = null

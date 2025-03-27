@@ -1,13 +1,17 @@
 package com.example.postsapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.databinding.FragmentHomeBinding
 import com.example.postsapp.models.Draft
+import com.example.postsapp.models.Post
 import com.example.postsapp.viewModels.SharedViewModel
 
 
@@ -29,6 +33,8 @@ class HomeFragment : Fragment() {
     private lateinit var binding : FragmentHomeBinding
     private lateinit var viewModel : SharedViewModel
 
+    private lateinit var ctx : Context
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +42,7 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
+        ctx = requireContext()
         viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
     }
 
@@ -52,6 +58,27 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val posts = mutableListOf<Post>()
+
+        val rvPost = binding.rvPosts
+        rvPost.layoutManager = LinearLayoutManager(ctx)
+        val adapterPost = PostsAdapter(posts)
+        rvPost.adapter = adapterPost
+
+
+        viewModel.allPosts.observe(viewLifecycleOwner){ postsList ->
+            // when first viewmodel is init() allPosts is null
+            if(postsList == null) return@observe
+            // for now refresh list
+            posts.removeAll(posts)
+            posts.addAll(postsList)
+            adapterPost.notifyItemRangeChanged(0,postsList.size)
+        }
+
+
+
+
 
         val d = Draft(
             0,
