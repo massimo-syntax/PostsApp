@@ -2,16 +2,18 @@ package com.example.postsapp
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postsapp.adapters.PostsAdapter
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentHomeBinding
 import com.example.postsapp.models.Draft
 import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.SharedViewModel
 
 
@@ -65,6 +67,24 @@ class HomeFragment : Fragment() {
         rvPost.layoutManager = LinearLayoutManager(ctx)
         val adapterPost = PostsAdapter(posts)
         rvPost.adapter = adapterPost
+
+        val profiles = mutableListOf<Profile>()
+
+        val rvProfiles = binding.rvProfiles
+        rvProfiles.layoutManager = LinearLayoutManager(ctx,LinearLayoutManager.HORIZONTAL, false)
+        val adapterProfiles = ProfilesAdapter(profiles)
+        rvProfiles.adapter = adapterProfiles
+
+        // get all profiles from database
+
+        viewModel.dbAllProfiles.observe(viewLifecycleOwner){ profilesList ->
+            // when first viewmodel is init() dbAllProfiles is null
+            if(profilesList == null) return@observe
+            // for now refresh list
+            profiles.removeAll(profiles)
+            profiles.addAll(profilesList)
+            adapterProfiles.notifyItemRangeChanged(0,profilesList.size)
+        }
 
 
         viewModel.allPosts.observe(viewLifecycleOwner){ postsList ->

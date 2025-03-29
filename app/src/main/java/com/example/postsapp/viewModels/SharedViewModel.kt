@@ -39,7 +39,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     // FIREBASE REALTIME DATABASE
     val firebaseRTDB = Firebase.database        // FIREBASE INSTANCE
-    val firebaseRTDBReference = Firebase.database.reference
+    val firebaseRTDBRoot = Firebase.database.reference
 
 
     // P R O F I L E
@@ -56,6 +56,14 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         // same as
         //firebaseRTDBReference.child("profiles").child(currentUID).setValue(p)
     }
+
+    val profilesQuery = firebaseRTDB.getReference("profiles").limitToFirst(50)
+
+    private val _dbAllProfiles = MutableLiveData<List<Profile>?>(null)
+    val dbAllProfiles : LiveData<List<Profile>?>
+        get() = _dbAllProfiles
+
+
 
     // P O S T
     // just the dbReference, to create queries .child(id).setValue(obj)
@@ -165,9 +173,30 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                     post = postSnapshot.getValue(Post::class.java)
                     // waiting for firebase returning null as part of a list
                     l.add(post!!)
-                    Log.e("tag tag" , post.title.toString())
                 }
+                Log.e("posts:" , l.toString())
                 _allPosts.value = l
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                //
+                // ...
+            }
+        })
+
+        // My top posts by number of stars
+        profilesQuery.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val l = mutableListOf<Profile>()
+                var profile : Profile? = null
+                for (postSnapshot in dataSnapshot.children) {
+                    profile = postSnapshot.getValue(Profile::class.java)
+                    // waiting for firebase returning null as part of a list
+                    l.add(profile!!)
+
+                }
+                Toast.makeText(application.applicationContext,l.toString(),Toast.LENGTH_SHORT).show()
+                _dbAllProfiles.value = l
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Getting Post failed, log a message
