@@ -75,7 +75,7 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/checkBox2"
+                    android:id="@+id/check_profiles"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/checkbox_selector"
@@ -114,9 +114,10 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_serch"
+            android:id="@+id/rv_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/checkbox_layout"/>
 

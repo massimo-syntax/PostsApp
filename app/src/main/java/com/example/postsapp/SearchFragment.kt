@@ -1,14 +1,20 @@
 package com.example.postsapp
 
-import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.postsapp.databinding.FragmentProfileBinding
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.postsapp.adapters.SearchAdapter
 import com.example.postsapp.databinding.FragmentSearchBinding
+import com.example.postsapp.models.Both
+import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.SharedViewModel
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -20,13 +26,19 @@ private const val ARG_PARAM2 = "param2"
  * A simple [Fragment] subclass.
  * Use the [SearchFragment.newInstance] factory method to
  * create an instance of this fragment.
+ *
+ *
  */
+
+
 class SearchFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var binding : FragmentSearchBinding
+    private lateinit var viewModel: SharedViewModel
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,18 +46,97 @@ class SearchFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-
         }
+
+        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentSearchBinding.inflate(layoutInflater, container,false)
-        binding.checkBox2.isChecked = true
         return binding.root
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val posts = mutableListOf<Post>()
+        val profiles = mutableListOf<Profile>()
+        val both = mutableListOf<Both>()
+
+        val rvSearch = binding.rvSearch
+
+        val adapterSearch = SearchAdapter(both)
+        rvSearch.layoutManager = LinearLayoutManager(context)
+        rvSearch.adapter = adapterSearch
+
+
+
+
+        // get all profiles from database
+        viewModel.dbAllProfiles.observe(viewLifecycleOwner){ profilesList ->
+            // when first viewmodel is init() dbAllProfiles is null
+            if(profilesList == null) return@observe
+            // for now refresh list
+            profiles.removeAll(profiles)
+            profiles.addAll(profilesList)
+
+        }
+
+
+        viewModel.allPosts.observe(viewLifecycleOwner){ postsList ->
+            // when first viewmodel is init() allPosts is null
+            if(postsList == null) return@observe
+            // for now refresh list
+            posts.removeAll(posts)
+            posts.addAll(postsList)
+        }
+
+
+        binding.btnSearch.setOnClickListener {
+            Toast.makeText(context, "nothing", Toast.LENGTH_LONG).show()
+            both.removeAll(both)
+            if(binding.checkPosts.isChecked){
+                profiles.forEach{profile ->
+                    both.add(
+                        Both(
+                            id = profile.uid ?: "123",
+                            title = profile.name ?: "",
+                            image = profile.image ?: "",
+                            description = profile.say ?: "",
+                            count = 0
+                        )
+                    )
+                }
+            }
+
+            if(binding.checkProfiles.isChecked){
+                posts.forEach{post ->
+                    both.add(
+                        Both(
+                            id = post.id ?: "123",
+                            title = post.title ?: "",
+                            image = post.image ?: "",
+                            description = post.body ?: "",
+                            count = 0
+                        )
+                    )
+                }
+            }
+
+            both.shuffle()
+           adapterSearch.notifyItemRangeChanged(0, both.size)
+
+        }
+
+
+
 
 
     }
