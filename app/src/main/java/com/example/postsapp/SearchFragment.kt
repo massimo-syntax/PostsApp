@@ -1,10 +1,11 @@
 package com.example.postsapp
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -68,11 +69,11 @@ class SearchFragment : Fragment() {
 
         val posts = mutableListOf<Post>()
         val profiles = mutableListOf<Profile>()
-        val both = mutableListOf<Both>()
+        val bothList = mutableListOf<Both>()
 
         val rvSearch = binding.rvSearch
 
-        val adapterSearch = SearchAdapter(both)
+        val adapterSearch = SearchAdapter(bothList)
         rvSearch.layoutManager = LinearLayoutManager(context)
         rvSearch.adapter = adapterSearch
 
@@ -100,43 +101,54 @@ class SearchFragment : Fragment() {
 
 
         binding.btnSearch.setOnClickListener {
+            val query: String = binding.etSearch.text.toString()
             Toast.makeText(context, "nothing", Toast.LENGTH_LONG).show()
-            both.removeAll(both)
+            bothList.removeAll(bothList)
+            var bothObj:Both? = null
             if(binding.checkPosts.isChecked){
                 profiles.forEach{profile ->
-                    both.add(
-                        Both(
+                    bothObj = Both(
                             id = profile.uid ?: "123",
                             title = profile.name ?: "",
                             image = profile.image ?: "",
                             description = profile.say ?: "",
-                            count = 0
+                            count = 0,
+                            type = "profile"
                         )
-                    )
+                    // add profile if matching query
+                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query))
+                        bothList.add(bothObj!!)
                 }
             }
 
             if(binding.checkProfiles.isChecked){
                 posts.forEach{post ->
-                    both.add(
-                        Both(
+                    bothObj = Both(
                             id = post.id ?: "123",
                             title = post.title ?: "",
                             image = post.image ?: "",
                             description = post.body ?: "",
-                            count = 0
+                            count = 0,
+                            type = "post"
                         )
-                    )
+                    // add if post matching query
+                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query))
+                        bothList.add(bothObj!!)
                 }
             }
 
-            both.shuffle()
-           adapterSearch.notifyItemRangeChanged(0, both.size)
+            bothList.sortByDescending { it.count }
+           //adapterSearch.notifyItemRangeChanged(0, both.size)
+            adapterSearch.notifyDataSetChanged()
+
+            // hide keyword
+
+            // Hiding the keyboard from a Fragment
+
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
 
         }
-
-
-
 
 
     }

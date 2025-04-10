@@ -48,7 +48,7 @@ class SearchAdapter (private val both: MutableList<Both>) :
                 .load(both[position].image)
                 .into(viewHolder.image)
         }
-        viewHolder.description.text = both[position].toString()
+        viewHolder.description.text = both[position].description
 
     }
 

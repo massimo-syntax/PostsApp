@@ -119,7 +119,8 @@
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/checkbox_layout"/>
+            app:layout_constraintTop_toBottomOf="@id/checkbox_layout"
+            android:paddingBottom="200dp"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
