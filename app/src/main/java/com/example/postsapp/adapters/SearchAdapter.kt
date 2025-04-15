@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.ItemSearchBinding
 import com.example.postsapp.models.Both
 
-class SearchAdapter (private val both: MutableList<Both>) :
+class SearchAdapter (private val both: MutableList<Both> , private val onItemClick: (Both) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
 
     private lateinit var binding: ItemSearchBinding
@@ -18,13 +18,15 @@ class SearchAdapter (private val both: MutableList<Both>) :
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
-    class ViewHolder(binding: ItemSearchBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(binding: ItemSearchBinding , onItemClicked: (Int)->Unit ) : RecyclerView.ViewHolder(binding.root) {
         val name = binding.tvTitle
         val image = binding.ivImage
         val description = binding.tvDescription
 
         init {
-            // Define click listener for the ViewHolder's View
+            binding.root.setOnClickListener{
+                onItemClicked(adapterPosition)
+            }
         }
     }
 
@@ -33,7 +35,9 @@ class SearchAdapter (private val both: MutableList<Both>) :
         // Create a new view, which defines the UI of the list item
         ctx = parent.context
         val itemBinding = ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(itemBinding)
+        return ViewHolder(itemBinding){
+            onItemClick(both[it])
+        }
 
     }
 

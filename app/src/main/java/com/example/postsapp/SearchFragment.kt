@@ -40,6 +40,10 @@ class SearchFragment : Fragment() {
     private lateinit var binding : FragmentSearchBinding
     private lateinit var viewModel: SharedViewModel
 
+    private fun toast(s:String){
+        Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
+    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +77,16 @@ class SearchFragment : Fragment() {
 
         val rvSearch = binding.rvSearch
 
-        val adapterSearch = SearchAdapter(bothList)
+        val adapterSearch = SearchAdapter(bothList){ both ->
+
+            when(both.type){
+                "profile" -> toast("profile")
+                "post" -> toast("post")
+                else -> toast("none")
+            }
+
+        }
+
         rvSearch.layoutManager = LinearLayoutManager(context)
         rvSearch.adapter = adapterSearch
 
@@ -102,7 +115,6 @@ class SearchFragment : Fragment() {
 
         binding.btnSearch.setOnClickListener {
             val query: String = binding.etSearch.text.toString()
-            Toast.makeText(context, "nothing", Toast.LENGTH_LONG).show()
             bothList.removeAll(bothList)
             var bothObj:Both? = null
             if(binding.checkPosts.isChecked){
@@ -137,7 +149,7 @@ class SearchFragment : Fragment() {
                 }
             }
 
-            bothList.sortByDescending { it.count }
+           // bothList.sortByDescending { it.count }
            //adapterSearch.notifyItemRangeChanged(0, both.size)
             adapterSearch.notifyDataSetChanged()
 
@@ -145,8 +157,8 @@ class SearchFragment : Fragment() {
 
             // Hiding the keyboard from a Fragment
 
-            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
+            //val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            //imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
 
         }
 
