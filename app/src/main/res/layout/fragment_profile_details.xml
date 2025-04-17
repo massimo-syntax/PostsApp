@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ProfileDetailsFragment">
+
+
+    <TextView
+        android:id="@+id/profile_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="profileId" />
+
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="profile name" />
+
+    <TextView
+        android:id="@+id/sentence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sentence" />
+
+    <TextView
+        android:id="@+id/likes"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="likes" />
+
+
+
+</LinearLayout>

@@ -178,10 +178,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                 _allPosts.value = l
             }
             override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                //
-                // ...
+                Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
             }
+
         })
 
         // My top posts by number of stars
@@ -199,9 +198,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                 _dbAllProfiles.value = l
             }
             override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                //
-                // ...
+                Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
             }
         })
 

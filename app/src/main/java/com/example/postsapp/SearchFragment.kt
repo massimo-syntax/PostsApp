@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postsapp.adapters.SearchAdapter
 import com.example.postsapp.databinding.FragmentSearchBinding
@@ -80,8 +81,17 @@ class SearchFragment : Fragment() {
         val adapterSearch = SearchAdapter(bothList){ both ->
 
             when(both.type){
-                "profile" -> toast("profile")
-                "post" -> toast("post")
+                "profile" -> {
+                    toast("profile id = ${both.id}")
+
+                    val action = SearchFragmentDirections.actionSearchFragmentToProfileDetailsFragment(both.id.toString(), both.title, both.description, both.count)
+                    findNavController().navigate(action)
+                }
+
+                "post" -> {
+                    toast("post")
+                   // findNavController().navigate(R.id.action_searchFragment_to_postDetailsFragment)
+                }
                 else -> toast("none")
             }
 
@@ -117,7 +127,7 @@ class SearchFragment : Fragment() {
             val query: String = binding.etSearch.text.toString()
             bothList.removeAll(bothList)
             var bothObj:Both? = null
-            if(binding.checkPosts.isChecked){
+            if(binding.checkProfiles.isChecked){
                 profiles.forEach{profile ->
                     bothObj = Both(
                             id = profile.uid ?: "123",
@@ -133,7 +143,7 @@ class SearchFragment : Fragment() {
                 }
             }
 
-            if(binding.checkProfiles.isChecked){
+            if(binding.checkPosts.isChecked){
                 posts.forEach{post ->
                     bothObj = Both(
                             id = post.id ?: "123",

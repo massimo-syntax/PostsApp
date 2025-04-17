@@ -15,7 +15,14 @@
         android:id="@+id/searchFragment"
         android:name="com.example.postsapp.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_profileDetailsFragment"
+            app:destination="@id/profileDetailsFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/createFragment"
@@ -28,5 +35,28 @@
         android:name="com.example.postsapp.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/profileDetailsFragment"
+        android:name="com.example.postsapp.ProfileDetailsFragment"
+        android:label="fragment_profile_details"
+        tools:layout="@layout/fragment_profile_details" >
+        <argument
+            android:name="profileId"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="sentence"
+            app:argType="string" />
+        <argument
+            android:name="likes"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/postDetailsFragment"
+        android:name="com.example.postsapp.PostDetailsFragment"
+        android:label="fragment_post_details"
+        tools:layout="@layout/fragment_post_details" />
 
 </navigation>

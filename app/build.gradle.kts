@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
     alias(libs.plugins.google.gms.google.services)
+    id("androidx.navigation.safeargs")
 }
 
 android {
@@ -38,6 +39,7 @@ android {
     buildFeatures{
         viewBinding = true
     }
+
 }
 
 dependencies {
@@ -75,6 +77,10 @@ dependencies {
 
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // navigation using arguments
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
 
 
 
