@@ -5,13 +5,10 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 
 @IgnoreExtraProperties
-data class Post(
+data class Comment(
     var id: String? = "",
     var user: String? = "",
-    var title: String? = "",
-    var body: String? = "",
-    var image: String? = "",
-    var tags: List<String>? = listOf(),
+    var comment: String? = "",
     var likes: Int? = 0
 ) {
 
@@ -20,9 +17,7 @@ data class Post(
         return mapOf(
             "id" to id,
             "user" to user,
-            "title" to title,
-            "body" to body,
-            "image" to image,
+            "comment" to comment,
             "likes" to likes
         )
     }

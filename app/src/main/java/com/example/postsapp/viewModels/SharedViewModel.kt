@@ -34,6 +34,11 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     // FIREBASE AUTH    /END
 
+    // develpoment
+    fun toast(s:String){
+        Toast.makeText(getApplication(), s , Toast.LENGTH_SHORT).show()
+    }
+
 
 
 
@@ -82,6 +87,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val allPosts : LiveData<List<Post>?>
         get() = _allPosts
 
+    // POSTING A POST
     // for now there is no userid in the post, when user changes profile name all other posts of himself do not appear on his profile
     // query the profilename in posts for now is nice
     fun post( p:Post ){
@@ -94,6 +100,19 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }.addOnFailureListener {
             // failure
             _dbPosted.value = null
+        }
+    }
+
+    //      GET SINGLE POST
+    private val _singlePost = MutableLiveData<Post?>(null)
+    val singlePost : LiveData<Post?>
+        get() = _singlePost
+
+    fun getSinglePost(id:String){
+        postsRef.child(id).get().addOnSuccessListener {
+            _singlePost.value = it.getValue(Post::class.java)
+        }.addOnFailureListener {
+            toast("error getting single post  ${it}")
         }
     }
 

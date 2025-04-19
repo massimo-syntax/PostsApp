@@ -144,8 +144,7 @@ class CreateFragment : Fragment() {
                     body = binding.etBody.text.toString(),
                     image = image,
                     tags = binding.etTags.text.split(" "),
-                    likes = 0,
-                    comments = listOf()
+                    likes = 0
                 )
                 viewModel.post(post)
             }
