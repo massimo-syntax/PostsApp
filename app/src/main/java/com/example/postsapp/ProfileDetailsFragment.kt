@@ -5,8 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 
 
@@ -20,7 +23,11 @@ class ProfileDetailsFragment : Fragment() {
     private var likes:Int? = null
 
     private lateinit var binding : FragmentProfileDetailsBinding
-    //private lateinit var viewModel: SharedViewModel
+    private lateinit var viewModel: ProfileViewModel
+
+    private fun toast(s:String){
+        Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +41,7 @@ class ProfileDetailsFragment : Fragment() {
             likes = it.getInt("likes")
         }
 
-        //viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -50,11 +57,25 @@ class ProfileDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var profile : Profile? = null
 
         binding.profileId.text = profileId
         binding.profileName.text = name
         binding.sentence.text = sentence
         binding.likes.text = likes.toString()
+
+
+
+        viewModel.singleProfile.observe(viewLifecycleOwner){ p ->
+            if( p == null) return@observe
+            profile = p
+            toast(p.toString())
+        }
+
+        viewModel.getSingleProfile(profileId!!)
+
+
+        //viewModel.likeProfile(profile!!.uid!!)
 
     }
 

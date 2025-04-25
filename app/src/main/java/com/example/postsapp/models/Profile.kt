@@ -11,8 +11,8 @@ data class Profile(
     var say: String? = "",
     var image: String? = "",
     var nPosts: Int = 0,
-    var followers: List<String>? = listOf(),
-    var followed: List<String>? = listOf(),
+    var followers: Map<String, Boolean>? = mapOf<String,Boolean>(),
+    var followed: Map<String, Boolean>? = mapOf<String,Boolean>(),
 ) {
 
     @Exclude

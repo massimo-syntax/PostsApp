@@ -116,6 +116,28 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    //      GET SINGLE USER
+    private val _singleProfile = MutableLiveData<Profile?>(null)
+    val singleProfile : LiveData<Profile?>
+        get() = _singleProfile
+
+    fun getSingleProfile(id:String){
+        val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
+        singleProfileRef.get().addOnSuccessListener {
+            _singleProfile.value = it.getValue(Profile::class.java)
+        }.addOnFailureListener {
+            toast("error getting single profile  ${it}")
+        }
+    }
+
+    fun likeProfile(id:String){
+        val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
+
+    }
+
+
+
+
     // FIREBASE REALTIME DATABASE   / END
 
 

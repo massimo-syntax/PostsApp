@@ -69,8 +69,8 @@ class ProfileFragment : Fragment() {
             name = "",
             say = "",
             image = "",
-            followers = listOf(),
-            followed = listOf()
+            followers = mapOf<String,Boolean>(),
+            followed = mapOf<String,Boolean>()
         )
 
         // load fields of current profile in ui
