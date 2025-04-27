@@ -10,17 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.ProfileViewModel
-import com.example.postsapp.viewModels.SharedViewModel
-
-
-
 
 class ProfileDetailsFragment : Fragment() {
 
     private var profileId:String? = null
     private var name:String? = null
     private var sentence:String? = null
-    private var likes:Int? = null
+    //private var likes:Int? = null
 
     private lateinit var binding : FragmentProfileDetailsBinding
     private lateinit var viewModel: ProfileViewModel
@@ -38,7 +34,7 @@ class ProfileDetailsFragment : Fragment() {
             profileId = it.getString("profileId")
             name = it.getString("name")
             sentence = it.getString("sentence")
-            likes = it.getInt("likes")
+            //likes = it.getInt("likes")
         }
 
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
@@ -59,23 +55,43 @@ class ProfileDetailsFragment : Fragment() {
 
         var profile : Profile? = null
 
+        fun alreadyLiked():Boolean{
+            return profile!!.followers!!.containsKey(viewModel.myProfile.value!!.uid.toString())
+        }
+
+        var likes = 0
+
         binding.profileId.text = profileId
         binding.profileName.text = name
         binding.sentence.text = sentence
         binding.likes.text = likes.toString()
 
 
-
         viewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             profile = p
-            toast(p.toString())
+            //toast(p.toString())
+            likes = profile!!.followers!!.size
+            binding.likes.text = likes.toString()
+            if(alreadyLiked()){
+                binding.btnLike.text = "unlike"
+            }
         }
 
         viewModel.getSingleProfile(profileId!!)
 
+        // like profile
+        binding.btnLike.setOnClickListener {
+            if ( ! alreadyLiked() ){
+                viewModel.likeProfile()
+                likes ++
+                binding.likes.text = likes.toString()
+                binding.btnLike.text = "unlike"
+            }else{
+                // unlike
+            }
+        }
 
-        //viewModel.likeProfile(profile!!.uid!!)
 
     }
 

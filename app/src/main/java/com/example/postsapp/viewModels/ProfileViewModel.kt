@@ -35,13 +35,13 @@ class ProfileViewModel : ViewModel() {
     val myProfileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
     // profile status when no profile
-    private val _dbProfile = MutableLiveData<Profile?>(null)
-    val dbProfile : LiveData<Profile?>
-        get() = _dbProfile
+    val _myProfile = MutableLiveData<Profile?>(null)
+    val myProfile : LiveData<Profile?>
+        get() = _myProfile
 
 
     //      GET SINGLE USER
-    private val _singleProfile = MutableLiveData<Profile?>(null)
+    val _singleProfile = MutableLiveData<Profile?>(null)
     val singleProfile : LiveData<Profile?>
         get() = _singleProfile
 
@@ -54,16 +54,21 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun likeProfile(id:String){
-        val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
+    fun likeProfile(){
+        // followers map of referred profile
+        val referredProfileFollowers = singleProfile.value!!.followers
+        // add element to map
+        referredProfileFollowers!!["${myProfile.value!!.uid}"] = true
+        // send to firebase
+        val referredProfileRef = firebaseRTDB.getReference("profiles/${singleProfile.value!!.uid}")
+        referredProfileRef.child("followers").setValue(referredProfileFollowers)
 
-        // like the other profile using id of logged in user (me)
-        var like = Like(userId.value!! , true)
-        singleProfileRef.child("followers").setValue(like)
-
-        // add a like value in likes of my profile
-        like = Like(id, true)
-        myProfileRef.child("followed").setValue(like)
+        // followed map of my profile
+        val myProfileFollowed = myProfile.value!!.followed
+        // add followed to myProfile map
+        myProfileFollowed!!["${singleProfile.value!!.uid}"] = true
+        // send to firebase
+        myProfileRef.child("followed").setValue(myProfileFollowed)
 
     }
 
@@ -73,12 +78,13 @@ class ProfileViewModel : ViewModel() {
         myProfileRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
-                if(profile != null) _dbProfile.value = profile!!
+                if(profile != null) _myProfile.value = profile!!
             }
             override fun onCancelled(error: DatabaseError) {
                 // error
             }
         })
-    }
+
+    }// init{END}
 
 }
