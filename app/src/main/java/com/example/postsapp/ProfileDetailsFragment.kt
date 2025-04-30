@@ -88,7 +88,10 @@ class ProfileDetailsFragment : Fragment() {
                 binding.likes.text = likes.toString()
                 binding.btnLike.text = "unlike"
             }else{
-                // unlike
+                viewModel.unlikeProfile()
+                likes --
+                binding.likes.text = likes.toString()
+                binding.btnLike.text = "like"
             }
         }
 

@@ -72,6 +72,24 @@ class ProfileViewModel : ViewModel() {
 
     }
 
+    fun unlikeProfile(){
+        // followers map of referred profile
+        val referredProfileFollowers = singleProfile.value!!.followers
+        // remove key form map
+        //                                          currebtUid is also good
+        referredProfileFollowers!!.remove("${myProfile.value!!.uid}")
+        // send to firebase
+        val referredProfileRef = firebaseRTDB.getReference("profiles/${singleProfile.value!!.uid}")
+        referredProfileRef.child("followers").setValue(referredProfileFollowers)
+
+        // followed map of my profile
+        val myProfileFollowed = myProfile.value!!.followed
+        // add followed to myProfile map
+        myProfileFollowed!!.remove("${singleProfile.value!!.uid}")
+        // send to firebase
+        myProfileRef.child("followed").setValue(myProfileFollowed)
+    }
+
 
     init {
         // PROFILE LISTENER FIREBASE REALTIME
