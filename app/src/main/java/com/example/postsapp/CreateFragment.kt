@@ -136,14 +136,19 @@ class CreateFragment : Fragment() {
                     return@setOnClickListener
                 }
                 // generate unique id
-                id += Date().time
+                val tagsList : List<String> = binding.etTags.text.split(" ")
+                val tagsMap : MutableMap<String,Boolean> = mutableMapOf()
+                tagsList.forEach{
+                    tagsMap[it.toString()] = true
+                }
                 val post = Post(
                     id = id.toString(),
                     user = profile!!.name,
+                    userId = profile!!.uid,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
                     image = image,
-                    tags = binding.etTags.text.split(" "),
+                    tags = tagsMap,
                     likes = 0
                 )
                 viewModel.post(post)

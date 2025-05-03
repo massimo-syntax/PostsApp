@@ -91,6 +91,8 @@ class SearchFragment : Fragment() {
                 "post" -> {
                     toast("post")
                    // findNavController().navigate(R.id.action_searchFragment_to_postDetailsFragment)
+                    val action = SearchFragmentDirections.actionSearchFragmentToPostDetailsFragment(both.id)
+                    findNavController().navigate(action)
                 }
                 else -> toast("none")
             }

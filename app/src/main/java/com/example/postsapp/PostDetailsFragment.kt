@@ -5,55 +5,65 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.example.postsapp.databinding.FragmentPostDetailsBinding
+import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.viewModels.PostViewModel
+import com.example.postsapp.viewModels.ProfileViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PostDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PostDetailsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private var postId:String? = null
+
+    //private var likes:Int? = null
+
+    private lateinit var binding : FragmentPostDetailsBinding
+    private lateinit var viewModel: PostViewModel
+
+    private fun toast(s:String){
+        Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            postId = it.getString("postId")
         }
+        viewModel = ViewModelProvider(this)[PostViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_post_details, container, false)
+        //return inflater.inflate(R.layout.fragment_post_details, container, false)
+        binding = FragmentPostDetailsBinding.inflate(layoutInflater,container,false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PostDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PostDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.tvPostId.text = postId
+
+        viewModel.currentPost.observe(viewLifecycleOwner){ post ->
+            if(post == null) return@observe
+            binding.tvPostTitle.text = post.title + " from " + post.user
+            binding.tvPostBody.text = post.body
+            binding.tvLikes.text = post.likes.toString()
+        }
+        viewModel.getCurrentPost(postId!!)
+
+        binding.btnLike.setOnClickListener {
+            val myProfile = viewModel.myProfile
+
+            //toast(myProfile!!.uid.toString())
+
+        }
     }
+
+
 }

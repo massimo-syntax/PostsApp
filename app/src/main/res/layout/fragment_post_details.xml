@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PostDetailsFragment">
+    tools:context=".PostDetailsFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="post details fragment" />
+        android:id="@+id/tv_post_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="profileId" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tv_post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="post title" />
+
+    <TextView
+        android:id="@+id/tv_post_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="post body" />
+
+    <TextView
+        android:id="@+id/tv_likes"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="likes" />
+
+    <Button
+        android:id="@+id/btn_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="like!"/>
+
+</LinearLayout>

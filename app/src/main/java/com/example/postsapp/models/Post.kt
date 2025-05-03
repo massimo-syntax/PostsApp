@@ -8,10 +8,11 @@ import com.google.firebase.database.IgnoreExtraProperties
 data class Post(
     var id: String? = "",
     var user: String? = "",
+    var userId: String? = "",
     var title: String? = "",
     var body: String? = "",
     var image: String? = "",
-    var tags: List<String>? = listOf(),
+    var tags: MutableMap <String, Boolean>? = mutableMapOf<String,Boolean>(),
     var likes: Int? = 0
 ) {
 
