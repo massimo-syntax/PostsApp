@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.models.Post
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
@@ -48,20 +49,34 @@ class PostDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvPostId.text = postId
+        var post: Post? = null
+        var likes = 0
 
-        viewModel.currentPost.observe(viewLifecycleOwner){ post ->
-            if(post == null) return@observe
-            binding.tvPostTitle.text = post.title + " from " + post.user
-            binding.tvPostBody.text = post.body
-            binding.tvLikes.text = post.likes.toString()
+        fun alreadyLiked():Boolean{
+            return post!!.likes!!.containsKey(viewModel.currentUID)
+        }
+
+        viewModel.currentPost.observe(viewLifecycleOwner){ p ->
+            if(p == null) return@observe
+            post = p
+            binding.tvPostTitle.text = p.title + " from " + p.user
+            binding.tvPostBody.text = p.body
+            likes = p.likes!!.size
+            binding.tvLikes.text = likes.toString()
+            toast("observed $p")
+            if(alreadyLiked()){
+                binding.btnLike.text = "unlike"
+            }
+
         }
         viewModel.getCurrentPost(postId!!)
 
         binding.btnLike.setOnClickListener {
-            val myProfile = viewModel.myProfile
-
-            //toast(myProfile!!.uid.toString())
-
+            if(!alreadyLiked()){
+                likes++
+                binding.btnLike.text = "unlike"
+            }
+            binding.tvLikes.text = likes.toString()
         }
     }
 

@@ -12,8 +12,9 @@ data class Post(
     var title: String? = "",
     var body: String? = "",
     var image: String? = "",
-    var tags: MutableMap <String, Boolean>? = mutableMapOf<String,Boolean>(),
-    var likes: Int? = 0
+    var datetime : String? = "",
+    var tags: MutableMap <String, Boolean>? = mutableMapOf(),
+    var likes: MutableMap <String, Boolean>? = mutableMapOf()
 ) {
 
     @Exclude

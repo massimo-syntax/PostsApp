@@ -45,6 +45,10 @@ class PostViewModel : ViewModel() {
         }
     }
 
+    fun likePost(){
+
+    }
+
 
     init{
         // get my profile

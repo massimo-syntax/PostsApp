@@ -90,11 +90,21 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     // POSTING A POST
     // for now there is no userid in the post, when user changes profile name all other posts of himself do not appear on his profile
     // query the profilename in posts for now is nice
+
+    // updating just nPost, does not update the entire profile, the listener is for the profile with no bubbling
+    // when the fragment is not reloaded, then the viewmodel is the same object firebase is not queried again
+    // just added a nPost ++ in a child branch of the listener..
+    var nPosts:Int = 0
+
     fun post( p:Post ){
         postsRef.child(p.id.toString()).setValue(p).addOnSuccessListener {
             _dbPosted.value = p
-            var nPosts:Int = _dbProfile.value!!.nPosts
+            // with new viewmodel loaded nPost is 0 again...
+            // cannot be set elsewhere, firebase requires time, doesnt work
+            // in future can be that update the intire profile changing just a node is also good
+            nPosts = _dbProfile.value!!.nPosts
             nPosts++
+            // that is updated only here.. in the function
             _dbProfile.value!!.nPosts = nPosts
             profileRef.child("nPosts").setValue( nPosts )
         }.addOnFailureListener {
@@ -102,6 +112,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             _dbPosted.value = null
         }
     }
+
+    /* --- moved as well
 
     //      GET SINGLE POST
     private val _singlePost = MutableLiveData<Post?>(null)
@@ -115,6 +127,10 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             toast("error getting single post  ${it}")
         }
     }
+
+     */
+
+    /* --- moved to profile viewmodel
 
     //      GET SINGLE USER
     private val _singleProfile = MutableLiveData<Profile?>(null)
@@ -135,6 +151,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     }
 
+
+     */
 
 
 

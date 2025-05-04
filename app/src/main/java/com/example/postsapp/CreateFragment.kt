@@ -22,21 +22,7 @@ import com.example.postsapp.viewModels.SharedViewModel
 import java.util.Date
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CreateFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CreateFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
 
     private lateinit var binding : FragmentCreateBinding
     private lateinit var viewModel: SharedViewModel
@@ -46,8 +32,7 @@ class CreateFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            // no arguments
         }
         ctx = requireContext()
         viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
@@ -67,7 +52,6 @@ class CreateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         var profile : Profile? =  null
-        var id:Long = Date().time
         var image:String = ""
 
         viewModel.dbProfile.observe(viewLifecycleOwner){ p ->
@@ -135,21 +119,33 @@ class CreateFragment : Fragment() {
                     binding.etBody.setText("required")
                     return@setOnClickListener
                 }
-                // generate unique id
-                val tagsList : List<String> = binding.etTags.text.split(" ")
+
                 val tagsMap : MutableMap<String,Boolean> = mutableMapOf()
-                tagsList.forEach{
-                    tagsMap[it.toString()] = true
+
+                // probably crashes when null
+                if (! binding.etTags.text.isNullOrEmpty()){
+                    // there can be
+                    val tagsList : List<String> = binding.etTags.text.split(" ")
+                    // a null
+                    if (tagsList.isNotEmpty()){
+                    //somewhere
+                        tagsList.forEach{
+                    // here
+                            tagsMap[it.toString()] = true
+                        }
+                    }
                 }
+
                 val post = Post(
-                    id = id.toString(),
+                    id = Date().time.toString(),
                     user = profile!!.name,
                     userId = profile!!.uid,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
                     image = image,
+                    datetime = Date().time.toString(),
                     tags = tagsMap,
-                    likes = 0
+                    likes = mutableMapOf()
                 )
                 viewModel.post(post)
             }
@@ -161,23 +157,4 @@ class CreateFragment : Fragment() {
 
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CreateFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CreateFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

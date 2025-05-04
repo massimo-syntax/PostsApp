@@ -67,15 +67,15 @@ class LoginActivity : AppCompatActivity() {
     }// onCreate() END
 
 
-    private suspend fun login(firebaseAuth: FirebaseAuth, emailId: String, password: String) : AuthResult? {
+    private suspend fun login(firebaseAuth: FirebaseAuth, email: String, password: String) : AuthResult? {
         try {
-            val result = firebaseAuth.signInWithEmailAndPassword(emailId,password)
+            val result = firebaseAuth.signInWithEmailAndPassword(email,password)
                 .await()
             loginReceivedResult(result.user)
             return result
         } catch (e :Exception){
             withContext(Dispatchers.Main){
-                //toast("login failed: $e")
+                Toast.makeText(application, "login failed, probably you have to register first" ,Toast.LENGTH_SHORT).show()
                 binding.progressCircular.visibility = View.GONE
             }
             return null
@@ -85,7 +85,9 @@ class LoginActivity : AppCompatActivity() {
 
     private suspend fun loginReceivedResult(user : FirebaseUser? ) {
         if(user == null){
-            //toast("no auth user")
+            // something went wrong
+            // login just throws exception on try catch when no user
+            // in the other function here up
             return
         }
         withContext(Dispatchers.Main){
