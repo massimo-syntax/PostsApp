@@ -27,8 +27,6 @@ class PostViewModel : ViewModel() {
 
 
     // single post
-
-
     val _currentPost = MutableLiveData<Post?>(null)
     val currentPost : LiveData<Post?>
         get() = _currentPost
@@ -46,7 +44,15 @@ class PostViewModel : ViewModel() {
     }
 
     fun likePost(){
+        // add element to map
+        currentPost.value!!.likes!![currentUID] = true
+        // get firebase reference for this post / likes
+        val postId = currentPost.value!!.id
+        val currentPostRef = firebaseRTDB.getReference("posts/$postId")
+        val postLikeRef = currentPostRef.child("likes")
+        // send to firebase
 
+        postLikeRef.setValue(currentPost.value!!.likes!!)
     }
 
 

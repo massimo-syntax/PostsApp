@@ -71,12 +71,16 @@ class PostDetailsFragment : Fragment() {
         }
         viewModel.getCurrentPost(postId!!)
 
+        // the observer changes already the value of the live data profile
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
+                viewModel.likePost()
                 likes++
                 binding.btnLike.text = "unlike"
             }
+
             binding.tvLikes.text = likes.toString()
+
         }
     }
 
