@@ -77,10 +77,12 @@ class PostDetailsFragment : Fragment() {
                 viewModel.likePost()
                 likes++
                 binding.btnLike.text = "unlike"
+            }else{
+                viewModel.unlikePost()
+                likes--
+                binding.btnLike.text = "like"
             }
-
             binding.tvLikes.text = likes.toString()
-
         }
     }
 

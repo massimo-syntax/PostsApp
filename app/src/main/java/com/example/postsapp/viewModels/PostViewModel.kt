@@ -55,6 +55,21 @@ class PostViewModel : ViewModel() {
         postLikeRef.setValue(currentPost.value!!.likes!!)
     }
 
+    fun unlikePost(){
+        // remove key from live data
+        currentPost.value!!.likes!!.remove(currentUID)
+
+        // get firebase reference for this post / likes
+        val postId = currentPost.value!!.id
+        val currentPostRef = firebaseRTDB.getReference("posts/$postId")
+        val postLikeRef = currentPostRef.child("likes")
+        // send to firebase
+
+        postLikeRef.setValue(currentPost.value!!.likes!!)
+
+
+    }
+
 
     init{
         // get my profile
