@@ -43,15 +43,6 @@
         <argument
             android:name="profileId"
             app:argType="string" />
-        <argument
-            android:name="name"
-            app:argType="string" />
-        <argument
-            android:name="sentence"
-            app:argType="string" />
-        <argument
-            android:name="likes"
-            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/postDetailsFragment"

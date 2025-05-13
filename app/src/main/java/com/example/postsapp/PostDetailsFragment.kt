@@ -18,8 +18,6 @@ class PostDetailsFragment : Fragment() {
 
     private var postId:String? = null
 
-    //private var likes:Int? = null
-
     private lateinit var binding : FragmentPostDetailsBinding
     private lateinit var viewModel: PostViewModel
 

@@ -84,7 +84,7 @@ class SearchFragment : Fragment() {
                 "profile" -> {
                     toast("profile id = ${both.id}")
 
-                    val action = SearchFragmentDirections.actionSearchFragmentToProfileDetailsFragment(both.id.toString(), both.title, both.description, both.count)
+                    val action = SearchFragmentDirections.actionSearchFragmentToProfileDetailsFragment(both.id)
                     findNavController().navigate(action)
                 }
 

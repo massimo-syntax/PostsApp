@@ -14,9 +14,6 @@ import com.example.postsapp.viewModels.ProfileViewModel
 class ProfileDetailsFragment : Fragment() {
 
     private var profileId:String? = null
-    private var name:String? = null
-    private var sentence:String? = null
-    //private var likes:Int? = null
 
     private lateinit var binding : FragmentProfileDetailsBinding
     private lateinit var viewModel: ProfileViewModel
@@ -28,13 +25,9 @@ class ProfileDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            //param1 = it.getString(ARG_PARAM1)
-            //param2 = it.getString(ARG_PARAM2)
-            // id = both.id , name = both.title , sentence = both.description, likes =
+
             profileId = it.getString("profileId")
-            name = it.getString("name")
-            sentence = it.getString("sentence")
-            //likes = it.getInt("likes")
+
         }
 
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
@@ -61,26 +54,32 @@ class ProfileDetailsFragment : Fragment() {
 
         var likes = 0
 
-        binding.profileId.text = profileId
-        binding.profileName.text = name
-        binding.sentence.text = sentence
-        binding.likes.text = likes.toString()
+        // init text waiting for server response
+        binding.profileId.text = ""
+        binding.profileName.text = ""
+        binding.sentence.text = ""
+        binding.likes.text = ""
 
-
+        // server response
         viewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             profile = p
             //toast(p.toString())
             likes = profile!!.followers!!.size
             binding.likes.text = likes.toString()
+            binding.profileId.text = p.uid
+            binding.profileName.text = p.name
+            binding.sentence.text = p.say
+            binding.likes.text = likes.toString()
+
             if(alreadyLiked()){
                 binding.btnLike.text = "unlike"
             }
         }
-
+        // request profile
         viewModel.getSingleProfile(profileId!!)
 
-        // like profile
+        // btn like profile
         binding.btnLike.setOnClickListener {
             if ( ! alreadyLiked() ){
                 viewModel.likeProfile()
@@ -99,33 +98,4 @@ class ProfileDetailsFragment : Fragment() {
     }
 
 
-
-
-
-/*
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-
-
-    }
-
-    */
 }
