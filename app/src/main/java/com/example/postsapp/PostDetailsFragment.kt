@@ -7,11 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Visibility
+import com.example.postsapp.adapters.CommentsAdapter
+import com.example.postsapp.adapters.PostsAdapter
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
-import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.PostViewModel
-import com.example.postsapp.viewModels.ProfileViewModel
 
 
 class PostDetailsFragment : Fragment() {
@@ -69,6 +74,62 @@ class PostDetailsFragment : Fragment() {
         }
         viewModel.getCurrentPost(postId!!)
 
+        val comments = mutableListOf(
+            Comment("12345",
+                "username",
+                "userId-123",
+                "this is the text of the comment",
+                "datetime-2341341234",
+                mutableMapOf("dflkdjalkd" to true , "lkdfjalsdkj" to true)) ,
+
+                Comment("123456",
+                "username2",
+                "userId-1234",
+                "this is the text of the second comment comment",
+                "datetime-234134123423",
+                mutableMapOf("dflkdjalkd" to true , "lkdfjalsdkj" to true)
+            )
+        )
+
+        val rvComments = binding.rvComments
+        rvComments.layoutManager = LinearLayoutManager(context)
+        val adapterComments = CommentsAdapter(comments)
+        rvComments.adapter = adapterComments
+
+        var formShowing = false
+
+        fun toggleForm(){
+            if(formShowing){
+                formShowing = false
+                binding.btnShowForm.text = "write comment"
+                binding.commentForm.visibility = View.GONE
+            }else{
+                formShowing = true
+                binding.btnShowForm.text = "writing comment .."
+                binding.commentForm.visibility = View.VISIBLE
+            }
+            binding.etWriteComment.setText("")
+        }
+
+
+        binding.btnShowForm.setOnClickListener{
+            toggleForm()
+        }
+
+        binding.btnWriteComment.setOnClickListener{
+            if (binding.etWriteComment.text.isNullOrBlank()) return@setOnClickListener
+
+            val newComment = Comment(
+                "id123","form user","useridform", binding.etWriteComment.editableText.toString().trim(),"datetime", mutableMapOf()
+            )
+
+            comments.add(newComment)
+            adapterComments.notifyItemInserted(comments.size-1)
+            toggleForm()
+        }
+
+
+
         // the observer changes already the value of the live data profile
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
@@ -82,6 +143,9 @@ class PostDetailsFragment : Fragment() {
             }
             binding.tvLikes.text = likes.toString()
         }
+
+
+
     }
 
 

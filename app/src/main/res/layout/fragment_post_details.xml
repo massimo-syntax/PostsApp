@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".PostDetailsFragment"
     android:orientation="vertical">
 
@@ -36,5 +37,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="like!"/>
+
+    <Button
+        android:id="@+id/btn_show_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="leve comment"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_comments"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/comment_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/et_write_comment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:hint="write your commentt"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_write_comment"/>
+        <Button
+            android:id="@+id/btn_write_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="write comment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -10,12 +10,7 @@ import com.example.postsapp.models.Post
 class PostsAdapter(private val posts: MutableList<Post>) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
 
-        private lateinit var binding: ItemPostBinding
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
     class ViewHolder(binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
         val user = binding.tvUser
         val title = binding.tvTitle

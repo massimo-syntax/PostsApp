@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.postsapp.models.Like
 import com.example.postsapp.models.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
