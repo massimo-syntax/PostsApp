@@ -8,14 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.Visibility
 import com.example.postsapp.adapters.CommentsAdapter
-import com.example.postsapp.adapters.PostsAdapter
-import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
-import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.CommentsViewModel
 import com.example.postsapp.viewModels.PostViewModel
 
 
@@ -24,7 +21,8 @@ class PostDetailsFragment : Fragment() {
     private var postId:String? = null
 
     private lateinit var binding : FragmentPostDetailsBinding
-    private lateinit var viewModel: PostViewModel
+    private lateinit var postViewModel: PostViewModel
+    private lateinit var commentsViewModel: CommentsViewModel
 
     private fun toast(s:String){
         Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
@@ -35,7 +33,8 @@ class PostDetailsFragment : Fragment() {
         arguments?.let {
             postId = it.getString("postId")
         }
-        viewModel = ViewModelProvider(this)[PostViewModel::class.java]
+        postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
+        commentsViewModel = ViewModelProvider(this)[CommentsViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -56,10 +55,10 @@ class PostDetailsFragment : Fragment() {
         var likes = 0
 
         fun alreadyLiked():Boolean{
-            return post!!.likes!!.containsKey(viewModel.currentUID)
+            return post!!.likes!!.containsKey(postViewModel.currentUID)
         }
 
-        viewModel.currentPost.observe(viewLifecycleOwner){ p ->
+        postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
             post = p
             binding.tvPostTitle.text = p.title + " from " + p.user
@@ -72,24 +71,9 @@ class PostDetailsFragment : Fragment() {
             }
 
         }
-        viewModel.getCurrentPost(postId!!)
+        postViewModel.getCurrentPost(postId!!)
 
-        val comments = mutableListOf(
-            Comment("12345",
-                "username",
-                "userId-123",
-                "this is the text of the comment",
-                "datetime-2341341234",
-                mutableMapOf("dflkdjalkd" to true , "lkdfjalsdkj" to true)) ,
-
-                Comment("123456",
-                "username2",
-                "userId-1234",
-                "this is the text of the second comment comment",
-                "datetime-234134123423",
-                mutableMapOf("dflkdjalkd" to true , "lkdfjalsdkj" to true)
-            )
-        )
+        val comments = mutableListOf<Comment>()
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
@@ -111,6 +95,23 @@ class PostDetailsFragment : Fragment() {
             binding.etWriteComment.setText("")
         }
 
+        commentsViewModel.event.observe(viewLifecycleOwner){e->
+            if (e == null) return@observe
+            when(e.first){
+                "added" -> toast(e.second)
+                else -> toast("event fired, e.first is not added")
+            }
+        }
+
+
+        commentsViewModel.allPostsComments.observe(viewLifecycleOwner){ list ->
+            if (list == null ) return@observe
+            toast(list.toString())
+        }
+
+        commentsViewModel.getAllComments(postId!!)
+        commentsViewModel.registerPostCommentsEventListener(postId!!)
+
 
         binding.btnShowForm.setOnClickListener{
             toggleForm()
@@ -120,29 +121,39 @@ class PostDetailsFragment : Fragment() {
             if (binding.etWriteComment.text.isNullOrBlank()) return@setOnClickListener
 
             val newComment = Comment(
-                "id123","form user","useridform", binding.etWriteComment.editableText.toString().trim(),"datetime", mutableMapOf()
+                System.currentTimeMillis().toString(),"username","useridform", binding.etWriteComment.editableText.toString().trim(),"datetime", mutableMapOf()
             )
 
             comments.add(newComment)
             adapterComments.notifyItemInserted(comments.size-1)
             toggleForm()
+
+            // check whats with firebase
+            commentsViewModel.writeComment(newComment,postId!!)
+
+
         }
+
 
 
 
         // the observer changes already the value of the live data profile
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
-                viewModel.likePost()
+                postViewModel.likePost()
                 likes++
                 binding.btnLike.text = "unlike"
             }else{
-                viewModel.unlikePost()
+                postViewModel.unlikePost()
                 likes--
                 binding.btnLike.text = "like"
             }
             binding.tvLikes.text = likes.toString()
         }
+
+
+
+
 
 
 
