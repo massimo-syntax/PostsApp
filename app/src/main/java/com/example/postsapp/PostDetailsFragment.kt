@@ -52,7 +52,10 @@ class PostDetailsFragment : Fragment() {
 
         binding.tvPostId.text = postId
         var post: Post? = null
-        var likes = 0
+        // for now just count.. users can also comment, in future updates of the app may be also see which users liked..
+        // being an app for posts can be nice to like without that your like is seen..
+        // in every case user can also comment posts then they can say something directly there..
+        var likesCount = 0
 
         fun alreadyLiked():Boolean{
             return post!!.likes!!.containsKey(postViewModel.currentUID)
@@ -63,8 +66,8 @@ class PostDetailsFragment : Fragment() {
             post = p
             binding.tvPostTitle.text = p.title + " from " + p.user
             binding.tvPostBody.text = p.body
-            likes = p.likes!!.size
-            binding.tvLikes.text = likes.toString()
+            likesCount = p.likes!!.size
+            binding.tvLikes.text = likesCount.toString()
             toast("observed $p")
             if(alreadyLiked()){
                 binding.btnLike.text = "unlike"
@@ -73,13 +76,54 @@ class PostDetailsFragment : Fragment() {
         }
         postViewModel.getCurrentPost(postId!!)
 
-        val comments = mutableListOf<Comment>()
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
-        val adapterComments = CommentsAdapter(comments)
+        // adapter has the comments from viewmodel
+        val adapterComments = CommentsAdapter( commentsViewModel.allComments )
         rvComments.adapter = adapterComments
 
+
+/*      PROBABLY NO NEED..
+        SINGLE COMMENT EVENT LISTENER REQUESTS TO FIREBASE EVERY COMMENT 1 BY 1
+        CAN BE THAT WITH RECYCLERVIEW ADD ELEMENTS 1 BY 1 IS VERY PRACTICAL ....
+        commentsViewModel.allPostsComments.observe(viewLifecycleOwner){ list ->
+            if (list == null ) return@observe
+            toast(list.toString())
+        }
+  */
+        // list of comment
+        //commentsViewModel.getAllComments(postId!!)
+
+        // every time that firebase adds new comment,
+        // also when requested first,
+        // the callback for event is run
+        var lastIndex = 0
+        commentsViewModel.event.observe(viewLifecycleOwner){e->
+            if (e == null) return@observe
+            when(e.first){
+                "added" ->{
+                    // been loaded first when started the event listener
+                    // then every time that firebase receives a new comment
+                    toast(e.second + "  at last index [$lastIndex]")
+                    // the viewmodel adds the comment from databse in the list
+                    // then calls the observer
+                    // the list is in the viewmodel, just for avoid cpu overload th index is just increased instead to count all the list every comment added
+                    // comments callback is from firebase, then is everything already nice and syncronous
+                    adapterComments.notifyItemInserted(lastIndex)
+                    lastIndex++
+                }
+
+                else -> toast("event fired, e.first is not added")
+            }
+        }
+
+        // event listener to comments of this postId
+        // the event listener also requests every comment 1 by 1 when started
+        commentsViewModel.registerPostCommentsEventListener(postId!!)
+
+
+        // WRITE COMMENT
         var formShowing = false
 
         fun toggleForm(){
@@ -94,61 +138,46 @@ class PostDetailsFragment : Fragment() {
             }
             binding.etWriteComment.setText("")
         }
-
-        commentsViewModel.event.observe(viewLifecycleOwner){e->
-            if (e == null) return@observe
-            when(e.first){
-                "added" -> toast(e.second)
-                else -> toast("event fired, e.first is not added")
-            }
-        }
-
-
-        commentsViewModel.allPostsComments.observe(viewLifecycleOwner){ list ->
-            if (list == null ) return@observe
-            toast(list.toString())
-        }
-
-        commentsViewModel.getAllComments(postId!!)
-        commentsViewModel.registerPostCommentsEventListener(postId!!)
-
-
+        // btn toggle form
         binding.btnShowForm.setOnClickListener{
             toggleForm()
         }
-
+        // btn write
         binding.btnWriteComment.setOnClickListener{
             if (binding.etWriteComment.text.isNullOrBlank()) return@setOnClickListener
+            val dateTime = System.currentTimeMillis().toString()
 
             val newComment = Comment(
-                System.currentTimeMillis().toString(),"username","useridform", binding.etWriteComment.editableText.toString().trim(),"datetime", mutableMapOf()
+                id = dateTime,
+                userName = postViewModel.myProfile!!.name,
+                userId = postViewModel.myProfile!!.uid,
+                comment = binding.etWriteComment.editableText.toString().trim(),
+                dateTime = dateTime,
+                likes = mutableMapOf()
             )
 
-            comments.add(newComment)
-            adapterComments.notifyItemInserted(comments.size-1)
+            //comments.add(newComment)
+            //adapterComments.notifyItemInserted(comments.size-1)
             toggleForm()
 
-            // check whats with firebase
+            // send to database
             commentsViewModel.writeComment(newComment,postId!!)
 
-
         }
+        // WRITE COMMENT [ E N D ]
 
-
-
-
-        // the observer changes already the value of the live data profile
+        // LIKE
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
                 postViewModel.likePost()
-                likes++
+                likesCount++
                 binding.btnLike.text = "unlike"
             }else{
                 postViewModel.unlikePost()
-                likes--
+                likesCount--
                 binding.btnLike.text = "like"
             }
-            binding.tvLikes.text = likes.toString()
+            binding.tvLikes.text = likesCount.toString()
         }
 
 

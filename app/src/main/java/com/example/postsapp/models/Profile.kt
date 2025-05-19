@@ -6,6 +6,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class Profile(
+    // id of profile is uid
     var uid: String? = "",
     var name: String? = "",
     var say: String? = "",

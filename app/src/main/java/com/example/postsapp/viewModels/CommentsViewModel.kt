@@ -23,18 +23,23 @@ class CommentsViewModel : ViewModel() {
     private val db = Firebase.database
     private val commentsRef = db.getReference("comments")
 
+    /*
     private val _allPostComments = MutableLiveData<List<Comment>?> (null)
     val allPostsComments : LiveData<List<Comment>?>
         get() = _allPostComments
+    */
+
+    // instead of a livedata the list can be updated in parallel with the event
+    // thats made from the firebase event listener: commentsChildsEventListener = object : ChildEventListener {
+    val allComments = mutableListOf<Comment>()
 
 
     private val _event = MutableLiveData<Pair<String,String>?>(null)
     val event : LiveData<Pair<String,String>?>
         get() = _event
 
-    var addedComment : Comment? = null
 
-
+/*
     fun getAllComments(postId:String){
         val postComments =  commentsRef.child(postId)
         postComments.get().addOnCompleteListener {
@@ -53,25 +58,26 @@ class CommentsViewModel : ViewModel() {
         }
     }
 
+*/
+
+
     fun writeComment(c:Comment, postId:String){
-        commentsRef.child(postId).child(c.id!!).setValue(c).addOnSuccessListener {
-            // added
-        }.addOnFailureListener {/**/}
+        commentsRef.child(postId).child(c.id!!).setValue(c).addOnSuccessListener { /* added, wait event listener */ }.addOnFailureListener {/* i ask the senior first.. */}
     }
 
 
-        val commentsChildsEventListener = object : ChildEventListener {
+    val commentsChildsEventListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("comment added", "onChildAdded:" + dataSnapshot.key!!)
                 // A new comment has been added, add it to the displayed list
                 val c = dataSnapshot.getValue<Comment>()
-
                 // this can replace downloading the whole list
-                addedComment = c
-                _event.value = Pair("added", "addedComment = ${addedComment.toString()}" ) // when null probably is ""
-
-
+                // firebase sends all comments 1 by 1 also at starting the listener
+                allComments.add(c!!)
+                // event callback changing value
+                // that directly calls the observer (i hope.. didnt read the java code of the observer, jet..)
+                _event.value = Pair("added", c.id.toString() )
 
             }
 
@@ -115,8 +121,9 @@ class CommentsViewModel : ViewModel() {
                 Log.w("something went wrong with comments from firebase", "postComments:onCancelled", databaseError.toException())
 
             }
-        }
+    }
 
+    // to use in the fragment
     fun registerPostCommentsEventListener(id:String){
         commentsRef.child(id).addChildEventListener(commentsChildsEventListener)
     }
