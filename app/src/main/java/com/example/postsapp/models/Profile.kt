@@ -12,8 +12,9 @@ data class Profile(
     var say: String? = "",
     var image: String? = "",
     var nPosts: Int = 0,
-    var followers: MutableMap <String, Boolean>? = mutableMapOf<String,Boolean>(),
-    var followed: MutableMap <String, Boolean>? = mutableMapOf<String,Boolean>()
+    var followers: MutableMap <String, Boolean>? = mutableMapOf(),
+    var followed: MutableMap <String, Boolean>? = mutableMapOf(),
+    var likedComments: MutableMap<String,Boolean>? = mutableMapOf()
 ) {
 
     @Exclude

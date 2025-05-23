@@ -14,6 +14,7 @@ import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
 import com.example.postsapp.viewModels.CommentsViewModel
 import com.example.postsapp.viewModels.PostViewModel
+import com.example.postsapp.viewModels.ProfileViewModel
 
 
 class PostDetailsFragment : Fragment() {
@@ -23,6 +24,7 @@ class PostDetailsFragment : Fragment() {
     private lateinit var binding : FragmentPostDetailsBinding
     private lateinit var postViewModel: PostViewModel
     private lateinit var commentsViewModel: CommentsViewModel
+    private lateinit var profileViewModel: ProfileViewModel
 
     private fun toast(s:String){
         Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
@@ -35,6 +37,7 @@ class PostDetailsFragment : Fragment() {
         }
         postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
         commentsViewModel = ViewModelProvider(this)[CommentsViewModel::class.java]
+        profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -58,7 +61,7 @@ class PostDetailsFragment : Fragment() {
         var likesCount = 0
 
         fun alreadyLiked():Boolean{
-            return post!!.likes!!.containsKey(postViewModel.currentUID)
+            return post!!.likes!!.containsKey(profileViewModel.currentUID)
         }
 
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
@@ -80,7 +83,20 @@ class PostDetailsFragment : Fragment() {
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
         // adapter has the comments from viewmodel
-        val adapterComments = CommentsAdapter( commentsViewModel.allComments )
+        val adapterComments = CommentsAdapter( commentsViewModel.allComments, profileViewModel.currentUID ){
+            comment ->
+            if(comment.userId == profileViewModel.currentUID){
+                toast("commented from you -> delete")
+                // @TODO
+                // delete comment with the mega super firebase api
+                // the rest can be handled from the fantastic unbeliveable custom event observer
+            }else{
+                toast("comment from somene else -> you can like")
+                // @TODO
+                // add +1 to comment likes count
+                // add comment liked in map of profile
+            }
+        }
         rvComments.adapter = adapterComments
 
 
@@ -149,11 +165,11 @@ class PostDetailsFragment : Fragment() {
 
             val newComment = Comment(
                 id = dateTime,
-                userName = postViewModel.myProfile!!.name,
-                userId = postViewModel.myProfile!!.uid,
+                userName = profileViewModel.myProfile.value!!.name,
+                userId = profileViewModel.myProfile.value!!.uid,
                 comment = binding.etWriteComment.editableText.toString().trim(),
                 dateTime = dateTime,
-                likes = mutableMapOf()
+                likesCount = 0
             )
 
             //comments.add(newComment)
@@ -169,21 +185,16 @@ class PostDetailsFragment : Fragment() {
         // LIKE
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
-                postViewModel.likePost()
+                postViewModel.likePost(profileViewModel.currentUID)
                 likesCount++
                 binding.btnLike.text = "unlike"
             }else{
-                postViewModel.unlikePost()
+                postViewModel.unlikePost(profileViewModel.currentUID)
                 likesCount--
                 binding.btnLike.text = "like"
             }
             binding.tvLikes.text = likesCount.toString()
         }
-
-
-
-
-
 
 
     }

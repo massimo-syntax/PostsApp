@@ -16,8 +16,8 @@ import com.google.firebase.database.getValue
 class CommentsViewModel : ViewModel() {
 
     // FIREBASE AUTH                                                        FIREBASE AUTH
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    public val currentUID = firebaseAuth.currentUser?.uid!!
+    //private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    //public val currentUID = firebaseAuth.currentUser?.uid!!
 
     // FIREBASE RTDB INSTANCE
     private val db = Firebase.database

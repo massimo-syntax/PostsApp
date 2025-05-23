@@ -5,26 +5,31 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.postsapp.convertTimestampToReadableFormat
 import com.example.postsapp.databinding.ItemCommentBinding
+import com.example.postsapp.models.Both
 import com.example.postsapp.models.Comment
 
 
-class CommentsAdapter(private val comments: MutableList<Comment>) :
+class CommentsAdapter(private val comments: MutableList<Comment>, private val myUserId:String , private val onItemClick: (Comment) -> Unit) :
     RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
 
-
-    class ViewHolder(binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(binding: ItemCommentBinding , onItemClicked: (Int)->Unit) : RecyclerView.ViewHolder(binding.root) {
         val user = binding.tvUsername
         val dateTime = binding.tvDatetime
         val text = binding.tvText
+        val btnOption = binding.btnCommentOption
 
         init {
-            // Define click listener for the ViewHolder's View
+            btnOption.setOnClickListener {
+                onItemClicked(adapterPosition)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent ,false)
-        return ViewHolder(itemBinding)
+        return ViewHolder(itemBinding){
+            onItemClick(comments[it])
+        }
     }
 
 
@@ -35,6 +40,19 @@ class CommentsAdapter(private val comments: MutableList<Comment>) :
         val date = convertTimestampToReadableFormat(comment.dateTime!!.toLong())
         holder.dateTime.text = date
         holder.text.text = comment.comment
+
+
+        if(comment.userId == myUserId){
+            holder.btnOption.text = "Delete"
+            holder.btnOption.setOnClickListener {
+                holder.btnOption.text = "Delete clicked"
+            }
+        }else{
+            holder.btnOption.text = "Like"
+            holder.btnOption.setOnClickListener {
+                holder.btnOption.text = "like clicked"
+            }
+        }
     }
 
     override fun getItemCount() = comments.size

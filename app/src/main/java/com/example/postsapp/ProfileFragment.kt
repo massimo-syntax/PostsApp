@@ -57,7 +57,8 @@ class ProfileFragment : Fragment() {
             say = "",
             image = "",
             followers = mutableMapOf<String,Boolean>(),
-            followed =  mutableMapOf<String,Boolean>()
+            followed =  mutableMapOf<String,Boolean>(),
+            likedComments = mutableMapOf<String,Boolean>()
         )
 
         // load fields of current profile in ui
@@ -101,7 +102,6 @@ class ProfileFragment : Fragment() {
                 .load(url)
                 .into(binding.iv)
             image = url
-
         }
 
         // UPDATE !

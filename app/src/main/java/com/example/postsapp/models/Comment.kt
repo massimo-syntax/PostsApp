@@ -11,7 +11,7 @@ data class Comment(
     var userId: String? = "",
     var comment: String? = "",
     var dateTime:String? = "",
-    var likes: MutableMap <String, Boolean>? = mutableMapOf()
+    var likesCount: Int? = 0
 ) {
 
     @Exclude
@@ -22,7 +22,7 @@ data class Comment(
             "userId" to userId,
             "comment" to comment,
             "dateTime" to dateTime,
-            "likes" to likes
+            "likesCount" to likesCount
         )
     }
 }

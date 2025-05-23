@@ -12,11 +12,13 @@ import com.google.firebase.database.database
 class PostViewModel : ViewModel() {
 
     // FIREBASE AUTH                                                        FIREBASE AUTH
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    public val currentUID = firebaseAuth.currentUser?.uid!!
+    //private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    //public val currentUID = firebaseAuth.currentUser?.uid!!
 
     // FIREBASE INSTANCE
     private val firebaseRTDB = Firebase.database
+
+    /*
 
     // M Y       P R O F I L E
     private val myProfileRef = firebaseRTDB.getReference("profiles/$currentUID")
@@ -25,6 +27,7 @@ class PostViewModel : ViewModel() {
     var myProfile : Profile ? = null
         get() = field
 
+    */
 
     // single post
     val _currentPost = MutableLiveData<Post?>(null)
@@ -43,7 +46,7 @@ class PostViewModel : ViewModel() {
         }
     }
 
-    fun likePost(){
+    fun likePost(currentUID:String){
         // add element to map
         currentPost.value!!.likes!![currentUID] = true
         // get firebase reference for this post / likes
@@ -55,7 +58,7 @@ class PostViewModel : ViewModel() {
         postLikeRef.setValue(currentPost.value!!.likes!!)
     }
 
-    fun unlikePost(){
+    fun unlikePost(currentUID:String){
         // remove key from live data
         currentPost.value!!.likes!!.remove(currentUID)
 
@@ -72,11 +75,12 @@ class PostViewModel : ViewModel() {
 
 
     init{
+        /*
         // get my profile
         myProfileRef.get().addOnSuccessListener {
             myProfile = it.getValue(Profile::class.java)
         }.addOnFailureListener { /*failure*/ }
-
+         */
     }
 
 

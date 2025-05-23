@@ -19,11 +19,13 @@ class ProfileViewModel : ViewModel() {
 
     // FIREBASE AUTH                                                        FIREBASE AUTH
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val currentUID = firebaseAuth.currentUser?.uid!!
+    val currentUID = firebaseAuth.currentUser?.uid!!
 
+    /*
     private val _userId = MutableLiveData<String>(currentUID)
     val userId : LiveData<String>
         get() = _userId
+    */
     // FIREBASE AUTH    /END
 
 
