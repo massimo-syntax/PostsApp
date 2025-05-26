@@ -44,14 +44,10 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val my
 
         if(comment.userId == myUserId){
             holder.btnOption.text = "Delete"
-            holder.btnOption.setOnClickListener {
-                holder.btnOption.text = "Delete clicked"
-            }
+
         }else{
             holder.btnOption.text = "Like"
-            holder.btnOption.setOnClickListener {
-                holder.btnOption.text = "like clicked"
-            }
+
         }
     }
 

@@ -85,8 +85,11 @@ class PostDetailsFragment : Fragment() {
         // adapter has the comments from viewmodel
         val adapterComments = CommentsAdapter( commentsViewModel.allComments, profileViewModel.currentUID ){
             comment ->
+            toast(" ${comment.userId} == ${profileViewModel.currentUID}")
             if(comment.userId == profileViewModel.currentUID){
                 toast("commented from you -> delete")
+                commentsViewModel.deleteComment(comment , postId!!)
+                toast("deleting comment ${comment.userId}")
                 // @TODO
                 // delete comment with the mega super firebase api
                 // the rest can be handled from the fantastic unbeliveable custom event observer
@@ -100,20 +103,9 @@ class PostDetailsFragment : Fragment() {
         rvComments.adapter = adapterComments
 
 
-/*      PROBABLY NO NEED..
-        SINGLE COMMENT EVENT LISTENER REQUESTS TO FIREBASE EVERY COMMENT 1 BY 1
-        CAN BE THAT WITH RECYCLERVIEW ADD ELEMENTS 1 BY 1 IS VERY PRACTICAL ....
-        commentsViewModel.allPostsComments.observe(viewLifecycleOwner){ list ->
-            if (list == null ) return@observe
-            toast(list.toString())
-        }
-  */
-        // list of comment
-        //commentsViewModel.getAllComments(postId!!)
-
-        // every time that firebase adds new comment,
-        // also when requested first,
-        // the callback for event is run
+        // every time that firebase adds a new comment, runs the event listener
+        // the same event listener runs for every comment 1 by 1 at first request
+        // that is in the viewmodel, there is notified also the event live data, that calls this observer
         var lastIndex = 0
         commentsViewModel.event.observe(viewLifecycleOwner){e->
             if (e == null) return@observe
@@ -125,9 +117,13 @@ class PostDetailsFragment : Fragment() {
                     // the viewmodel adds the comment from databse in the list
                     // then calls the observer
                     // the list is in the viewmodel, just for avoid cpu overload th index is just increased instead to count all the list every comment added
-                    // comments callback is from firebase, then is everything already nice and syncronous
                     adapterComments.notifyItemInserted(lastIndex)
                     lastIndex++
+                }
+                "removed" -> {
+                    toast("index = ${e.second}")
+                    adapterComments.notifyItemRemoved(e.second.toInt())
+                    lastIndex--
                 }
 
                 else -> toast("event fired, e.first is not added")
@@ -172,12 +168,9 @@ class PostDetailsFragment : Fragment() {
                 likesCount = 0
             )
 
-            //comments.add(newComment)
-            //adapterComments.notifyItemInserted(comments.size-1)
-            toggleForm()
-
             // send to database
             commentsViewModel.writeComment(newComment,postId!!)
+            toggleForm()
 
         }
         // WRITE COMMENT [ E N D ]
