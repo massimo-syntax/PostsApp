@@ -85,19 +85,17 @@ class PostDetailsFragment : Fragment() {
         // adapter has the comments from viewmodel
         val adapterComments = CommentsAdapter( commentsViewModel.allComments, profileViewModel.currentUID ){
             comment ->
-            toast(" ${comment.userId} == ${profileViewModel.currentUID}")
+            // the comment is yours, you can delete the comment
             if(comment.userId == profileViewModel.currentUID){
+                // DELETE COMMENT (if yours)
                 toast("commented from you -> delete")
                 commentsViewModel.deleteComment(comment , postId!!)
                 toast("deleting comment ${comment.userId}")
-                // @TODO
-                // delete comment with the mega super firebase api
-                // the rest can be handled from the fantastic unbeliveable custom event observer
-            }else{
+
+            }else{ // comment is from someone else, you can like
+                // LIKE COMMENT (if written by others)
                 toast("comment from somene else -> you can like")
-                // @TODO
-                // add +1 to comment likes count
-                // add comment liked in map of profile
+                commentsViewModel.likeComment(profileViewModel.currentUID, comment.id!! , postId!!)
             }
         }
         rvComments.adapter = adapterComments
