@@ -113,47 +113,62 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    /* --- moved as well
 
-    //      GET SINGLE POST
-    private val _singlePost = MutableLiveData<Post?>(null)
-    val singlePost : LiveData<Post?>
-        get() = _singlePost
+    val profilesListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            val l = mutableListOf<Profile>()
+            var profile : Profile? = null
+            for (postSnapshot in dataSnapshot.children) {
+                profile = postSnapshot.getValue(Profile::class.java)
+                // waiting for firebase returning null as part of a list
+                l.add(profile!!)
 
-    fun getSinglePost(id:String){
-        postsRef.child(id).get().addOnSuccessListener {
-            _singlePost.value = it.getValue(Post::class.java)
-        }.addOnFailureListener {
-            toast("error getting single post  ${it}")
+            }
+            Toast.makeText(application.applicationContext,l.toString(),Toast.LENGTH_SHORT).show()
+            _dbAllProfiles.value = l
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+            Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
         }
     }
 
-     */
 
-    /* --- moved to profile viewmodel
-
-    //      GET SINGLE USER
-    private val _singleProfile = MutableLiveData<Profile?>(null)
-    val singleProfile : LiveData<Profile?>
-        get() = _singleProfile
-
-    fun getSingleProfile(id:String){
-        val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
-        singleProfileRef.get().addOnSuccessListener {
-            _singleProfile.value = it.getValue(Profile::class.java)
-        }.addOnFailureListener {
-            toast("error getting single profile  ${it}")
+    val postsListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            val l = mutableListOf<Post>()
+            var post : Post? = null
+            for (postSnapshot in dataSnapshot.children) {
+                post = postSnapshot.getValue(Post::class.java)
+                // waiting for firebase returning null as part of a list
+                l.add(post!!)
+            }
+            Log.e("posts:" , l.toString())
+            _allPosts.value = l
+        }
+        override fun onCancelled(databaseError: DatabaseError) {
+            Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun likeProfile(id:String){
-        val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
+
+
+
+    fun startListenersForLists(){
+        postsQuery.addValueEventListener(postsListener)
+        profilesQuery.addValueEventListener(profilesListener)
 
     }
 
 
-     */
 
+    fun removePostsListener(){
+        postsQuery.removeEventListener(postsListener)
+    }
+
+
+    fun removeProfilesListener(){
+        profilesQuery.removeEventListener(profilesListener)
+    }
 
 
     // FIREBASE REALTIME DATABASE   / END
@@ -211,7 +226,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         */
 
 
-        // PROFILE LISTENER FIREBASE REALTIME
+        // CURRENT PROFILE.. IT CAN BE USED THE PROFILE VIEWMODEL, NOW THERE IS
+        // FIRST A BIT OF TIDY UP AND HANDLE THE LISTENERS FOR THE LISTS
         profileRef.addValueEventListener(object:ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
@@ -222,44 +238,10 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             }
         })
 
+        // just register the listeners as it was before to avoid crashes for now..
+        startListenersForLists()
 
-        // My top posts by number of stars
-        postsQuery.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val l = mutableListOf<Post>()
-                var post : Post? = null
-                for (postSnapshot in dataSnapshot.children) {
-                    post = postSnapshot.getValue(Post::class.java)
-                    // waiting for firebase returning null as part of a list
-                    l.add(post!!)
-                }
-                Log.e("posts:" , l.toString())
-                _allPosts.value = l
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
-            }
 
-        })
-
-        // My top posts by number of stars
-        profilesQuery.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val l = mutableListOf<Profile>()
-                var profile : Profile? = null
-                for (postSnapshot in dataSnapshot.children) {
-                    profile = postSnapshot.getValue(Profile::class.java)
-                    // waiting for firebase returning null as part of a list
-                    l.add(profile!!)
-
-                }
-                Toast.makeText(application.applicationContext,l.toString(),Toast.LENGTH_SHORT).show()
-                _dbAllProfiles.value = l
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(application , "firebase error: ${databaseError.message}" , Toast.LENGTH_SHORT).show()
-            }
-        })
 
 
 

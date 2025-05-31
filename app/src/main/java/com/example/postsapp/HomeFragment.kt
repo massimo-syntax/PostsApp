@@ -62,7 +62,6 @@ class HomeFragment : Fragment() {
         rvProfiles.adapter = adapterProfiles
 
         // get all profiles from database
-
         viewModel.dbAllProfiles.observe(viewLifecycleOwner) { profilesList ->
             // when first viewmodel is init() dbAllProfiles is null
             if (profilesList == null) return@observe
@@ -70,8 +69,11 @@ class HomeFragment : Fragment() {
             profiles.removeAll(profiles)
             profiles.addAll(profilesList)
             adapterProfiles.notifyItemRangeChanged(0, profilesList.size)
-        }
 
+            // DONT REFRESH THE WHOLE LOST
+            // approach to avoid downloading the whole list again
+            viewModel.removeProfilesListener()
+        }
 
         viewModel.allPosts.observe(viewLifecycleOwner) { postsList ->
             // when first viewmodel is init() allPosts is null
@@ -80,6 +82,10 @@ class HomeFragment : Fragment() {
             posts.removeAll(posts)
             posts.addAll(postsList)
             adapterPost.notifyItemRangeChanged(0, postsList.size)
+
+            // DONT REFRESH THE WHOLE LOST
+            // approach to avoid downloading the whole list again
+            viewModel.removePostsListener()
         }
 
 
