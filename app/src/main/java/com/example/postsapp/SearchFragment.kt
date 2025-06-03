@@ -16,30 +16,18 @@ import com.example.postsapp.databinding.FragmentSearchBinding
 import com.example.postsapp.models.Both
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- *
- */
 
 
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var binding : FragmentSearchBinding
     private lateinit var viewModel: SharedViewModel
+    private lateinit var profileViewModel: ProfileViewModel
 
     private fun toast(s:String){
         Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
@@ -50,12 +38,11 @@ class SearchFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            // NO PARAMETERS
         }
 
         viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-
+        profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
 
     }
 
@@ -78,42 +65,35 @@ class SearchFragment : Fragment() {
 
         val rvSearch = binding.rvSearch
 
+        //  rv click to details page
         val adapterSearch = SearchAdapter(bothList){ both ->
-
             when(both.type){
                 "profile" -> {
-                    toast("profile id = ${both.id}")
-
                     val action = SearchFragmentDirections.actionSearchFragmentToProfileDetailsFragment(both.id)
                     findNavController().navigate(action)
                 }
-
                 "post" -> {
-                    toast("post")
-                   // findNavController().navigate(R.id.action_searchFragment_to_postDetailsFragment)
                     val action = SearchFragmentDirections.actionSearchFragmentToPostDetailsFragment(both.id)
                     findNavController().navigate(action)
                 }
-                else -> toast("none")
+                else -> toast("Thats not post neather profile")
             }
-
         }
 
         rvSearch.layoutManager = LinearLayoutManager(context)
         rvSearch.adapter = adapterSearch
 
 
-
-
-        // get all profiles from database
-        viewModel.dbAllProfiles.observe(viewLifecycleOwner){ profilesList ->
+        profileViewModel.profilesList.observe(viewLifecycleOwner){
+            profilesList ->
             // when first viewmodel is init() dbAllProfiles is null
             if(profilesList == null) return@observe
             // for now refresh list
             profiles.removeAll(profiles)
             profiles.addAll(profilesList)
-
         }
+        // get profiles from firebase databse
+        profileViewModel.getProfilesList()
 
 
         viewModel.allPosts.observe(viewLifecycleOwner){ postsList ->
@@ -125,10 +105,19 @@ class SearchFragment : Fragment() {
         }
 
 
+        // click
+        // ADD to LIST matching CHECKBOXES
         binding.btnSearch.setOnClickListener {
             val query: String = binding.etSearch.text.toString()
-            bothList.removeAll(bothList)
             var bothObj:Both? = null
+
+            // for notify adapterr
+            val oldDatasetSize = bothList.size
+            var newDatasetSize = 0
+            // refresh the whole list
+            bothList.removeAll(bothList)
+
+            // PROFILES CHECKED
             if(binding.checkProfiles.isChecked){
                 profiles.forEach{profile ->
                     bothObj = Both(
@@ -140,11 +129,15 @@ class SearchFragment : Fragment() {
                             type = "profile"
                         )
                     // add profile if matching query
-                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query))
+                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query)){
                         bothList.add(bothObj!!)
+                        newDatasetSize++
+                    }
                 }
+
             }
 
+            // POSTS CHECKED
             if(binding.checkPosts.isChecked){
                 posts.forEach{post ->
                     bothObj = Both(
@@ -156,44 +149,24 @@ class SearchFragment : Fragment() {
                             type = "post"
                         )
                     // add if post matching query
-                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query))
+                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query)){
                         bothList.add(bothObj!!)
+                        newDatasetSize++
+                    }
                 }
             }
 
-           // bothList.sortByDescending { it.count }
-           //adapterSearch.notifyItemRangeChanged(0, both.size)
-            adapterSearch.notifyDataSetChanged()
+            adapterSearch.notifyItemRangeRemoved(0 , oldDatasetSize)
+            adapterSearch.notifyItemRangeInserted(0 , newDatasetSize )
 
             // hide keyword
-
             // Hiding the keyboard from a Fragment
-
-            //val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            //imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
 
         }
 
 
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

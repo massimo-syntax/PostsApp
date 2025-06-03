@@ -46,6 +46,13 @@ class ProfileViewModel : ViewModel() {
     val singleProfile : LiveData<Profile?>
         get() = _singleProfile
 
+
+    //      GET LIST OF PROFILES
+    val _profilesList = MutableLiveData<List<Profile>?>(null)
+    val profilesList : LiveData<List<Profile>?>
+        get() = _profilesList
+
+
     fun getSingleProfile(id:String){
         val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
         singleProfileRef.get().addOnSuccessListener {
@@ -54,6 +61,28 @@ class ProfileViewModel : ViewModel() {
             // failure
         }
     }
+
+
+    // REQUIRE ONCE LIST OF PROFILES
+    fun getProfilesList(){
+        val profilesRef = firebaseRTDB.getReference("profiles")
+        profilesRef.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val snapshot = it.result
+                val profiles = mutableListOf<Profile>()
+                for (profileSnapshot in snapshot.children) {
+                    val p = profileSnapshot.getValue(Profile::class.java)
+                    profiles.add(p!!)
+                }
+                //Log.d(TAG, "${profiles.size}")
+                _profilesList.value = profiles.toList()
+            } else {
+                // EROOR
+                //Log.d(TAG, "${it.exception?.message}")
+            }
+        }
+    }
+
 
     fun likeProfile(){
         // followers map of referred profile
@@ -92,6 +121,7 @@ class ProfileViewModel : ViewModel() {
     }
 
 
+    // retrive my profile at viewmodel instanciation
     init {
         // PROFILE LISTENER FIREBASE REALTIME
         myProfileRef.addValueEventListener(object: ValueEventListener {
