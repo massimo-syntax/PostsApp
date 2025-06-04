@@ -11,7 +11,8 @@ data class Profile(
     var name: String? = "",
     var say: String? = "",
     var image: String? = "",
-    var nPosts: Int = 0,
+    var nPosts: Int? = 0,
+    var nFollowers: Int? = 0,
     var followers: MutableMap <String, Boolean>? = mutableMapOf(),
     var followed: MutableMap <String, Boolean>? = mutableMapOf(),
     var likedComments: MutableMap<String,Boolean>? = mutableMapOf()
@@ -25,6 +26,7 @@ data class Profile(
             "say" to say,
             "image" to image,
             "nPosts" to nPosts,
+            "nFollowers" to nFollowers,
             "followers" to followers,
             "followed" to followed,
         )

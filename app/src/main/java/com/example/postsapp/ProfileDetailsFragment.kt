@@ -82,12 +82,12 @@ class ProfileDetailsFragment : Fragment() {
         // btn like profile
         binding.btnLike.setOnClickListener {
             if ( ! alreadyLiked() ){
-                viewModel.likeProfile()
+                viewModel.likeProfile(profile!!.uid!!)
                 likes ++
                 binding.likes.text = likes.toString()
                 binding.btnLike.text = "unlike"
             }else{
-                viewModel.unlikeProfile()
+                viewModel.unlikeProfile(profile!!.uid!!)
                 likes --
                 binding.likes.text = likes.toString()
                 binding.btnLike.text = "like"

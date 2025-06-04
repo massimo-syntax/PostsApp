@@ -1,6 +1,5 @@
 package com.example.postsapp.viewModels
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,10 +8,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
-import kotlin.coroutines.coroutineContext
 
 class ProfileViewModel : ViewModel() {
 
@@ -21,11 +20,6 @@ class ProfileViewModel : ViewModel() {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     val currentUID = firebaseAuth.currentUser?.uid!!
 
-    /*
-    private val _userId = MutableLiveData<String>(currentUID)
-    val userId : LiveData<String>
-        get() = _userId
-    */
     // FIREBASE AUTH    /END
 
 
@@ -47,12 +41,6 @@ class ProfileViewModel : ViewModel() {
         get() = _singleProfile
 
 
-    //      GET LIST OF PROFILES
-    val _profilesList = MutableLiveData<List<Profile>?>(null)
-    val profilesList : LiveData<List<Profile>?>
-        get() = _profilesList
-
-
     fun getSingleProfile(id:String){
         val singleProfileRef = firebaseRTDB.getReference("profiles/$id")
         singleProfileRef.get().addOnSuccessListener {
@@ -62,6 +50,10 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    //      GET LIST OF PROFILES
+    val _profilesList = MutableLiveData<List<Profile>?>(null)
+    val profilesList : LiveData<List<Profile>?>
+        get() = _profilesList
 
     // REQUIRE ONCE LIST OF PROFILES
     fun getProfilesList(){
@@ -84,50 +76,54 @@ class ProfileViewModel : ViewModel() {
     }
 
 
-    fun likeProfile(){
-        // followers map of referred profile
-        val referredProfileFollowers = singleProfile.value!!.followers
-        // add element to map
-        referredProfileFollowers!!["${myProfile.value!!.uid}"] = true
-        // send to firebase
-        val referredProfileRef = firebaseRTDB.getReference("profiles/${singleProfile.value!!.uid}")
-        referredProfileRef.child("followers").setValue(referredProfileFollowers)
+    fun likeProfile(otherProfileId:String){
+        val db = Firebase.database.reference
 
-        // followed map of my profile
-        val myProfileFollowed = myProfile.value!!.followed
-        // add followed to myProfile map
-        myProfileFollowed!!["${singleProfile.value!!.uid}"] = true
-        // send to firebase
-        myProfileRef.child("followed").setValue(myProfileFollowed)
+        val updates: MutableMap<String, Any> = hashMapOf(
+            "profiles/$otherProfileId/followers/$currentUID" to true,
+            "profiles/$currentUID/followed/$otherProfileId" to true,
+            // increment +1 the count of follower in the other profile
+            "profiles/$otherProfileId/nFollowers" to ServerValue.increment (1)
+        )
+        db.updateChildren(updates)
 
+        // update the livedata
+        _singleProfile.value!!.followers!![currentUID] = true
+        _myProfile.value!!.followed!![otherProfileId] = true
+
+        var followersCount = _singleProfile.value!!.nFollowers!!
+        followersCount++
+        _singleProfile.value!!.nFollowers = followersCount
     }
 
-    fun unlikeProfile(){
-        // followers map of referred profile
-        val referredProfileFollowers = singleProfile.value!!.followers
-        // remove key form map
-        //                                          currebtUid is also good
-        referredProfileFollowers!!.remove("${myProfile.value!!.uid}")
-        // send to firebase
-        val referredProfileRef = firebaseRTDB.getReference("profiles/${singleProfile.value!!.uid}")
-        referredProfileRef.child("followers").setValue(referredProfileFollowers)
+    fun unlikeProfile(otherProfileId: String){
+        val profilesReference = firebaseRTDB.getReference("profiles")
 
-        // followed map of my profile
-        val myProfileFollowed = myProfile.value!!.followed
-        // add followed to myProfile map
-        myProfileFollowed!!.remove("${singleProfile.value!!.uid}")
-        // send to firebase
-        myProfileRef.child("followed").setValue(myProfileFollowed)
+        // remove follower from databse
+        profilesReference.child(otherProfileId).child("followers/$currentUID").removeValue()
+        profilesReference.child(otherProfileId).child("nFollowers").setValue(ServerValue.increment(-1))
+
+        profilesReference.child(currentUID).child("followed/$otherProfileId").removeValue()
+
+        // update livedata
+        _singleProfile.value!!.followers!!.remove(currentUID)
+        _myProfile.value!!.followed!!.remove(otherProfileId)
+
+        var followersCount = _singleProfile.value!!.nFollowers!!
+        followersCount--
+        _singleProfile.value!!.nFollowers = followersCount
     }
 
 
-    // retrive my profile at viewmodel instanciation
+
     init {
-        // PROFILE LISTENER FIREBASE REALTIME
+        // retrive my profile at viewmodel instanciation ..
+        // on data change receives the data form firebase also first when started
+        // in the case of the profile fragment, to update the profile, is also useful a listener on change
         myProfileRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
-                if(profile != null) _myProfile.value = profile!!
+                if(profile != null) _myProfile.value = profile
             }
             override fun onCancelled(error: DatabaseError) {
                 // error

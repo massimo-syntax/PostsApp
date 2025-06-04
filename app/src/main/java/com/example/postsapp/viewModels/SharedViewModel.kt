@@ -102,7 +102,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             // with new viewmodel loaded nPost is 0 again...
             // cannot be set elsewhere, firebase requires time, doesnt work
             // in future can be that update the intire profile changing just a node is also good
-            nPosts = _dbProfile.value!!.nPosts
+            nPosts = _dbProfile.value!!.nPosts!!
             nPosts++
             // that is updated only here.. in the function
             _dbProfile.value!!.nPosts = nPosts
