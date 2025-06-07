@@ -1,6 +1,5 @@
 package com.example.postsapp
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,23 +15,19 @@ import com.example.postsapp.databinding.FragmentSearchBinding
 import com.example.postsapp.models.Both
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
-import com.example.postsapp.viewModels.SharedViewModel
-
-
-
 
 
 class SearchFragment : Fragment() {
 
     private lateinit var binding : FragmentSearchBinding
-    private lateinit var viewModel: SharedViewModel
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var postsViewmodel:PostViewModel
 
     private fun toast(s:String){
         Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,33 +35,29 @@ class SearchFragment : Fragment() {
         arguments?.let {
             // NO PARAMETERS
         }
-
-        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        // init viewmodels
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
-
+        postsViewmodel = ViewModelProvider(this)[PostViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        // assign xml layout for this fragment
         binding = FragmentSearchBinding.inflate(layoutInflater, container,false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val posts = mutableListOf<Post>()
-        val profiles = mutableListOf<Profile>()
-        val bothList = mutableListOf<Both>()
-
+        // recycler view
         val rvSearch = binding.rvSearch
-
-        //  rv click to details page
-        val adapterSearch = SearchAdapter(bothList){ both ->
+        // adapter
+        val bothList = mutableListOf<Both>()
+        val adapterSearch = SearchAdapter(bothList){
+            // adapter click listener
+            both ->
             when(both.type){
                 "profile" -> {
                     val action = SearchFragmentDirections.actionSearchFragmentToProfileDetailsFragment(both.id)
@@ -76,33 +67,36 @@ class SearchFragment : Fragment() {
                     val action = SearchFragmentDirections.actionSearchFragmentToPostDetailsFragment(both.id)
                     findNavController().navigate(action)
                 }
-                else -> toast("Thats not post neather profile")
+                else -> toast("Thats not post neither profile")
             }
         }
-
         rvSearch.layoutManager = LinearLayoutManager(context)
         rvSearch.adapter = adapterSearch
 
-
+        // GET LIST OF      P R O F I L E S
+        var profiles = listOf<Profile>()
         profileViewModel.profilesList.observe(viewLifecycleOwner){
             profilesList ->
             // when first viewmodel is init() dbAllProfiles is null
             if(profilesList == null) return@observe
-            // for now refresh list
-            profiles.removeAll(profiles)
-            profiles.addAll(profilesList)
+            // assign pointer to local variable
+            profiles = profilesList.toList()
         }
         // get profiles from firebase databse
         profileViewModel.getProfilesList()
 
 
-        viewModel.allPosts.observe(viewLifecycleOwner){ postsList ->
+        // GET LIST OF      P O S T S
+        var posts = listOf<Post>()
+        postsViewmodel.postsList.observe(viewLifecycleOwner){
+            postsList ->
             // when first viewmodel is init() allPosts is null
             if(postsList == null) return@observe
-            // for now refresh list
-            posts.removeAll(posts)
-            posts.addAll(postsList)
+            // assign pointer to local variable
+            posts = postsList
         }
+        // request posts from databse
+        postsViewmodel.getPostsList()
 
 
         // click
@@ -111,15 +105,16 @@ class SearchFragment : Fragment() {
             val query: String = binding.etSearch.text.toString()
             var bothObj:Both? = null
 
-            // for notify adapterr
+            // to remove from adapter
             val oldDatasetSize = bothList.size
+            // to add notifyItemRangeInserted for adapter
             var newDatasetSize = 0
             // refresh the whole list
             bothList.removeAll(bothList)
 
             // PROFILES CHECKED
             if(binding.checkProfiles.isChecked){
-                profiles.forEach{profile ->
+                profiles.forEach{ profile ->
                     bothObj = Both(
                             id = profile.uid ?: "123",
                             title = profile.name ?: "",
@@ -155,18 +150,21 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
-
+            // completely refresh adapter to the new list
             adapterSearch.notifyItemRangeRemoved(0 , oldDatasetSize)
             adapterSearch.notifyItemRangeInserted(0 , newDatasetSize )
 
+            binding.etSearch.setText("")
+
+            /* this works once but then crashes on click */
             // hide keyword
             // Hiding the keyboard from a Fragment
             //val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             //imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
 
-        }
+        }/* click listener submit */
 
 
-    }
+    }/* onViewCreated */
 
 }

@@ -1,6 +1,5 @@
 package com.example.postsapp
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,27 +10,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentHomeBinding
-import com.example.postsapp.models.Draft
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
-import com.example.postsapp.viewModels.SharedViewModel
-
+import com.example.postsapp.viewModels.PostViewModel
+import com.example.postsapp.viewModels.ProfileViewModel
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding : FragmentHomeBinding
-    private lateinit var viewModel : SharedViewModel
 
-    private lateinit var ctx : Context
-
+    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var postsViewmodel: PostViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             // no  params
         }
-        ctx = requireContext()
-        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        // init viewmodels
+        profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        postsViewmodel = ViewModelProvider(this)[PostViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -47,69 +45,63 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val posts = mutableListOf<Post>()
-
-        val rvPost = binding.rvPosts
-        rvPost.layoutManager = LinearLayoutManager(ctx)
-        val adapterPost = PostsAdapter(posts)
-        rvPost.adapter = adapterPost
-
+        //  profiles recycler view
         val profiles = mutableListOf<Profile>()
-
         val rvProfiles = binding.rvProfiles
-        rvProfiles.layoutManager = LinearLayoutManager(ctx, LinearLayoutManager.HORIZONTAL, false)
+        rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         val adapterProfiles = ProfilesAdapter(profiles)
         rvProfiles.adapter = adapterProfiles
 
-        // get all profiles from database
-        viewModel.dbAllProfiles.observe(viewLifecycleOwner) { profilesList ->
-            // when first viewmodel is init() dbAllProfiles is null
-            if (profilesList == null) return@observe
-            // for now refresh list
-            profiles.removeAll(profiles)
-            profiles.addAll(profilesList)
-            adapterProfiles.notifyItemRangeChanged(0, profilesList.size)
-
-            // DONT REFRESH THE WHOLE LOST
-            // approach to avoid downloading the whole list again
-            viewModel.removeProfilesListener()
-        }
-
-        viewModel.allPosts.observe(viewLifecycleOwner) { postsList ->
+        // GET LIST OF      P R O F I L E
+        profileViewModel.profilesList.observe(viewLifecycleOwner){
+                profilesList ->
             // when first viewmodel is init() allPosts is null
-            if (postsList == null) return@observe
-            // for now refresh list
-            posts.removeAll(posts)
-            posts.addAll(postsList)
-            adapterPost.notifyItemRangeChanged(0, postsList.size)
+            // navigating back to this fragment the observer every time requests the data from database,
+            // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
+            // this is the best solution for now, no new data in the database, no flickering duplicates
+            if(profilesList == null || adapterProfiles.itemCount == profilesList.size) return@observe
 
-            // DONT REFRESH THE WHOLE LOST
-            // approach to avoid downloading the whole list again
-            viewModel.removePostsListener()
+            profiles.removeAll(profilesList)
+            profiles.addAll(profilesList)
+            // here the adapter receives a new list only once
+            // once when the databse is queryed first, never more..
+            // the livedata.value just changes from null to the list 1 time
+            adapterProfiles.notifyItemRangeRemoved(0,profiles.size)
+            adapterProfiles.notifyItemRangeInserted(0,profiles.size)
         }
+        // request profiles once from databse
+        profileViewModel.getProfilesList()
 
 
+        // posts recycler view
+        var posts = mutableListOf<Post>()
+        val rvPost = binding.rvPosts
+        rvPost.layoutManager = LinearLayoutManager(context)
+        val adapterPost = PostsAdapter(posts)
+        rvPost.adapter = adapterPost
+
+        // GET LIST OF      P O S T S
+        postsViewmodel.postsList.observe(viewLifecycleOwner){
+            postsList ->
+            // when first viewmodel is init() allPosts is null
+            // navigating back to this fragment the observer every time requests the data from database,
+            // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
+            // this is the best solution for now, no new data in the database, no flickering duplicates
+            if(postsList == null || adapterPost.itemCount == postsList.size) return@observe
+
+            posts.removeAll(postsList)
+            posts.addAll(postsList)
+            // here the adapter receives a new list only once
+            // once when the databse is queryed first, never more..
+            // the livedata.value just changes from null to the list 1 time
+            adapterPost.notifyItemRangeRemoved(0,posts.size)
+            adapterPost.notifyItemRangeInserted(0,posts.size)
+        }
+        // request posts once from databse
+        postsViewmodel.getPostsList()
 
 
-
-        val d = Draft(
-            0,
-            "title",
-            "description",
-            "today" ,
-            "",
-            "",
-        )
-
-        /*
-        viewModel.addDraft(d)
-
-        viewModel.allDrafts.observe(viewLifecycleOwner, { draftList ->
-            binding.title.text = draftList.first().title
-        })
-        */
-
-    }
+    } /* onViewCreated */
 
 
 }

@@ -4,35 +4,45 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postsapp.models.Post
-import com.example.postsapp.models.Profile
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.database
 
 class PostViewModel : ViewModel() {
 
-    // FIREBASE AUTH                                                        FIREBASE AUTH
-    //private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    //public val currentUID = firebaseAuth.currentUser?.uid!!
-
     // FIREBASE INSTANCE
     private val firebaseRTDB = Firebase.database
 
-    /*
-
-    // M Y       P R O F I L E
-    private val myProfileRef = firebaseRTDB.getReference("profiles/$currentUID")
-
-    // contructor queries my profile
-    var myProfile : Profile ? = null
-        get() = field
-
-    */
 
     // single post
     val _currentPost = MutableLiveData<Post?>(null)
     val currentPost : LiveData<Post?>
         get() = _currentPost
+
+
+    //      GET LIST OF POSTS
+    val _postsList = MutableLiveData<List<Post>?>(null)
+    val postsList : LiveData<List<Post>?>
+        get() = _postsList
+
+    // REQUIRE ONCE LIST OF POSTS
+    fun getPostsList(){
+        val postsRef = firebaseRTDB.getReference("posts")
+        postsRef.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val snapshot = it.result
+                val posts = mutableListOf<Post>()
+                for (postsSnapshot in snapshot.children) {
+                    val p = postsSnapshot.getValue(Post::class.java)
+                    posts.add(p!!)
+                }
+                //Log.d(TAG, "${profiles.size}")
+                _postsList.value = posts.toList()
+            } else {
+                // EROOR
+                //Log.d(TAG, "${it.exception?.message}")
+            }
+        }
+    }
 
 
     fun getCurrentPost(id:String){
@@ -75,12 +85,7 @@ class PostViewModel : ViewModel() {
 
 
     init{
-        /*
-        // get my profile
-        myProfileRef.get().addOnSuccessListener {
-            myProfile = it.getValue(Profile::class.java)
-        }.addOnFailureListener { /*failure*/ }
-         */
+        // nothing at viewmodel instanciation for now
     }
 
 

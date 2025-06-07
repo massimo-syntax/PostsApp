@@ -14,7 +14,8 @@ data class Post(
     var image: String? = "",
     var datetime : String? = "",
     var tags: MutableMap <String, Boolean>? = mutableMapOf(),
-    var likes: MutableMap <String, Boolean>? = mutableMapOf()
+    var likes: MutableMap <String, Boolean>? = mutableMapOf(),
+    var nLikes: Int? = 0
 ) {
 
     @Exclude
@@ -25,7 +26,8 @@ data class Post(
             "title" to title,
             "body" to body,
             "image" to image,
-            "likes" to likes
+            "likes" to likes,
+            "nLikes" to nLikes
         )
     }
 }
