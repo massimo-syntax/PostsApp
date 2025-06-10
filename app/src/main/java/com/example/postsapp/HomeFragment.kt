@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.adapters.ProfilesAdapter
@@ -49,7 +50,11 @@ class HomeFragment : Fragment() {
         val profiles = mutableListOf<Profile>()
         val rvProfiles = binding.rvProfiles
         rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        val adapterProfiles = ProfilesAdapter(profiles)
+        val adapterProfiles = ProfilesAdapter(profiles){
+            profile ->
+            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid)
+            findNavController().navigate(action)
+        }
         rvProfiles.adapter = adapterProfiles
 
         // GET LIST OF      P R O F I L E
@@ -77,7 +82,11 @@ class HomeFragment : Fragment() {
         var posts = mutableListOf<Post>()
         val rvPost = binding.rvPosts
         rvPost.layoutManager = LinearLayoutManager(context)
-        val adapterPost = PostsAdapter(posts)
+        val adapterPost = PostsAdapter(posts){
+            post ->
+            val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id)
+            findNavController().navigate(action)
+        }
         rvPost.adapter = adapterPost
 
         // GET LIST OF      P O S T S

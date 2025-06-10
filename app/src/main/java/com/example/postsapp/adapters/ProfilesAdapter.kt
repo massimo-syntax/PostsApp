@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.ItemProfileBinding
+import com.example.postsapp.models.Both
 import com.example.postsapp.models.Profile
 
-class ProfilesAdapter (private val profiles: MutableList<Profile>) :
+class ProfilesAdapter (private val profiles: MutableList<Profile> , private val onItemClick: (Profile) -> Unit) :
     RecyclerView.Adapter<ProfilesAdapter.ViewHolder>() {
 
     private lateinit var binding: ItemProfileBinding
@@ -18,13 +19,16 @@ class ProfilesAdapter (private val profiles: MutableList<Profile>) :
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
-    class ViewHolder(binding: ItemProfileBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(binding: ItemProfileBinding , onItemClicked: (Int)->Unit) : RecyclerView.ViewHolder(binding.root) {
         val name = binding.tvName
         val image = binding.ivImage
         val nPosts = binding.tvNPosts
 
         init {
             // Define click listener for the ViewHolder's View
+            binding.root.setOnClickListener {
+                onItemClicked(adapterPosition)
+            }
         }
     }
 
@@ -33,7 +37,9 @@ class ProfilesAdapter (private val profiles: MutableList<Profile>) :
         // Create a new view, which defines the UI of the list item
         ctx = parent.context
         val itemBinding = ItemProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(itemBinding)
+        return ViewHolder(itemBinding){
+            onItemClick(profiles[it])
+        }
 
     }
 

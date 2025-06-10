@@ -5,19 +5,23 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.postsapp.databinding.ItemPostBinding
 import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 
 
-class PostsAdapter(private val posts: MutableList<Post>) :
+class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemClick: (Post) -> Unit) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
 
 
-    class ViewHolder(binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(binding: ItemPostBinding , onItemClicked: (Int)->Unit) : RecyclerView.ViewHolder(binding.root) {
         val user = binding.tvUser
         val title = binding.tvTitle
         val body = binding.tvBody
 
         init {
             // Define click listener for the ViewHolder's View
+            binding.root.setOnClickListener {
+                onItemClicked(adapterPosition)
+            }
         }
     }
 
@@ -25,7 +29,9 @@ class PostsAdapter(private val posts: MutableList<Post>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val itemBinding = ItemPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(itemBinding)
+        return ViewHolder(itemBinding){
+            onItemClick(posts[it])
+        }
     }
 
     // Replace the contents of a view (invoked by the layout manager)
