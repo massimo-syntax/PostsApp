@@ -48,6 +48,11 @@ class CommentsViewModel : ViewModel() {
         db.updateChildren(updates)
     }
 
+    fun unlikeComment(postId: String , commentId: String, uid: String){
+        Firebase.database.getReference("profiles").child(uid).child("likedComments").child(commentId).removeValue()
+        commentsRef.child(postId).child(commentId).child("likesCount").setValue(ServerValue.increment(-1))
+    }
+
 
     val commentsChildsEventListener = object : ChildEventListener {
 
@@ -112,8 +117,8 @@ class CommentsViewModel : ViewModel() {
     }
 
     // to use in the fragment
-    fun registerPostCommentsEventListener(id:String){
-        commentsRef.child(id).addChildEventListener(commentsChildsEventListener)
+    fun registerPostCommentsEventListener(postId:String){
+        commentsRef.child(postId).addChildEventListener(commentsChildsEventListener)
     }
 
 
