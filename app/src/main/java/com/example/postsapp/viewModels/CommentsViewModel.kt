@@ -21,8 +21,7 @@ class CommentsViewModel : ViewModel() {
 
     // instead of a livedata the list can be updated in parallel with the event
     // thats made from the firebase event listener: commentsChildsEventListener = object : ChildEventListener {
-    val allComments = mutableListOf<Comment>()
-
+    var allComments = mutableListOf<Comment>()
 
     private val _event = MutableLiveData<Pair<String,String>?>(null)
     val event : LiveData<Pair<String,String>?>
@@ -61,10 +60,13 @@ class CommentsViewModel : ViewModel() {
                 val c = dataSnapshot.getValue<Comment>()
                 // this can replace downloading the whole list
                 // firebase sends all comments 1 by 1 also at starting the listener
-                allComments.add(c!!)
+                if (allComments.contains(c!!))return
+                allComments.add(c)
                 // event callback changing value
                 // that directly calls the observer (i hope.. didnt read the java code of the observer, jet..)
                 _event.value = Pair("added", c.id.toString() )
+
+
 
             }
 
@@ -88,7 +90,8 @@ class CommentsViewModel : ViewModel() {
                 val cKey = dataSnapshot.key
 
                 val index = allComments.indexOf(c)
-                allComments.removeAt(index)
+                //allComments.removeAt(index)
+                allComments.remove(c)
 
                 _event.value = Pair("removed", index.toString() )
 

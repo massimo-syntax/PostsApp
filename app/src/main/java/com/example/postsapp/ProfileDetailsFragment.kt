@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.ProfileViewModel
@@ -94,6 +95,11 @@ class ProfileDetailsFragment : Fragment() {
             }
         }
 
+
+        // BTN BACK
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
     }
 

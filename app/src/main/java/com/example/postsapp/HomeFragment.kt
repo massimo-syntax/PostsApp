@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
         rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         val adapterProfiles = ProfilesAdapter(profiles){
             profile ->
-            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid)
+            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
             findNavController().navigate(action)
         }
         rvProfiles.adapter = adapterProfiles
@@ -84,7 +84,7 @@ class HomeFragment : Fragment() {
         rvPost.layoutManager = LinearLayoutManager(context)
         val adapterPost = PostsAdapter(posts){
             post ->
-            val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id)
+            val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id!!)
             findNavController().navigate(action)
         }
         rvPost.adapter = adapterPost
