@@ -27,7 +27,7 @@ class PostDetailsFragment : Fragment() {
     private lateinit var commentsViewModel: CommentsViewModel
     private lateinit var profileViewModel: ProfileViewModel
 
-    private var resumed = false
+    private val adapter:CommentsAdapter? = null
 
     private fun toast(s:String){
         Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
@@ -102,6 +102,7 @@ class PostDetailsFragment : Fragment() {
             }
         }
         rvComments.adapter = adapterComments
+
 
 
         // every time that firebase adds a new comment, runs the event listener
@@ -194,6 +195,7 @@ class PostDetailsFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+
     }
 
     // avoid interferences and display post when home tab is pressed
@@ -204,10 +206,13 @@ class PostDetailsFragment : Fragment() {
         // there is problems with the duplicates and also with delete, in this case
         // is also much better that changing tab the user can get back to home fragment not to the post
         //
-        // doing that when there is no data loaded from firebase the fragemnt shows
-        // with that a new instance of viewmodel gets the list brand new, with rv and all
-        if(commentsViewModel.allComments.size > 0) findNavController().popBackStack()
+        // with that a new instance of viewmodel gets the list brand new, with rv , adapter and all
+
+        if(commentsViewModel.dbDataLoadedOnce) findNavController().popBackStack()
+
     }
+
+
 
 
 

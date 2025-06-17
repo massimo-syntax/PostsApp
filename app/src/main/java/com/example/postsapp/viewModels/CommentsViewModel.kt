@@ -27,6 +27,8 @@ class CommentsViewModel : ViewModel() {
     val event : LiveData<Pair<String,String>?>
         get() = _event
 
+    var dbDataLoadedOnce = false
+
 
 
     //  WRITE
@@ -60,13 +62,13 @@ class CommentsViewModel : ViewModel() {
                 val c = dataSnapshot.getValue<Comment>()
                 // this can replace downloading the whole list
                 // firebase sends all comments 1 by 1 also at starting the listener
-                if (allComments.contains(c!!))return
-                allComments.add(c)
+
+                allComments.add(c!!)
                 // event callback changing value
                 // that directly calls the observer (i hope.. didnt read the java code of the observer, jet..)
                 _event.value = Pair("added", c.id.toString() )
 
-
+                dbDataLoadedOnce = true
 
             }
 
