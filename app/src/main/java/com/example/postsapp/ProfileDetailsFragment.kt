@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
 class ProfileDetailsFragment : Fragment() {
@@ -18,6 +19,7 @@ class ProfileDetailsFragment : Fragment() {
 
     private lateinit var binding : FragmentProfileDetailsBinding
     private lateinit var viewModel: ProfileViewModel
+    private lateinit var fragmentState:FragmentStateViewModel
 
     private fun toast(s:String){
         Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
@@ -30,7 +32,7 @@ class ProfileDetailsFragment : Fragment() {
             profileId = it.getString("profileId")
 
         }
-
+        fragmentState = ViewModelProvider(this)[FragmentStateViewModel::class.java]
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
     }
 
@@ -100,6 +102,17 @@ class ProfileDetailsFragment : Fragment() {
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
+
+    }
+
+    override fun onResume() {
+        if(fragmentState.fragmentWasPaused)findNavController().popBackStack()
+        super.onResume()
+    }
+
+    override fun onPause() {
+        fragmentState.fragmentWasPaused = true
+        super.onPause()
 
     }
 

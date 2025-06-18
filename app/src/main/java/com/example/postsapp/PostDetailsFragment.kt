@@ -14,6 +14,7 @@ import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
 import com.example.postsapp.viewModels.CommentsViewModel
+import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
@@ -26,8 +27,8 @@ class PostDetailsFragment : Fragment() {
     private lateinit var postViewModel: PostViewModel
     private lateinit var commentsViewModel: CommentsViewModel
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var fragmentState:FragmentStateViewModel
 
-    private val adapter:CommentsAdapter? = null
 
     private fun toast(s:String){
         Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
@@ -38,9 +39,11 @@ class PostDetailsFragment : Fragment() {
         arguments?.let {
             postId = it.getString("postId")
         }
+
         postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
         commentsViewModel = ViewModelProvider(this)[CommentsViewModel::class.java]
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        fragmentState = ViewModelProvider(this)[FragmentStateViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -208,8 +211,13 @@ class PostDetailsFragment : Fragment() {
         //
         // with that a new instance of viewmodel gets the list brand new, with rv , adapter and all
 
-        if(commentsViewModel.dbDataLoadedOnce) findNavController().popBackStack()
+        if(fragmentState.fragmentWasPaused) findNavController().popBackStack()
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fragmentState.fragmentWasPaused = true
     }
 
 

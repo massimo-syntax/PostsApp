@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
             // when first viewmodel is init() allPosts is null
             // navigating back to this fragment the observer every time requests the data from database,
             // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
-            // this is the best solution for now, no new data in the database, no flickering duplicates
+            // this is the best solution for now
             if(profilesList == null || adapterProfiles.itemCount == profilesList.size) return@observe
 
             profiles.removeAll(profilesList)
@@ -95,7 +95,7 @@ class HomeFragment : Fragment() {
             // when first viewmodel is init() allPosts is null
             // navigating back to this fragment the observer every time requests the data from database,
             // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
-            // this is the best solution for now, no new data in the database, no flickering duplicates
+            // this is the best solution for now
             if(postsList == null || adapterPost.itemCount == postsList.size) return@observe
 
             posts.removeAll(postsList)
