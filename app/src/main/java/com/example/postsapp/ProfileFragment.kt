@@ -58,13 +58,13 @@ class ProfileFragment : Fragment() {
             image = "",
             followers = mutableMapOf<String,Boolean>(),
             followed =  mutableMapOf<String,Boolean>(),
-            likedComments = mutableMapOf<String,Boolean>()
+            likedComments = mutableMapOf<String,String>()
         )
 
         // load fields of current profile in ui
         viewModel.dbProfile.observe(viewLifecycleOwner){ profile ->
             if (profile == null){
-                binding.tvTitle.text = "no profile yet"
+                binding.tvTitle.text = "-- ! NO PROFILE YET ! --"
             } else {
                 p = profile
                 binding.tvTitle.text = p.name

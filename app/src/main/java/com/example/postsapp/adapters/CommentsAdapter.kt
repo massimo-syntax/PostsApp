@@ -9,7 +9,7 @@ import com.example.postsapp.models.Both
 import com.example.postsapp.models.Comment
 
 
-class CommentsAdapter(private val comments: MutableList<Comment>, private val myUserId:String , private val onItemClick: (Comment) -> Unit) :
+class CommentsAdapter(private val comments: MutableList<Comment>, private val alreadyLikedComments: MutableSet<String>, private val myUserId:String , private val onItemClick: (Comment) -> Unit) :
     RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
 
     class ViewHolder(binding: ItemCommentBinding , onItemClicked: (Int)->Unit) : RecyclerView.ViewHolder(binding.root) {
@@ -44,9 +44,14 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val my
 
         if(comment.userId == myUserId){
             holder.btnOption.text = "Delete"
-
         }else{
             holder.btnOption.text = "Like"
+
+            if(alreadyLikedComments.contains(comment.id)){
+                holder.btnOption.text = "Unlike"
+            }else{
+                holder.btnOption.text = "Like"
+            }
 
         }
     }

@@ -85,23 +85,34 @@ class PostDetailsFragment : Fragment() {
         }
         postViewModel.getCurrentPost(postId!!)
 
+        val alreadyLikedComments = mutableSetOf<String>()
+
+        fun commentAlreadyLiked(id:String) : Boolean {
+            val likedCommentsMap = profileViewModel._myProfile.value!!.likedComments
+            return likedCommentsMap!!.containsKey(id)
+        }
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
         // adapter has the comments from viewmodel
-        val adapterComments = CommentsAdapter( commentsViewModel.allComments, profileViewModel.currentUID ){
+        val adapterComments = CommentsAdapter( commentsViewModel.allComments, alreadyLikedComments, profileViewModel.currentUID ){
             comment ->
-            // the comment is yours, you can delete the comment
+            // the COMMENT is YOURS, you can delete the comment
             if(comment.userId == profileViewModel.currentUID){
                 // DELETE COMMENT (if yours)
                 //toast("commented from you -> delete")
                 commentsViewModel.deleteComment(comment , postId!!)
                 //toast("deleting comment ${comment.userId}")
 
-            }else{ // comment is from someone else, you can like
-                // LIKE COMMENT (if written by others)
-                //toast("comment from somene else -> you can like")
-                commentsViewModel.likeComment(profileViewModel.currentUID, comment.id!! , postId!!)
+            }else{ // SOMEONE ELSE S COMMENT, you can like
+                /*
+                if(commentAlreadyLiked(comment.id!!)){
+                    commentsViewModel.unlikeComment(profileViewModel.currentUID , comment.id!!,postId!!)
+                }else{
+                    commentsViewModel.likeComment(profileViewModel.currentUID, comment.id!! , postId!!)
+                }
+
+                 */
             }
         }
         rvComments.adapter = adapterComments
@@ -123,11 +134,30 @@ class PostDetailsFragment : Fragment() {
                     // the viewmodel adds the comment from databse in the list
                     // then calls the observer
                     // the list is in the viewmodel, just for avoid cpu overload th index is just increased instead to count all the list every comment added
+
+                    if(commentAlreadyLiked(e.second)){
+                        // load list for adapter first when all data is loaded from
+                        alreadyLikedComments.add(e.second)
+                    }
+
                     adapterComments.notifyItemInserted(commentsViewModel.allComments.size-1)
+
                 }
                 "removed" -> {
                     toast("index = ${e.second}")
                     adapterComments.notifyItemRemoved(e.second.toInt())
+                }
+                "liked" -> {
+                    toast("liked comment id ${e.second}")
+                    // @ todo
+                    // add to likedcomments list and map
+                    // notify adapter
+                }
+                "unliked" -> {
+                    toast("unliked comment id ${e.second}")
+                    // @todo
+                    // add to likedcomments list and map
+                    // notify adapter
                 }
 
                 else -> toast("event fired, e.first is not added")

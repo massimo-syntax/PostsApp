@@ -22,7 +22,7 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySignupBinding
     private lateinit var firebaseAuth:FirebaseAuth
 
-    //fun toast(s:String){ Toast.makeText(this,s,Toast.LENGTH_SHORT).show() }
+    fun toast(s:String){ Toast.makeText(this,s,Toast.LENGTH_SHORT).show() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +35,13 @@ class SignupActivity : AppCompatActivity() {
         binding.btnSignup.setOnClickListener {
             val email:String = binding.etEmailAddress.text.toString()
             val password:String = binding.etPassword.text.toString()
+            val password2:String = binding.etRepeatPassword.text.toString()
             if(email.isEmpty() || password.isEmpty()){
-                //toast("both fields are required")
+                toast("There are empty fields")
+                return@setOnClickListener
+            }
+            if(password != password2){
+                toast("Password does not match")
                 return@setOnClickListener
             }
 
@@ -45,6 +50,12 @@ class SignupActivity : AppCompatActivity() {
             lifecycleScope.launch(Dispatchers.IO){
                 signup(firebaseAuth,email,password)
             }
+        }
+
+        binding.tvAlreadyHaveAnAccount.setOnClickListener {
+            val intent = Intent(this,LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
 

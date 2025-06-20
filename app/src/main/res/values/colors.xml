@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">    #292D34 </color>
+    <color name="black">    #000000 </color>
     <color name="darkgrey"> #292D34 </color>
     <color name="white">#FFFFFFFF</color>
 
@@ -9,7 +9,7 @@
     <color name="green">#7BC678</color>
     <color name="orange"> #FE7648 </color>
     <color name="yellow"> #FE7648 </color>
-    <color name="lightgrey">#F5EFF1</color>
+    <color name="lightgrey">#CACACA</color>
 
 
 </resources>

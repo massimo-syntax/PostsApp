@@ -23,7 +23,7 @@ class CommentsViewModel : ViewModel() {
     // thats made from the firebase event listener: commentsChildsEventListener = object : ChildEventListener {
     var allComments = mutableListOf<Comment>()
 
-    private val _event = MutableLiveData<Pair<String,String>?>(null)
+    val _event = MutableLiveData<Pair<String,String>?>(null)
     val event : LiveData<Pair<String,String>?>
         get() = _event
 
@@ -46,12 +46,18 @@ class CommentsViewModel : ViewModel() {
             "profiles/$uid/likedComments/$commentId" to postId,
             "comments/$postId/$commentId/likesCount" to ServerValue.increment(1)
         )
-        db.updateChildren(updates)
+
+         db.updateChildren(updates).addOnCompleteListener {
+             _event.value= Pair("liked", commentId )
+         }
+
     }
 
-    fun unlikeComment(postId: String , commentId: String, uid: String){
+    fun unlikeComment(uid: String , commentId: String, postId: String){
         Firebase.database.getReference("profiles").child(uid).child("likedComments").child(commentId).removeValue()
-        commentsRef.child(postId).child(commentId).child("likesCount").setValue(ServerValue.increment(-1))
+        commentsRef.child(postId).child(commentId).child("likesCount").setValue(ServerValue.increment(-1)).addOnCompleteListener{
+            _event.value = Pair("unliked" , commentId)
+        }
     }
 
 
