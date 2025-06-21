@@ -128,7 +128,7 @@ class CommentsViewModel : ViewModel() {
     }
 
     // to use in the fragment
-    fun registerPostCommentsEventListener(postId:String){
+    fun registerCommentsEventListenerForThisPost(postId:String){
         commentsRef.child(postId).addChildEventListener(commentsChildsEventListener)
     }
 

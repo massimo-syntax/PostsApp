@@ -6,5 +6,32 @@
         <item name="android:textColor">@color/darkgrey</item>
     </style>
 
+    <style name="btn_style">
+        <item name="android:textSize">@dimen/btn_text_size</item>
+        <item name="android:background">@drawable/btn_borders</item>
+    </style>
+
+    <style name="et_icon_style">
+        <item name="android:layout_marginLeft">@dimen/et_icon_margin</item>
+        <item name="android:layout_marginRight">@dimen/et_icon_margin</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="et_layout">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/et_padding</item>
+        <item name="android:background">@drawable/et_borders</item>
+        <item name="android:layout_marginBottom">@dimen/et_layout_margin</item>
+    </style>
+
+    <style name="roundedImageView">
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerSizeBottomLeft">@dimen/margin_width</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeBottomRight">@dimen/margin_width</item>
+
+
+    </style>
+
 
 </resources>

@@ -136,7 +136,7 @@ class PostDetailsFragment : Fragment() {
                     // the list is in the viewmodel, just for avoid cpu overload th index is just increased instead to count all the list every comment added
 
                     if(commentAlreadyLiked(e.second)){
-                        // load list for adapter first when all data is loaded from
+                        // add to list for adapter, already 1 by 1 receiving from database
                         alreadyLikedComments.add(e.second)
                     }
 
@@ -166,7 +166,7 @@ class PostDetailsFragment : Fragment() {
 
         // event listener to comments of this postId
         // the event listener also requests every comment 1 by 1 when started
-        commentsViewModel.registerPostCommentsEventListener(postId!!)
+        commentsViewModel.registerCommentsEventListenerForThisPost(postId!!)
 
 
         // WRITE COMMENT

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- CONTAINER -->
+    <dimen name="margin_width">36dp</dimen>
+
+    <!-- HEADING -->
+    <dimen name="text_heading">22sp</dimen>
+    <dimen name="padding_text_heading">16dp</dimen>
+
+    <!-- TEXT -->
+    <dimen name="text_size">16sp</dimen>
+    <dimen name="btn_text_size">18sp</dimen>
+
+    <!-- EDIT TEXT -->
+    <dimen name="et_padding">2dp</dimen>
+    <dimen name="et_icon_size">36dp</dimen>
+    <dimen name="et_icon_margin">8dp</dimen>
+    <dimen name="et_layout_margin">16dp</dimen>
+
+
+
+
+
+</resources>

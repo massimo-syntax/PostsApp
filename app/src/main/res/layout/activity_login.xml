@@ -18,7 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="36dp"
+        android:layout_marginHorizontal="@dimen/margin_width"
         app:layout_constraintTop_toBottomOf="@id/img_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -39,9 +39,9 @@
             android:layout_height="wrap_content"
             android:text="Select your accout"
             android:textColor="@color/darkgrey"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_heading"
             android:textStyle="bold"
-            android:paddingVertical="16dp"
+            android:paddingVertical="@dimen/padding_text_heading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -51,18 +51,16 @@
             android:id="@+id/email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp"
+            style="@style/et_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
-            android:background="@drawable/et_borders">
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/email"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"/>
+                android:layout_width="@dimen/et_icon_size"
+                android:layout_height="@dimen/et_icon_size"
+                style="@style/et_icon_style"
+                android:src="@drawable/email"/>
+
             <EditText
                 android:id="@+id/et_EmailAddress"
                 android:layout_width="match_parent"
@@ -76,19 +74,18 @@
             android:id="@+id/password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp"
-            android:layout_marginVertical="16dp"
+            style="@style/et_layout"
+            android:layout_marginTop="@dimen/et_layout_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_layout"
-            android:background="@drawable/et_borders">
+            app:layout_constraintTop_toBottomOf="@+id/email_layout">
             <ImageView
                 android:layout_width="36dp"
-                android:layout_height="match_parent"
+                android:layout_height="36dp"
                 android:src="@drawable/password"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"/>
+                android:layout_marginHorizontal="8dp"
+                />
             <EditText
                 android:id="@+id/et_Password"
                 android:layout_width="match_parent"
@@ -104,9 +101,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:layout_marginVertical="28dp"
-            android:textSize="18sp"
-            android:background="@drawable/btn_borders"
+            style="@style/btn_style"
+            android:layout_marginTop="@dimen/et_layout_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password_layout"

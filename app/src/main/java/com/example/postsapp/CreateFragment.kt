@@ -29,6 +29,10 @@ class CreateFragment : Fragment() {
 
     private lateinit var ctx : Context
 
+    private fun toast(s:String){
+        Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -65,7 +69,7 @@ class CreateFragment : Fragment() {
 
 
         // easiest way to upload picture for now
-        binding.btnSelectImg .setOnClickListener {
+        binding.btnSelectImg.setOnClickListener {
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
                 .setMessage("Scroll to COPY ALL after uploading\nCome back, click done! ")
@@ -125,15 +129,17 @@ class CreateFragment : Fragment() {
                 // probably crashes when null
                 if (! binding.etTags.text.isNullOrEmpty()){
                     // there can be
-                    val tagsList : List<String> = binding.etTags.text.split(" ")
+                    val tagsList : List<String> = binding.etTags.text.trim().split(" ")
+                    toast(tagsList.toString())
                     // a null
                     if (tagsList.isNotEmpty()){
                     //somewhere
                         tagsList.forEach{
-                    // here
-                            tagsMap[it.toString()] = true
+                            tag->
+                            tagsMap[tag] = true
                         }
                     }
+                    toast(tagsMap.toString())
                 }
 
                 val post = Post(
@@ -145,7 +151,7 @@ class CreateFragment : Fragment() {
                     image = image,
                     datetime = Date().time.toString(),
                     tags = tagsMap,
-                    likes = mutableMapOf()
+                    likes = mutableMapOf<String,Boolean>()
                 )
                 viewModel.post(post)
             }

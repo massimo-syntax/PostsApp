@@ -1,7 +1,5 @@
 package com.example.postsapp
 
-import android.R
-import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -56,6 +54,8 @@ class ProfileFragment : Fragment() {
             name = "",
             say = "",
             image = "",
+            nPosts = 0,
+            nFollowers = 0,
             followers = mutableMapOf<String,Boolean>(),
             followed =  mutableMapOf<String,Boolean>(),
             likedComments = mutableMapOf<String,String>()
@@ -82,7 +82,7 @@ class ProfileFragment : Fragment() {
 
         // easiest way to upload picture for now
         // UPLOAD
-        binding.btnSelectImg .setOnClickListener {
+        binding.btnSelectImg.setOnClickListener {
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
                 .setMessage("SCROLL to ->COPY ALL<- after uploading\nCome back, click CONFIRM! ")

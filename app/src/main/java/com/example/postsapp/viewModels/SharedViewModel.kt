@@ -40,8 +40,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-
-
     // FIREBASE REALTIME DATABASE
     val firebaseRTDB = Firebase.database        // FIREBASE INSTANCE
     val firebaseRTDBRoot = Firebase.database.reference
