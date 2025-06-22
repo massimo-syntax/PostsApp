@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentCreateBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.PostViewModel
+import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 import java.util.Date
 
@@ -25,7 +27,9 @@ import java.util.Date
 class CreateFragment : Fragment() {
 
     private lateinit var binding : FragmentCreateBinding
-    private lateinit var viewModel: SharedViewModel
+
+    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var postViewModel: PostViewModel
 
     private lateinit var ctx : Context
 
@@ -39,7 +43,10 @@ class CreateFragment : Fragment() {
             // no arguments
         }
         ctx = requireContext()
-        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+
+        profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -58,7 +65,7 @@ class CreateFragment : Fragment() {
         var profile : Profile? =  null
         var image:String = ""
 
-        viewModel.dbProfile.observe(viewLifecycleOwner){ p ->
+        profileViewModel.myProfile.observe(viewLifecycleOwner){ p ->
             if(p != null){
                 profile = p
                 binding.title.text = p.name
@@ -95,8 +102,9 @@ class CreateFragment : Fragment() {
 
 
 
-        viewModel.dbPosted.observe(viewLifecycleOwner){ post ->
-            if(post != null) Toast.makeText(ctx, "post sent succesfully", Toast.LENGTH_SHORT).show()
+
+        postViewModel.postSentSuccessfully.observe(viewLifecycleOwner){ success ->
+            if(success) Toast.makeText(ctx, "post sent succesfully", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -142,8 +150,10 @@ class CreateFragment : Fragment() {
                     toast(tagsMap.toString())
                 }
 
+
+
                 val post = Post(
-                    id = Date().time.toString(),
+                    id = "from firebase",
                     user = profile!!.name,
                     userId = profile!!.uid,
                     title = binding.etTitle.text.toString(),
@@ -153,7 +163,7 @@ class CreateFragment : Fragment() {
                     tags = tagsMap,
                     likes = mutableMapOf<String,Boolean>()
                 )
-                viewModel.post(post)
+                postViewModel.post(post, profileViewModel.currentUID)
             }
 
         }

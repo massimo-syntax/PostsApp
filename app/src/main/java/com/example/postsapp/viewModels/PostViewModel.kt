@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postsapp.models.Post
 import com.google.firebase.Firebase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.database
 
 class PostViewModel : ViewModel() {
@@ -56,6 +57,29 @@ class PostViewModel : ViewModel() {
         }
     }
 
+
+    //      CALLBACK FOR OBSERVER SENDING POST
+    val _postSentSuccessfully = MutableLiveData<Boolean>(false)
+    val postSentSuccessfully : LiveData<Boolean>
+        get() = _postSentSuccessfully
+
+
+    fun post( p:Post , uid:String){
+        // let create an id from firebase
+        val key = firebaseRTDB.getReference("posts").push().key
+        if (key == null) return
+        p.id = key
+        val updates: MutableMap<String, Any> = hashMapOf(
+            "posts/$key" to p,
+            "profiles/$uid/nPosts" to ServerValue.increment(1),
+        )
+        Firebase.database.reference.updateChildren(updates).addOnCompleteListener {
+            _postSentSuccessfully.value = true
+        }
+    }
+
+
+
     fun likePost(currentUID:String){
         // add element to map
         currentPost.value!!.likes!![currentUID] = true
@@ -79,7 +103,6 @@ class PostViewModel : ViewModel() {
         // send to firebase
 
         postLikeRef.setValue(currentPost.value!!.likes!!)
-
 
     }
 

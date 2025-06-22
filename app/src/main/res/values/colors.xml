@@ -4,11 +4,10 @@
     <color name="darkgrey"> #292D34 </color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="red">#FFf85a3e</color>
+    <color name="red">#F85A3E</color>
     <color name="blue">#0171DF</color>
     <color name="green">#7BC678</color>
     <color name="orange"> #FE7648 </color>
-    <color name="yellow"> #FE7648 </color>
     <color name="lightgrey">#CACACA</color>
 
 

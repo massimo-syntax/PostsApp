@@ -23,6 +23,7 @@ class ProfilesAdapter (private val profiles: MutableList<Profile> , private val 
         val name = binding.tvName
         val image = binding.ivImage
         val nPosts = binding.tvNPosts
+        val nFollowers = binding.tvNFollowers
 
         init {
             // Define click listener for the ViewHolder's View
@@ -48,13 +49,17 @@ class ProfilesAdapter (private val profiles: MutableList<Profile> , private val 
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.name.text = profiles[position].name
-        if(!profiles[position].image.isNullOrEmpty()){
+        val item = profiles[position]
+
+        viewHolder.name.text = item.name
+        viewHolder.nPosts.text = item.nPosts.toString()
+        viewHolder.nFollowers.text = item.nFollowers.toString()
+
+        if(!item.image.isNullOrEmpty()){
             Glide.with(ctx)
-                .load(profiles[position].image)
+                .load(item.image)
                 .into(viewHolder.image)
         }
-        viewHolder.nPosts.text = profiles[position].nPosts.toString()
 
     }
 

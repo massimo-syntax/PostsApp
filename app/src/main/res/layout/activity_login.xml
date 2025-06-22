@@ -116,7 +116,7 @@
             android:textSize="16sp"
             android:layout_marginVertical="28dp"
             android:text="No account? Sign Up !"
-            android:textColor="@color/blue"
+            android:textColor="@color/green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_login"
