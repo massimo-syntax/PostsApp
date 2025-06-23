@@ -52,8 +52,8 @@ class ProfilesAdapter (private val profiles: MutableList<Profile> , private val 
         val item = profiles[position]
 
         viewHolder.name.text = item.name
-        viewHolder.nPosts.text = item.nPosts.toString()
-        viewHolder.nFollowers.text = item.nFollowers.toString()
+        viewHolder.nPosts.text = item.postsCount.toString()
+        viewHolder.nFollowers.text = item.followersCount.toString()
 
         if(!item.image.isNullOrEmpty()){
             Glide.with(ctx)

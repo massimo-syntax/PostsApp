@@ -55,6 +55,11 @@ class ProfileViewModel : ViewModel() {
     val profilesList : LiveData<List<Profile>?>
         get() = _profilesList
 
+    fun clearProfileList(){
+        //if(_profilesList== null) return
+        _profilesList.value = listOf()
+    }
+
     // REQUIRE ONCE LIST OF PROFILES
     fun getProfilesList(){
         val profilesRef = firebaseRTDB.getReference("profiles")
@@ -83,7 +88,7 @@ class ProfileViewModel : ViewModel() {
             "profiles/$otherProfileId/followers/$currentUID" to true,
             "profiles/$currentUID/followed/$otherProfileId" to true,
             // increment +1 the count of follower in the other profile
-            "profiles/$otherProfileId/nFollowers" to ServerValue.increment (1)
+            "profiles/$otherProfileId/followersCount" to ServerValue.increment (1)
         )
         db.updateChildren(updates)
 
@@ -91,9 +96,9 @@ class ProfileViewModel : ViewModel() {
         _singleProfile.value!!.followers!![currentUID] = true
         _myProfile.value!!.followed!![otherProfileId] = true
 
-        var followersCount = _singleProfile.value!!.nFollowers!!
+        var followersCount = _singleProfile.value!!.followersCount!!
         followersCount++
-        _singleProfile.value!!.nFollowers = followersCount
+        _singleProfile.value!!.followersCount = followersCount
     }
 
     fun unlikeProfile(otherProfileId: String){
@@ -101,7 +106,7 @@ class ProfileViewModel : ViewModel() {
 
         // remove follower from databse
         profilesReference.child(otherProfileId).child("followers/$currentUID").removeValue()
-        profilesReference.child(otherProfileId).child("nFollowers").setValue(ServerValue.increment(-1))
+        profilesReference.child(otherProfileId).child("followersCount").setValue(ServerValue.increment(-1))
 
         profilesReference.child(currentUID).child("followed/$otherProfileId").removeValue()
 
@@ -109,9 +114,9 @@ class ProfileViewModel : ViewModel() {
         _singleProfile.value!!.followers!!.remove(currentUID)
         _myProfile.value!!.followed!!.remove(otherProfileId)
 
-        var followersCount = _singleProfile.value!!.nFollowers!!
+        var followersCount = _singleProfile.value!!.followersCount!!
         followersCount--
-        _singleProfile.value!!.nFollowers = followersCount
+        _singleProfile.value!!.followersCount = followersCount
     }
 
 

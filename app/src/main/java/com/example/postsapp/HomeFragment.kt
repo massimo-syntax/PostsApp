@@ -47,9 +47,12 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //  profiles recycler view
-        val profiles = mutableListOf<Profile>()
+
         val rvProfiles = binding.rvProfiles
         rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        profileViewModel.clearProfileList()
+        val profiles = profileViewModel.profilesList.value!!.toMutableList()
         val adapterProfiles = ProfilesAdapter(profiles){
             profile ->
             val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
@@ -64,9 +67,9 @@ class HomeFragment : Fragment() {
             // navigating back to this fragment the observer every time requests the data from database,
             // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
             // this is the best solution for now
-            if(profilesList == null || adapterProfiles.itemCount == profilesList.size) return@observe
+            if(profilesList == null) return@observe
 
-            profiles.removeAll(profilesList)
+            //profiles.removeAll(profilesList)
             profiles.addAll(profilesList)
             // here the adapter receives a new list only once
             // once when the databse is queryed first, never more..

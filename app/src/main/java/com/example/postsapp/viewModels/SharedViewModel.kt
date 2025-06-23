@@ -93,7 +93,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     // when the fragment is not reloaded, then the viewmodel is the same object firebase is not queried again
     // just added a nPost ++ in a child branch of the listener..
     var nPosts:Int = 0
-
+/*
     fun post( p:Post ){
         postsRef.child(p.id.toString()).setValue(p).addOnSuccessListener {
             _dbPosted.value = p
@@ -110,7 +110,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             _dbPosted.value = null
         }
     }
-
+*/
 
     val profilesListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {

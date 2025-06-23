@@ -54,8 +54,8 @@ class ProfileFragment : Fragment() {
             name = "",
             say = "",
             image = "",
-            nPosts = 0,
-            nFollowers = 0,
+            postsCount = 0,
+            followersCount = 0,
             followers = mutableMapOf<String,Boolean>(),
             followed =  mutableMapOf<String,Boolean>(),
             likedComments = mutableMapOf<String,String>()
