@@ -80,12 +80,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/email_layout">
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/password"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"
-                />
+                android:layout_width="@dimen/et_icon_size"
+                android:layout_height="@dimen/et_icon_size"
+                style="@style/et_icon_style"
+                android:src="@drawable/password"/>
             <EditText
                 android:id="@+id/et_Password"
                 android:layout_width="match_parent"

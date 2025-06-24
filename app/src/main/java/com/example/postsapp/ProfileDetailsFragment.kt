@@ -58,17 +58,18 @@ class ProfileDetailsFragment : Fragment() {
         var likes = 0
 
         // init text waiting for server response
+        // useful in the case that no profile is created yet
         binding.profileId.text = ""
         binding.profileName.text = ""
         binding.sentence.text = ""
         binding.likes.text = ""
 
-        // server response
+        // REQUESTING PROFILE FROM DB
         viewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             profile = p
             //toast(p.toString())
-            likes = profile!!.followers!!.size
+            likes = profile!!.followersCount!!
             binding.likes.text = likes.toString()
             binding.profileId.text = p.uid
             binding.profileName.text = p.name
@@ -97,7 +98,6 @@ class ProfileDetailsFragment : Fragment() {
             }
         }
 
-
         // BTN BACK
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
@@ -105,6 +105,7 @@ class ProfileDetailsFragment : Fragment() {
 
     }
 
+    // navigating from the bottom navbar (pressing "home") to the same fragment, is not shown this fragment still on stack but home
     override fun onResume() {
         if(fragmentState.fragmentWasPaused)findNavController().popBackStack()
         super.onResume()

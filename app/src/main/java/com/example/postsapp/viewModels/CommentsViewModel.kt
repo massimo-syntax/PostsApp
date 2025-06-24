@@ -32,12 +32,32 @@ class CommentsViewModel : ViewModel() {
 
 
     //  WRITE
-    fun writeComment(c:Comment, postId:String){
-        commentsRef.child(postId).child(c.id!!).setValue(c).addOnSuccessListener { /* added, wait event listener */ }.addOnFailureListener {/* i ask the senior first.. */}
+    fun writeComment(c:Comment, postId:String, uid: String){
+        val key = commentsRef.push().key
+        if (key == null) return
+        c.id = key
+
+        val updates: MutableMap<String, Any> = hashMapOf(
+            "comments/$postId/$key" to c,
+            "profiles/$uid/myComments/$key" to postId,
+        )
+        Firebase.database.reference.updateChildren(updates).addOnCompleteListener {
+            // done by commentsEventListener when added
+        }
+
     }
     //  DELETE
-    fun deleteComment(c:Comment, postId:String){
-        commentsRef.child(postId).child(c.id!!).removeValue().addOnSuccessListener { /* added, wait event listener */ }.addOnFailureListener {/* i ask the senior first.. */}
+    fun deleteComment(c:Comment, postId:String, uid: String){
+        // remove comment
+        commentsRef
+            .child(postId)
+            .child(c.id!!)
+            .removeValue().addOnSuccessListener { /* added, wait event listener */ }.addOnFailureListener {/* i ask the senior first.. */}
+        // remove comment from my profile
+        Firebase.database.getReference("profiles")
+            .child(uid)
+            .child("myComments")
+            .child(c.id!!).removeValue()
     }
 
 
@@ -61,7 +81,7 @@ class CommentsViewModel : ViewModel() {
     }
 
 
-    val commentsChildsEventListener = object : ChildEventListener {
+    val commentsEventListener = object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 // A new comment has been added, add it to the displayed list
@@ -129,7 +149,7 @@ class CommentsViewModel : ViewModel() {
 
     // to use in the fragment
     fun registerCommentsEventListenerForThisPost(postId:String){
-        commentsRef.child(postId).addChildEventListener(commentsChildsEventListener)
+        commentsRef.child(postId).addChildEventListener(commentsEventListener)
     }
 
 

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ProfileDetailsFragment">
+    tools:context=".ProfileDetailsFragment"
+    android:background="@color/white">
 
 
     <ImageButton

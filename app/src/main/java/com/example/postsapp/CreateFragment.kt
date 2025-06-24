@@ -150,18 +150,17 @@ class CreateFragment : Fragment() {
                     toast(tagsMap.toString())
                 }
 
-
-
                 val post = Post(
                     id = "from firebase",
                     user = profile!!.name,
-                    userId = profile!!.uid,
+                    userId = profileViewModel.currentUID,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
                     image = image,
                     datetime = Date().time.toString(),
                     tags = tagsMap,
-                    likes = mutableMapOf<String,Boolean>()
+                    likes = mutableMapOf<String,Boolean>(),
+                    likesCount = 0
                 )
                 postViewModel.post(post, profileViewModel.currentUID)
             }

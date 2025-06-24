@@ -16,6 +16,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
@@ -92,25 +93,18 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     // updating just nPost, does not update the entire profile, the listener is for the profile with no bubbling
     // when the fragment is not reloaded, then the viewmodel is the same object firebase is not queried again
     // just added a nPost ++ in a child branch of the listener..
-    var nPosts:Int = 0
-/*
+
     fun post( p:Post ){
         postsRef.child(p.id.toString()).setValue(p).addOnSuccessListener {
             _dbPosted.value = p
-            // with new viewmodel loaded nPost is 0 again...
-            // cannot be set elsewhere, firebase requires time, doesnt work
-            // in future can be that update the intire profile changing just a node is also good
-            nPosts = _dbProfile.value!!.nPosts!!
-            nPosts++
-            // that is updated only here.. in the function
-            _dbProfile.value!!.nPosts = nPosts
-            profileRef.child("nPosts").setValue( nPosts )
+
+            profileRef.child("postsCount").setValue( ServerValue.increment(1) )
         }.addOnFailureListener {
             // failure
             _dbPosted.value = null
         }
     }
-*/
+
 
     val profilesListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {

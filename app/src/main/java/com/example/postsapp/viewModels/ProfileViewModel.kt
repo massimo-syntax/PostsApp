@@ -51,14 +51,10 @@ class ProfileViewModel : ViewModel() {
     }
 
     //      GET LIST OF PROFILES
-    val _profilesList = MutableLiveData<List<Profile>?>(null)
-    val profilesList : LiveData<List<Profile>?>
+    val _profilesList = MutableLiveData<MutableList<Profile>?>(null)
+    val profilesList : LiveData<MutableList<Profile>?>
         get() = _profilesList
 
-    fun clearProfileList(){
-        //if(_profilesList== null) return
-        _profilesList.value = listOf()
-    }
 
     // REQUIRE ONCE LIST OF PROFILES
     fun getProfilesList(){
@@ -72,7 +68,7 @@ class ProfileViewModel : ViewModel() {
                     profiles.add(p!!)
                 }
                 //Log.d(TAG, "${profiles.size}")
-                _profilesList.value = profiles.toList()
+                _profilesList.value = profiles
             } else {
                 // EROOR
                 //Log.d(TAG, "${it.exception?.message}")

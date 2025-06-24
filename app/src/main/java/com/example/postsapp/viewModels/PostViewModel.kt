@@ -21,8 +21,8 @@ class PostViewModel : ViewModel() {
 
 
     //      GET LIST OF POSTS
-    val _postsList = MutableLiveData<List<Post>?>(null)
-    val postsList : LiveData<List<Post>?>
+    val _postsList = MutableLiveData<MutableList<Post>?>(null)
+    val postsList : LiveData<MutableList<Post>?>
         get() = _postsList
 
     // REQUIRE ONCE LIST OF POSTS
@@ -37,7 +37,7 @@ class PostViewModel : ViewModel() {
                     posts.add(p!!)
                 }
                 //Log.d(TAG, "${profiles.size}")
-                _postsList.value = posts.toList()
+                _postsList.value = posts
             } else {
                 // EROOR
                 //Log.d(TAG, "${it.exception?.message}")
@@ -71,7 +71,7 @@ class PostViewModel : ViewModel() {
         p.id = key
         val updates: MutableMap<String, Any> = hashMapOf(
             "posts/$key" to p,
-            "profiles/$uid/nPosts" to ServerValue.increment(1),
+            "profiles/$uid/postsCount" to ServerValue.increment(1),
         )
         Firebase.database.reference.updateChildren(updates).addOnCompleteListener {
             _postSentSuccessfully.value = true
@@ -85,24 +85,16 @@ class PostViewModel : ViewModel() {
         currentPost.value!!.likes!![currentUID] = true
         // get firebase reference for this post / likes
         val postId = currentPost.value!!.id
-        val currentPostRef = firebaseRTDB.getReference("posts/$postId")
-        val postLikeRef = currentPostRef.child("likes")
-        // send to firebase
-
-        postLikeRef.setValue(currentPost.value!!.likes!!)
+        firebaseRTDB.getReference("posts/$postId/likes/$currentUID").setValue(true)
+        firebaseRTDB.getReference("posts/$postId/likesCount").setValue(ServerValue.increment(1))
     }
 
     fun unlikePost(currentUID:String){
         // remove key from live data
         currentPost.value!!.likes!!.remove(currentUID)
-
-        // get firebase reference for this post / likes
         val postId = currentPost.value!!.id
-        val currentPostRef = firebaseRTDB.getReference("posts/$postId")
-        val postLikeRef = currentPostRef.child("likes")
-        // send to firebase
-
-        postLikeRef.setValue(currentPost.value!!.likes!!)
+        firebaseRTDB.getReference("posts/$postId/likes/$currentUID").removeValue()
+        firebaseRTDB.getReference("posts/$postId/likesCount").setValue(ServerValue.increment(-1))
 
     }
 

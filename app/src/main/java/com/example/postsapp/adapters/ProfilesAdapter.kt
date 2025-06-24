@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.ItemProfileBinding
-import com.example.postsapp.models.Both
 import com.example.postsapp.models.Profile
 
 class ProfilesAdapter (private val profiles: MutableList<Profile> , private val onItemClick: (Profile) -> Unit) :

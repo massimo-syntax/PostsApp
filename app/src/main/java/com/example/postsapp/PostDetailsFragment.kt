@@ -101,7 +101,7 @@ class PostDetailsFragment : Fragment() {
             if(comment.userId == profileViewModel.currentUID){
                 // DELETE COMMENT (if yours)
                 //toast("commented from you -> delete")
-                commentsViewModel.deleteComment(comment , postId!!)
+                commentsViewModel.deleteComment(comment , postId!! , profileViewModel.currentUID)
                 //toast("deleting comment ${comment.userId}")
 
             }else{ // SOMEONE ELSE S COMMENT, you can like
@@ -125,7 +125,6 @@ class PostDetailsFragment : Fragment() {
         //var lastIndex = 0
         commentsViewModel.event.observe(viewLifecycleOwner){e->
             if (e == null) return@observe
-
             when( e.first ){
                 "added" ->{
                     // been loaded first when started the event listener
@@ -139,9 +138,7 @@ class PostDetailsFragment : Fragment() {
                         // add to list for adapter, already 1 by 1 receiving from database
                         alreadyLikedComments.add(e.second)
                     }
-
                     adapterComments.notifyItemInserted(commentsViewModel.allComments.size-1)
-
                 }
                 "removed" -> {
                     toast("index = ${e.second}")
@@ -159,7 +156,6 @@ class PostDetailsFragment : Fragment() {
                     // add to likedcomments list and map
                     // notify adapter
                 }
-
                 else -> toast("event fired, e.first is not added")
             }
         }
@@ -188,13 +184,13 @@ class PostDetailsFragment : Fragment() {
         binding.btnShowForm.setOnClickListener{
             toggleForm()
         }
-        // btn write
+        // BTN      S U B M I T  comment
         binding.btnWriteComment.setOnClickListener{
             if (binding.etWriteComment.text.isNullOrBlank()) return@setOnClickListener
             val dateTime = System.currentTimeMillis().toString()
 
             val newComment = Comment(
-                id = dateTime,
+                id = "from firebase",
                 userName = profileViewModel.myProfile.value!!.name,
                 userId = profileViewModel.myProfile.value!!.uid,
                 comment = binding.etWriteComment.editableText.toString().trim(),
@@ -203,7 +199,7 @@ class PostDetailsFragment : Fragment() {
             )
 
             // send to database
-            commentsViewModel.writeComment(newComment,postId!!)
+            commentsViewModel.writeComment(newComment,postId!!, profileViewModel.currentUID)
             toggleForm()
 
         }

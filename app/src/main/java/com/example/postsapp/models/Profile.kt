@@ -15,7 +15,8 @@ data class Profile(
     var followersCount: Int? = 0,
     var followers: MutableMap <String, Boolean>? = mutableMapOf(),
     var followed: MutableMap <String, Boolean>? = mutableMapOf(),
-    var likedComments: MutableMap<String,String>? = mutableMapOf()
+    var likedComments: MutableMap<String,String>? = mutableMapOf(),
+    var myComments: MutableMap<String,String>? = mutableMapOf()
 ) {
 
     @Exclude
@@ -29,7 +30,8 @@ data class Profile(
             "followersCount" to followersCount,
             "followers" to followers,
             "followed" to followed,
-            "likedComments" to likedComments
+            "likedComments" to likedComments,
+            "myComments" to myComments
         )
     }
 }

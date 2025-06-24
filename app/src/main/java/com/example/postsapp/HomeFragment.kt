@@ -46,74 +46,62 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //  profiles recycler view
-
-        val rvProfiles = binding.rvProfiles
-        rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-
-        profileViewModel.clearProfileList()
-        val profiles = profileViewModel.profilesList.value!!.toMutableList()
-        val adapterProfiles = ProfilesAdapter(profiles){
-            profile ->
-            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
-            findNavController().navigate(action)
+        // create new rv only when there is data from firebase
+        fun refreshProfilesRv(profiles:MutableList<Profile>){
+            val rvProfiles = binding.rvProfiles
+            rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            val adapterProfiles = ProfilesAdapter(profiles){
+                    profile ->
+                val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
+                findNavController().navigate(action)
+            }
+            rvProfiles.adapter = adapterProfiles
         }
-        rvProfiles.adapter = adapterProfiles
 
         // GET LIST OF      P R O F I L E
         profileViewModel.profilesList.observe(viewLifecycleOwner){
                 profilesList ->
-            // when first viewmodel is init() allPosts is null
-            // navigating back to this fragment the observer every time requests the data from database,
-            // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
-            // this is the best solution for now
             if(profilesList == null) return@observe
 
-            //profiles.removeAll(profilesList)
-            profiles.addAll(profilesList)
-            // here the adapter receives a new list only once
-            // once when the databse is queryed first, never more..
-            // the livedata.value just changes from null to the list 1 time
+            // navigating back <- to this fragment, even from menu, the rv has the double of items, repeated.
+            /*
             adapterProfiles.notifyItemRangeRemoved(0,profiles.size)
             adapterProfiles.notifyItemRangeInserted(0,profiles.size)
+            profiles.removeAll(profilesList)
+            profiles.addAll(profilesList)
+             */
+            //is also needed a profileViewModel.clearProfileList(), even with the list assigned = not .add()
+
+            // for this fragment this is the best solution
+            refreshProfilesRv(profilesList.toMutableList())
         }
         // request profiles once from databse
         profileViewModel.getProfilesList()
 
 
-        // posts recycler view
-        var posts = mutableListOf<Post>()
-        val rvPost = binding.rvPosts
-        rvPost.layoutManager = LinearLayoutManager(context)
-        val adapterPost = PostsAdapter(posts){
-            post ->
-            val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id!!)
-            findNavController().navigate(action)
+        // create new rv only when there is data from db
+        fun refreshPostsRv(posts:MutableList<Post>){
+            val rvPost = binding.rvPosts
+            rvPost.layoutManager = LinearLayoutManager(context)
+            val adapterPost = PostsAdapter(posts){
+                    post ->
+                val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id!!)
+                findNavController().navigate(action)
+            }
+            rvPost.adapter = adapterPost
         }
-        rvPost.adapter = adapterPost
 
         // GET LIST OF      P O S T S
         postsViewmodel.postsList.observe(viewLifecycleOwner){
             postsList ->
-            // when first viewmodel is init() allPosts is null
-            // navigating back to this fragment the observer every time requests the data from database,
-            // the adapter has his list on place, the rv flicks, and there is a duplicate of data in the rv
-            // this is the best solution for now
-            if(postsList == null || adapterPost.itemCount == postsList.size) return@observe
-
-            posts.removeAll(postsList)
-            posts.addAll(postsList)
-            // here the adapter receives a new list only once
-            // once when the databse is queryed first, never more..
-            // the livedata.value just changes from null to the list 1 time
-            adapterPost.notifyItemRangeRemoved(0,posts.size)
-            adapterPost.notifyItemRangeInserted(0,posts.size)
+            if(postsList == null) return@observe
+            refreshPostsRv(postsList)
         }
         // request posts once from databse
         postsViewmodel.getPostsList()
 
 
     } /* onViewCreated */
-
+    
 
 }

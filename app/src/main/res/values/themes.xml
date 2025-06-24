@@ -5,7 +5,7 @@
         <item name="colorPrimary">@color/blue</item>
         <item name="colorPrimaryVariant">@color/blue</item>
         <item name="android:statusBarColor">@color/white</item>
-
+        <item name="backgroundColor">@color/white</item>
     </style>
 
     <style name="Theme.PostsApp" parent="Base.Theme.PostsApp" />

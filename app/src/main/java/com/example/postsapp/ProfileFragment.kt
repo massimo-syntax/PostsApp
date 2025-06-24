@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentProfileBinding
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 
 
@@ -22,6 +23,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding : FragmentProfileBinding
     private lateinit var viewModel: SharedViewModel
+    private lateinit var profileViewmodel: ProfileViewModel
     private lateinit var ctx : Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +33,7 @@ class ProfileFragment : Fragment() {
         }
         ctx = requireContext()
         viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-
+        profileViewmodel = ViewModelProvider(this)[ProfileViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -61,25 +63,36 @@ class ProfileFragment : Fragment() {
             likedComments = mutableMapOf<String,String>()
         )
 
-        // load fields of current profile in ui
-        viewModel.dbProfile.observe(viewLifecycleOwner){ profile ->
-            if (profile == null){
-                binding.tvTitle.text = "-- ! NO PROFILE YET ! --"
-            } else {
-                p = profile
-                binding.tvTitle.text = p.name
-                binding.etUserName.setText(p.name)
-                binding.etSay.setText(p.say)
 
-                if( ! p.image.isNullOrEmpty() ){
-                    Glide.with(ctx)
-                        .load(p.image)
-                        .into(binding.iv)
-                    image = p.image!!
-                }
+
+        // load fields of current profile in ui
+        profileViewmodel.myProfile.observe(viewLifecycleOwner){ profile ->
+            if (profile == null) {
+                binding.tvTitle.text = "-- ! NO PROFILE YET ! --"
+                binding.iv.setImageResource(R.drawable.writing)
+                return@observe
             }
+            // print profile info in fields
+            p = profile
+            binding.tvTitle.text = p.name
+            binding.etUserName.setText(p.name)
+            binding.etSay.setText(p.say)
+
+            binding.tvFollowersCount.text = p.followersCount.toString()
+            binding.tvPostsCount.text = p.postsCount.toString()
+            binding.tvWrittenComments.text = p.myComments!!.size.toString()
+
+            // load image if present
+            if( ! p.image.isNullOrEmpty() ){
+                Glide.with(ctx)
+                    .load(p.image)
+                    .into(binding.iv)
+                image = p.image!!
+            }
+
         }
 
+        //      I M A G E  BUTTONS
         // easiest way to upload picture for now
         // UPLOAD
         binding.btnSelectImg.setOnClickListener {
@@ -104,7 +117,7 @@ class ProfileFragment : Fragment() {
             image = url
         }
 
-        // UPDATE !
+        // BTN      S U B M I T
         binding.btnSend.setOnClickListener {
             if(binding.etUserName.text.isEmpty() ){
                 binding.etUserName.setText("PROFILE NAME IS REQUIRED")
