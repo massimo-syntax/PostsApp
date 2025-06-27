@@ -18,6 +18,9 @@
     <dimen name="et_icon_margin">8dp</dimen>
     <dimen name="et_layout_margin">14dp</dimen>
 
+    <!-- MARGIN -->
+    <dimen name="margin_layout_small">8dp</dimen>
+
 
 
 

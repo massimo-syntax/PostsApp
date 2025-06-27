@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/et_borders"
-    >
+    android:layout_marginHorizontal="@dimen/margin_layout_small">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/writing"
+        app:srcCompat="@drawable/writing"
+        app:shapeAppearanceOverlay="@style/itemProfileImageView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -19,8 +21,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="profile name"
-        app:layout_constraintTop_toTopOf="@id/iv_image"
-        app:layout_constraintStart_toEndOf="@id/iv_image"/>
+        android:textColor="@color/lightgrey"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/iv_image"
+        app:layout_constraintStart_toStartOf="@id/iv_image"/>
 
 
     <LinearLayout
@@ -28,17 +34,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@id/iv_image"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="@id/iv_image"
         app:layout_constraintTop_toBottomOf="@id/tv_name">
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginLeft="4sp"
             android:src="@drawable/posting"/>
         <TextView
             android:id="@+id/tv_n_posts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="4sp"
             android:text="1000"/>
+
 
     </LinearLayout>
 
@@ -49,15 +61,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/layout_n_posts"
-        app:layout_constraintStart_toEndOf="@id/iv_image">
+        app:layout_constraintStart_toStartOf="@id/iv_image">
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginLeft="4sp"
             android:src="@drawable/like"/>
         <TextView
             android:id="@+id/tv_n_followers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginLeft="4sp"
             android:text="1000"/>
 
     </LinearLayout>

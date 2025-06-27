@@ -18,40 +18,47 @@
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp"
             android:text="Search"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_heading"
+            android:textAlignment="center"
+            android:layout_marginVertical="@dimen/padding_text_heading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- search form -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/search_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/btn_borders"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title">
 
-
             <EditText
                 android:id="@+id/et_search"
-                android:layout_width="250dp"
+                android:layout_width="0dp"
                 android:layout_height="46dp"
-                android:background="@drawable/et_borders"
-                android:hint="search"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@null"
+                android:hint="Title, username, text..."
+                android:padding="@dimen/margin_layout_small"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_search"/>
 
-            <Button
+            <ImageButton
                 android:id="@+id/btn_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="search"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:backgroundTint="@color/blue"
+                android:src="@drawable/search"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/btn_borders"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

@@ -34,7 +34,9 @@
     <EditText
         android:id="@+id/et_body"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:maxHeight="154dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/et_borders"
         android:hint="Write your post here"

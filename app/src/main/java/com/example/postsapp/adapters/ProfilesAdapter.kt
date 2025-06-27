@@ -11,8 +11,6 @@ import com.example.postsapp.models.Profile
 class ProfilesAdapter (private val profiles: MutableList<Profile> , private val onItemClick: (Profile) -> Unit) :
     RecyclerView.Adapter<ProfilesAdapter.ViewHolder>() {
 
-    private lateinit var binding: ItemProfileBinding
-
     private lateinit var ctx : Context
     /**
      * Provide a reference to the type of views that you are using

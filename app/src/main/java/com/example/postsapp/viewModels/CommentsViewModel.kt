@@ -27,8 +27,6 @@ class CommentsViewModel : ViewModel() {
     val event : LiveData<Pair<String,String>?>
         get() = _event
 
-    var dbDataLoadedOnce = false
-
 
 
     //  WRITE
@@ -93,8 +91,6 @@ class CommentsViewModel : ViewModel() {
                 // event callback changing value
                 // that directly calls the observer (i hope.. didnt read the java code of the observer, jet..)
                 _event.value = Pair("added", c.id.toString() )
-
-                dbDataLoadedOnce = true
 
             }
 

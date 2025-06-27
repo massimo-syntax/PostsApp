@@ -5,8 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.postsapp.databinding.ItemPostBinding
 import com.example.postsapp.models.Post
-import com.example.postsapp.models.Profile
-
 
 class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemClick: (Post) -> Unit) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {

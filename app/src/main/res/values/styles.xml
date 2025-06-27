@@ -29,9 +29,11 @@
         <item name="cornerSizeBottomLeft">@dimen/margin_width</item>
         <item name="cornerFamilyBottomRight">rounded</item>
         <item name="cornerSizeBottomRight">@dimen/margin_width</item>
-
-
     </style>
 
+    <style name="itemProfileImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 
 </resources>
