@@ -11,7 +11,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileBinding
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.ProfileViewModel
@@ -116,6 +119,33 @@ class ProfileFragment : Fragment() {
                 .into(binding.iv)
             image = url
         }
+
+        //      F O L L O W E D
+
+
+        // create new rv only when there is data from firebase
+        fun refreshProfilesRv(profiles:MutableList<Profile>){
+            val rvProfiles = binding.rvProfiles
+            rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            val adapterProfiles = ProfilesAdapter(profiles){
+                    profile ->
+                val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
+                findNavController().navigate(action)
+            }
+            rvProfiles.adapter = adapterProfiles
+        }
+
+        // GET LIST OF      P R O F I L E
+        profileViewmodel.profilesList.observe(viewLifecycleOwner){
+                profilesList ->
+            if(profilesList == null) return@observe
+            refreshProfilesRv(profilesList.toMutableList())
+        }
+        // request profiles once from databse
+        profileViewmodel.getProfilesList()
+
+
+
 
         // BTN      S U B M I T
         binding.btnSend.setOnClickListener {
