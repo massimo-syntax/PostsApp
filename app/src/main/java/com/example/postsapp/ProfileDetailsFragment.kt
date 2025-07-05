@@ -77,24 +77,24 @@ class ProfileDetailsFragment : Fragment() {
             binding.likes.text = likes.toString()
 
             if(alreadyLiked()){
-                binding.btnLike.text = "unlike"
+                binding.btnFollow.setImageResource(R.drawable.like)
             }
         }
         // request profile
         viewModel.getSingleProfile(profileId!!)
 
         // btn like profile
-        binding.btnLike.setOnClickListener {
+        binding.btnFollow.setOnClickListener {
             if ( ! alreadyLiked() ){
                 viewModel.likeProfile(profile!!.uid!!)
                 likes ++
                 binding.likes.text = likes.toString()
-                binding.btnLike.text = "unlike"
+                binding.btnFollow.setImageResource(R.drawable.like)
             }else{
                 viewModel.unlikeProfile(profile!!.uid!!)
                 likes --
                 binding.likes.text = likes.toString()
-                binding.btnLike.text = "like"
+                binding.btnFollow.setImageResource(R.drawable.unliked)
             }
         }
 

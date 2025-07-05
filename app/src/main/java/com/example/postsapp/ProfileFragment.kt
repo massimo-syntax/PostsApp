@@ -66,9 +66,30 @@ class ProfileFragment : Fragment() {
             likedComments = mutableMapOf<String,String>()
         )
 
+        //      F O L L O W E D
+        //  rv
+        val rvProfiles = binding.rvProfiles
+        rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        val adapterProfiles = ProfilesAdapter(profileViewmodel.followedsList){
+                profile ->
+            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
+            findNavController().navigate(action)
+        }
+        rvProfiles.adapter = adapterProfiles
+
+
+        // wait for followed from databse
+        profileViewmodel.eventFollowedReceived.observe(viewLifecycleOwner){
+                followed ->
+            // in viewmodel starting value is null
+            if(followed == null) return@observe
+            adapterProfiles.notifyItemInserted(profileViewmodel.followedsList.size-1)
+        }
+
 
 
         // load fields of current profile in ui
+        // get followeds when myProfile is loaded
         profileViewmodel.myProfile.observe(viewLifecycleOwner){ profile ->
             if (profile == null) {
                 binding.tvTitle.text = "-- ! NO PROFILE YET ! --"
@@ -80,6 +101,7 @@ class ProfileFragment : Fragment() {
             binding.tvTitle.text = p.name
             binding.etUserName.setText(p.name)
             binding.etSay.setText(p.say)
+            if(profile.followed.isNullOrEmpty()) binding.followedLable.text = "No profile followed"
 
             binding.tvFollowersCount.text = p.followersCount.toString()
             binding.tvPostsCount.text = p.postsCount.toString()
@@ -92,8 +114,10 @@ class ProfileFragment : Fragment() {
                     .into(binding.iv)
                 image = p.image!!
             }
-
+            // once the profile is loaded retrive followed
+            profileViewmodel.getFollowed()
         }
+
 
         //      I M A G E  BUTTONS
         // easiest way to upload picture for now
@@ -120,32 +144,6 @@ class ProfileFragment : Fragment() {
             image = url
         }
 
-        //      F O L L O W E D
-
-
-        // create new rv only when there is data from firebase
-        fun refreshProfilesRv(profiles:MutableList<Profile>){
-            val rvProfiles = binding.rvProfiles
-            rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            val adapterProfiles = ProfilesAdapter(profiles){
-                    profile ->
-                val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
-                findNavController().navigate(action)
-            }
-            rvProfiles.adapter = adapterProfiles
-        }
-
-        // GET LIST OF      P R O F I L E
-        profileViewmodel.profilesList.observe(viewLifecycleOwner){
-                profilesList ->
-            if(profilesList == null) return@observe
-            refreshProfilesRv(profilesList.toMutableList())
-        }
-        // request profiles once from databse
-        profileViewmodel.getProfilesList()
-
-
-
 
         // BTN      S U B M I T
         binding.btnSend.setOnClickListener {
@@ -159,6 +157,14 @@ class ProfileFragment : Fragment() {
             viewModel.updateProfile(p)
         }
 
+    }
+
+    // when another tab is pressed the list is new
+    // when this fragment is displayed again the adapter is populated from 0
+    // otherwise the viewmodel instance has all properties still the same
+    override fun onPause() {
+        super.onPause()
+        profileViewmodel.followedsList = mutableListOf<Profile>()
     }
 
 }

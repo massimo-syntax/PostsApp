@@ -41,11 +41,17 @@
         android:layout_width="wrap_content"
         android:text="likes" />
 
-    <Button
-        android:id="@+id/btn_like"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="like!"/>
+
+    <ImageButton
+        android:id="@+id/btn_follow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_borders"
+        android:padding="@dimen/et_icon_margin"
+        android:src="@drawable/unliked"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
+
 
 
 </LinearLayout>

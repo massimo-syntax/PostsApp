@@ -76,6 +76,30 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    // followed rv
+    val _eventFollowedReceived = MutableLiveData<Profile?>(null)
+    val eventFollowedReceived : LiveData<Profile?>
+        get() = _eventFollowedReceived
+
+    var followedsList = mutableListOf<Profile>()
+
+    fun getFollowed(){
+        val followed = _myProfile.value!!.followed
+        if (followed==null) return
+
+        followed.forEach { followed ->
+            val fID = followed.key
+            firebaseRTDB.getReference("profiles/$fID")
+                .get()
+                .addOnSuccessListener {
+                    // firebase does not send null
+                    val p = it.getValue(Profile::class.java)!!
+                    followedsList.add( p )
+                    _eventFollowedReceived.value = p
+                }
+        }
+    }
+
 
     fun likeProfile(otherProfileId:String){
         val db = Firebase.database.reference
