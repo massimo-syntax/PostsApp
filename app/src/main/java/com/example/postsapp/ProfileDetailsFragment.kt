@@ -8,9 +8,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.FragmentStateViewModel
+import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
 class ProfileDetailsFragment : Fragment() {
@@ -18,7 +22,9 @@ class ProfileDetailsFragment : Fragment() {
     private var profileId:String? = null
 
     private lateinit var binding : FragmentProfileDetailsBinding
-    private lateinit var viewModel: ProfileViewModel
+    private lateinit var profilesViewModel: ProfileViewModel
+    private lateinit var postsViewModel: PostViewModel
+
     private lateinit var fragmentState:FragmentStateViewModel
 
     private fun toast(s:String){
@@ -33,7 +39,8 @@ class ProfileDetailsFragment : Fragment() {
 
         }
         fragmentState = ViewModelProvider(this)[FragmentStateViewModel::class.java]
-        viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        profilesViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        postsViewModel = ViewModelProvider(this)[PostViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -52,7 +59,7 @@ class ProfileDetailsFragment : Fragment() {
         var profile : Profile? = null
 
         fun alreadyLiked():Boolean{
-            return profile!!.followers!!.containsKey(viewModel.myProfile.value!!.uid.toString())
+            return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
         }
 
         var likes = 0
@@ -65,7 +72,7 @@ class ProfileDetailsFragment : Fragment() {
         binding.likes.text = ""
 
         // REQUESTING PROFILE FROM DB
-        viewModel.singleProfile.observe(viewLifecycleOwner){ p ->
+        profilesViewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             profile = p
             //toast(p.toString())
@@ -81,17 +88,17 @@ class ProfileDetailsFragment : Fragment() {
             }
         }
         // request profile
-        viewModel.getSingleProfile(profileId!!)
+        profilesViewModel.getSingleProfile(profileId!!)
 
         // btn like profile
         binding.btnFollow.setOnClickListener {
             if ( ! alreadyLiked() ){
-                viewModel.likeProfile(profile!!.uid!!)
+                profilesViewModel.likeProfile(profile!!.uid!!)
                 likes ++
                 binding.likes.text = likes.toString()
                 binding.btnFollow.setImageResource(R.drawable.like)
             }else{
-                viewModel.unlikeProfile(profile!!.uid!!)
+                profilesViewModel.unlikeProfile(profile!!.uid!!)
                 likes --
                 binding.likes.text = likes.toString()
                 binding.btnFollow.setImageResource(R.drawable.unliked)
@@ -102,6 +109,26 @@ class ProfileDetailsFragment : Fragment() {
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        fun refreshPostsRv(posts:MutableList<Post>){
+            val rvPost = binding.rvPosts
+            rvPost.layoutManager = LinearLayoutManager(context)
+            val adapterPost = PostsAdapter(posts){
+                    post ->
+                val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id!!)
+                findNavController().navigate(action)
+            }
+            rvPost.adapter = adapterPost
+        }
+
+        // GET LIST OF      P O S T S
+        postsViewModel.postsList.observe(viewLifecycleOwner){
+                postsList ->
+            if(postsList == null) return@observe
+            refreshPostsRv(postsList)
+        }
+        // request posts once from databse
+        postsViewModel.getPostsList()
 
     }
 

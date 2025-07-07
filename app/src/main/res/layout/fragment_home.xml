@@ -38,6 +38,7 @@
         android:textSize="@dimen/text_heading"
         android:layout_margin="@dimen/margin_layout_small"
         android:text="Posts" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_posts"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
