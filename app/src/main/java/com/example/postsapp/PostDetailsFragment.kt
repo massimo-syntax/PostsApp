@@ -219,10 +219,6 @@ class PostDetailsFragment : Fragment() {
             binding.tvLikes.text = likesCount.toString()
         }
 
-        // BTN BACK
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
 
 
     }

@@ -44,7 +44,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navbar"
         android:background="?android:attr/windowBackground"
-        app:itemRippleColor="@color/red"
+        android:backgroundTint="@color/lightgrey"
+        app:itemRippleColor="@color/lightgrey"
         app:itemTextColor="@color/blue" />
 
 

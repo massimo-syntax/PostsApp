@@ -1,9 +1,11 @@
 package com.example.postsapp.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.database
@@ -45,6 +47,28 @@ class PostViewModel : ViewModel() {
         }
     }
 
+    // REQUIRE ONCE ALL POSTS FROM nyPosts of a UID
+    // followed rv
+    val _eventPostReceived = MutableLiveData<Post?>(null)
+    val eventPostReceived : LiveData<Post?>
+        get() = _eventPostReceived
+
+    var UIDPostsList = mutableListOf<Post>()
+
+    fun getPostsFromIDList( postIDs : List<String> ){
+        if (postIDs.isNullOrEmpty() ) return
+        postIDs.forEach { postID ->
+            firebaseRTDB.getReference("posts/$postID")
+                .get()
+                .addOnSuccessListener {
+                    // firebase does not send null
+                    val p = it.getValue(Post::class.java)!!
+                    // add at beginning of list
+                    UIDPostsList.add (0 , p )
+                    _eventPostReceived.value = p
+                }
+        }
+    }
 
     fun getCurrentPost(id:String){
         val currentPostRef = firebaseRTDB.getReference("posts/$id")
@@ -72,6 +96,7 @@ class PostViewModel : ViewModel() {
         val updates: MutableMap<String, Any> = hashMapOf(
             "posts/$key" to p,
             "profiles/$uid/postsCount" to ServerValue.increment(1),
+            "profiles/$uid/myPosts/$key" to true
         )
         Firebase.database.reference.updateChildren(updates).addOnCompleteListener {
             _postSentSuccessfully.value = true

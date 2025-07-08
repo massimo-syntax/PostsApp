@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postsapp.adapters.PostsAdapter
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
@@ -71,6 +72,31 @@ class ProfileDetailsFragment : Fragment() {
         binding.sentence.text = ""
         binding.likes.text = ""
 
+
+
+        // declare rv
+        // RV FOR POSTS OF THIS UID
+        val rvPosts = binding.rvPosts
+        rvPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val adapterPosts = PostsAdapter(postsViewModel.UIDPostsList){
+                post ->
+            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(post.id!!)
+            findNavController().navigate(action)
+        }
+        rvPosts.adapter = adapterPosts
+
+        // add to adapter every post queried
+        postsViewModel.eventPostReceived.observe(viewLifecycleOwner){
+                post ->
+            // in viewmodel starting value is null
+            if(post == null) return@observe
+            toast(post.toString())
+            toast(postsViewModel.UIDPostsList.toString())
+            adapterPosts.notifyItemRangeChanged ( 0 , postsViewModel.UIDPostsList.size )
+        }
+        // when this single profile is loaded from database the posts are also requested
+        // see singleProfile.observe ----v
+
         // REQUESTING PROFILE FROM DB
         profilesViewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
@@ -82,11 +108,15 @@ class ProfileDetailsFragment : Fragment() {
             binding.profileName.text = p.name
             binding.sentence.text = p.say
             binding.likes.text = likes.toString()
-
             if(alreadyLiked()){
                 binding.btnFollow.setImageResource(R.drawable.like)
             }
+
+            // make a list of posts from this profile
+            if (p.myPosts.isNullOrEmpty()) return@observe
+            postsViewModel.getPostsFromIDList(p.myPosts!!.keys.toList())
         }
+
         // request profile
         profilesViewModel.getSingleProfile(profileId!!)
 
@@ -105,30 +135,12 @@ class ProfileDetailsFragment : Fragment() {
             }
         }
 
-        // BTN BACK
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
 
-        fun refreshPostsRv(posts:MutableList<Post>){
-            val rvPost = binding.rvPosts
-            rvPost.layoutManager = LinearLayoutManager(context)
-            val adapterPost = PostsAdapter(posts){
-                    post ->
-                val action = HomeFragmentDirections.actionHomeFragmentToPostDetailsFragment(post.id!!)
-                findNavController().navigate(action)
-            }
-            rvPost.adapter = adapterPost
-        }
 
-        // GET LIST OF      P O S T S
-        postsViewModel.postsList.observe(viewLifecycleOwner){
-                postsList ->
-            if(postsList == null) return@observe
-            refreshPostsRv(postsList)
-        }
-        // request posts once from databse
-        postsViewModel.getPostsList()
+
+
+
+
 
     }
 

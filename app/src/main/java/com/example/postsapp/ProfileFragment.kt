@@ -85,6 +85,7 @@ class ProfileFragment : Fragment() {
             if(followed == null) return@observe
             adapterProfiles.notifyItemInserted(profileViewmodel.followedsList.size-1)
         }
+        // get followed is in the observer of myProfile
 
 
 

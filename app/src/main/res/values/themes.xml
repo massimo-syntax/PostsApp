@@ -6,6 +6,8 @@
         <item name="colorPrimaryVariant">@color/blue</item>
         <item name="android:statusBarColor">@color/white</item>
         <item name="backgroundColor">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="popupMenuStyle">@style/ToolbarStyle</item>
     </style>
 
     <style name="Theme.PostsApp" parent="Base.Theme.PostsApp" />
