@@ -21,6 +21,9 @@
     <!-- MARGIN -->
     <dimen name="margin_layout_small">8dp</dimen>
 
+    <!-- IMAGES -->
+    <dimen name="rv_item_img_size">75dp</dimen>
+
 
 
 

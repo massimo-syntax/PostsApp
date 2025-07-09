@@ -1,80 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".PostDetailsFragment"
-    android:orientation="vertical"
     android:background="@color/white">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tv_post_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="profileId" />
+        <ImageView
+            android:id="@+id/iv_post_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/writing"
+            app:srcCompat="@drawable/writing"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_author_image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user"
+            app:srcCompat="@drawable/user"
+            android:layout_margin="@dimen/padding_text_heading"
+            app:shapeAppearanceOverlay="@style/rvItemImageView"
+            app:layout_constraintTop_toBottomOf="@id/iv_post_image"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_author_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="username"
+            app:layout_constraintTop_toTopOf="@id/iv_author_image"
+            app:layout_constraintStart_toEndOf="@id/iv_author_image"/>
+
+        <TextView
+            android:id="@+id/tv_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="datetime"
+            android:layout_marginEnd="@dimen/margin_layout_small"
+            android:textColor="@color/lightgrey"
+            app:layout_constraintTop_toTopOf="@id/tv_author_username"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/layout_posts_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="4dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_author_username"
+            app:layout_constraintStart_toEndOf="@id/iv_author_image" >
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="4sp"
+                android:src="@drawable/posting"/>
+            <TextView
+                android:id="@+id/tv_posts_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginLeft="4sp"
+                android:text="1000"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_likes_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="4dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_posts_count"
+            app:layout_constraintStart_toEndOf="@id/iv_author_image" >
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="4sp"
+                android:src="@drawable/like"/>
+            <TextView
+                android:id="@+id/tv_followers_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginLeft="4sp"
+                android:text="1000"/>
+
+        </LinearLayout>
 
     <TextView
         android:id="@+id/tv_post_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="post title" />
+        android:text="post title"
+        android:textSize="@dimen/text_heading"
+        android:padding="@dimen/padding_text_heading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_author_image"/>
 
     <TextView
         android:id="@+id/tv_post_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="post body" />
+        android:paddingHorizontal="@dimen/padding_text_heading"
+        android:text="post body"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_title"/>
 
     <TextView
         android:id="@+id/tv_likes"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="likes" />
+        android:text="likes"
+        android:padding="@dimen/margin_layout_small"
+        app:layout_constraintTop_toTopOf="@id/btn_like"
+        app:layout_constraintBottom_toBottomOf="@id/btn_like"
+        app:layout_constraintEnd_toStartOf="@id/btn_like"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_like"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="like!"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:padding="@dimen/et_icon_margin"
+        android:scaleType="fitCenter"
+        android:src="@drawable/unliked"
+        android:text="like!"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_body"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <Button
-        android:id="@+id/btn_show_form"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="leve comment"/>
+
+
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_comments"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_like"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/padding_text_heading"/>
+
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/comment_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
-
+        android:minHeight="46dp"
+        android:maxHeight="92dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/rv_comments"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/padding_text_heading">
         <EditText
             android:id="@+id/et_write_comment"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:hint="write your commentt"
+            android:layout_height="wrap_content"
+            android:hint="comment.."
+            android:background="@null"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_write_comment"/>
-        <Button
+        <ImageButton
             android:id="@+id/btn_write_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="write comment"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/btn_borders"
+            android:scaleType="fitCenter"
+            android:src="@drawable/write"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btn_show_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Write comment"
+            android:background="@drawable/btn_borders"
+            android:layout_margin="@dimen/margin_layout_small"
+            app:layout_constraintStart_toStartOf="@id/comment_form"
+            app:layout_constraintTop_toBottomOf="@id/comment_form"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

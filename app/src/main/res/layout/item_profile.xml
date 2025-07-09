@@ -7,12 +7,12 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_image"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_width="@dimen/rv_item_img_size"
+        android:layout_height="@dimen/rv_item_img_size"
         android:scaleType="centerCrop"
-        android:src="@drawable/writing"
-        app:srcCompat="@drawable/writing"
-        app:shapeAppearanceOverlay="@style/itemProfileImageView"
+        android:src="@drawable/user"
+        app:srcCompat="@drawable/user"
+        app:shapeAppearanceOverlay="@style/rvItemImageView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

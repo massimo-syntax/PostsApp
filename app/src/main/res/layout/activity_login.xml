@@ -90,7 +90,7 @@
                 android:layout_height="46dp"
                 android:hint="password"
                 android:background="@null"
-                android:inputType="textEmailAddress" />
+                android:inputType="textPassword" />
         </LinearLayout>
 
 

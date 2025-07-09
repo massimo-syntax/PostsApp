@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
@@ -59,19 +60,13 @@ class ProfileDetailsFragment : Fragment() {
 
         var profile : Profile? = null
 
-        fun alreadyLiked():Boolean{
-            return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
-        }
-
         var likes = 0
 
         // init text waiting for server response
         // useful in the case that no profile is created yet
-        binding.profileId.text = ""
         binding.profileName.text = ""
         binding.sentence.text = ""
-        binding.likes.text = ""
-
+        binding.tvFollowersCount.text = ""
 
 
         // declare rv
@@ -97,18 +92,26 @@ class ProfileDetailsFragment : Fragment() {
         // when this single profile is loaded from database the posts are also requested
         // see singleProfile.observe ----v
 
+
+        fun alreadyFollowed():Boolean{
+            return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
+        }
         // REQUESTING PROFILE FROM DB
         profilesViewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             profile = p
             //toast(p.toString())
             likes = profile!!.followersCount!!
-            binding.likes.text = likes.toString()
-            binding.profileId.text = p.uid
+            binding.tvPostsCount.text = p.postsCount.toString() + " posts"
+            binding.tvFollowersCount.text = likes.toString()
             binding.profileName.text = p.name
             binding.sentence.text = p.say
-            binding.likes.text = likes.toString()
-            if(alreadyLiked()){
+            if( ! p.image.isNullOrEmpty() ) {
+                Glide.with(requireContext())
+                    .load(p.image)
+                    .into(binding.ivImage)
+            }
+            if(alreadyFollowed()){
                 binding.btnFollow.setImageResource(R.drawable.like)
             }
 
@@ -120,26 +123,21 @@ class ProfileDetailsFragment : Fragment() {
         // request profile
         profilesViewModel.getSingleProfile(profileId!!)
 
+
         // btn like profile
         binding.btnFollow.setOnClickListener {
-            if ( ! alreadyLiked() ){
+            if ( ! alreadyFollowed() ){
                 profilesViewModel.likeProfile(profile!!.uid!!)
                 likes ++
-                binding.likes.text = likes.toString()
+                binding.tvFollowersCount.text = likes.toString()
                 binding.btnFollow.setImageResource(R.drawable.like)
             }else{
                 profilesViewModel.unlikeProfile(profile!!.uid!!)
                 likes --
-                binding.likes.text = likes.toString()
+                binding.tvFollowersCount.text = likes.toString()
                 binding.btnFollow.setImageResource(R.drawable.unliked)
             }
         }
-
-
-
-
-
-
 
 
     }

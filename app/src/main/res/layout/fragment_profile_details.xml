@@ -14,57 +14,85 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/profile_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="profileId"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_image"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user"
+            app:srcCompat="@drawable/user"
+            app:shapeAppearanceOverlay="@style/rvItemImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/profile_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="profile name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_id" />
+            android:layout_margin="4dp"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/iv_image"
+            app:layout_constraintTop_toTopOf="@+id/iv_image" />
 
         <TextView
             android:id="@+id/sentence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="sentence"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:maxWidth="200dp"
+            android:layout_margin="4dp"
+            app:layout_constraintStart_toEndOf="@+id/iv_image"
             app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
+        <!-- followers -->
+        <ImageView
+            android:id="@+id/iv_posts_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="4dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/posting"
+            app:layout_constraintStart_toEndOf="@+id/iv_image"
+            app:layout_constraintTop_toBottomOf="@+id/sentence" />
         <TextView
-            android:id="@+id/likes"
+            android:id="@+id/tv_posts_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="likes"
-            app:layout_constraintEnd_toEndOf="@+id/btn_follow"
-            app:layout_constraintStart_toStartOf="@+id/btn_follow"
-            app:layout_constraintTop_toBottomOf="@+id/btn_follow" />
+            android:text="posts"
+            android:layout_margin="4dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/iv_posts_count"
+            app:layout_constraintTop_toTopOf="@id/iv_posts_count"
+            app:layout_constraintBottom_toBottomOf="@id/iv_posts_count"/>
 
+
+        <!-- followers -->
         <ImageButton
             android:id="@+id/btn_follow"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="20dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/btn_borders"
+            android:background="@color/white"
             android:padding="@dimen/et_icon_margin"
             android:scaleType="fitCenter"
             android:src="@drawable/unliked"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/tv_followers_count"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_followers_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="flw"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_posts_count"
+            app:layout_constraintEnd_toEndOf="@+id/btn_follow"
+            app:layout_constraintStart_toStartOf="@+id/btn_follow" />
+
 
         <!-- header -->
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -76,7 +104,8 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/header_layout"
+        android:padding="16dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

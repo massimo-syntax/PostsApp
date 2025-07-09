@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.CommentsAdapter
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.models.Comment
@@ -59,7 +60,6 @@ class PostDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvPostId.text = postId
         var post: Post? = null
         // for now just count.. users can also comment, in future updates of the app may be also see which users liked..
         // being an app for posts can be nice to like without that your like is seen..
@@ -70,23 +70,43 @@ class PostDetailsFragment : Fragment() {
             return post!!.likes!!.containsKey(profileViewModel.currentUID)
         }
 
+        profileViewModel.singleProfile.observe(viewLifecycleOwner){ profile ->
+            if(profile == null) return@observe
+            if( ! profile.image.isNullOrEmpty() ) {
+                Glide.with(requireContext())
+                    .load(profile.image)
+                    .into(binding.ivAuthorImage)
+            }
+            binding.tvAuthorUsername.text = profile.name
+            binding.tvPostsCount.text = profile.postsCount.toString()
+            binding.tvFollowersCount.text = profile.followersCount.toString()
+        } // profile is requested when the post is loaded
+
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
             post = p
-            binding.tvPostTitle.text = p.title + " from " + p.user
+            if( ! p.image.isNullOrEmpty() ) {
+                Glide.with(requireContext())
+                    .load(p.image)
+                    .into(binding.ivPostImage)
+            }
+            binding.tvPostTitle.text = p.title
+            binding.tvDatetime.text = convertTimestampToReadableFormat(p.datetime!!.toLong())
             binding.tvPostBody.text = p.body
             likesCount = p.likes!!.size
             binding.tvLikes.text = likesCount.toString()
             //toast("observed $p")
             if(alreadyLiked()){
-                binding.btnLike.text = "unlike"
+                binding.btnLike.setImageResource(R.drawable.like)
             }
-
+            profileViewModel.getSingleProfile(post!!.userId!!)
         }
         postViewModel.getCurrentPost(postId!!)
 
-        val alreadyLikedComments = mutableSetOf<String>()
 
+
+
+        val alreadyLikedComments = mutableSetOf<String>()
         fun commentAlreadyLiked(id:String) : Boolean {
             val likedCommentsMap = profileViewModel._myProfile.value!!.likedComments
             return likedCommentsMap!!.containsKey(id)
@@ -175,7 +195,7 @@ class PostDetailsFragment : Fragment() {
                 binding.commentForm.visibility = View.GONE
             }else{
                 formShowing = true
-                binding.btnShowForm.text = "writing comment .."
+                binding.btnShowForm.text = "cancel"
                 binding.commentForm.visibility = View.VISIBLE
             }
             binding.etWriteComment.setText("")
@@ -210,11 +230,11 @@ class PostDetailsFragment : Fragment() {
             if(!alreadyLiked()){
                 postViewModel.likePost(profileViewModel.currentUID)
                 likesCount++
-                binding.btnLike.text = "unlike"
+                binding.btnLike.setImageResource(R.drawable.like)
             }else{
                 postViewModel.unlikePost(profileViewModel.currentUID)
                 likesCount--
-                binding.btnLike.text = "like"
+                binding.btnLike.setImageResource(R.drawable.unliked)
             }
             binding.tvLikes.text = likesCount.toString()
         }
