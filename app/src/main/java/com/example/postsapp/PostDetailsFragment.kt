@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,9 +17,9 @@ import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
 import com.example.postsapp.viewModels.CommentsViewModel
 import com.example.postsapp.viewModels.FragmentStateViewModel
+import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
-
 
 class PostDetailsFragment : Fragment() {
 
@@ -29,7 +30,6 @@ class PostDetailsFragment : Fragment() {
     private lateinit var commentsViewModel: CommentsViewModel
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var fragmentState:FragmentStateViewModel
-
 
     private fun toast(s:String){
         Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
@@ -80,7 +80,24 @@ class PostDetailsFragment : Fragment() {
             binding.tvAuthorUsername.text = profile.name
             binding.tvPostsCount.text = profile.postsCount.toString()
             binding.tvFollowersCount.text = profile.followersCount.toString()
+
+            fun goToProfile(){
+                val action = PostDetailsFragmentDirections.actionPostDetailsFragmentToProfileDetailsFragment(profile.uid!!)
+                findNavController().navigate(action)
+            }
+            binding.ivAuthorImage.setOnClickListener { goToProfile() }
+            binding.tvAuthorUsername.setOnClickListener { goToProfile() }
+
+
         } // profile is requested when the post is loaded
+
+
+
+
+
+
+
+
 
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
@@ -104,13 +121,13 @@ class PostDetailsFragment : Fragment() {
         postViewModel.getCurrentPost(postId!!)
 
 
-
-
         val alreadyLikedComments = mutableSetOf<String>()
         fun commentAlreadyLiked(id:String) : Boolean {
-            val likedCommentsMap = profileViewModel._myProfile.value!!.likedComments
+            val likedCommentsMap = profileViewModel.myProfile.value!!.likedComments
             return likedCommentsMap!!.containsKey(id)
         }
+
+
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
@@ -243,24 +260,32 @@ class PostDetailsFragment : Fragment() {
 
     }
 
-    // avoid interferences and display post when home tab is pressed
-    // home tab brings to home, from there the user can navigate to the post
+
+
+    // some fragments are used navigating from different tabs of bottom navbar
+    // like that, after the user was navigating around, when pressed on a bottom tab
+    // if this fragment is still on the stack of the previous navigation, gets popd bach to the proper root fragment, of the tab.
+    private val mainViewModel: MainViewModel by activityViewModels()
     override fun onResume() {
         super.onResume()
-        // when navigating back to home tab the fragment stays
-        // there is problems with the duplicates and also with delete, in this case
-        // is also much better that changing tab the user can get back to home fragment not to the post
-        //
-        // with that a new instance of viewmodel gets the list brand new, with rv , adapter and all
+        // every click on something that navigates, has to be set the last tab pressed
+        if( fragmentState.lastTabPressed == ""){
+            // fragment is fresh on the stack
+            fragmentState.lastTabPressed = mainViewModel.currentSection!! /*this fragment is accessed never directly from menu*/
+        }
+        // as previous statement, only when the fragment is fresh on the stack gets assigned the root-tab-selected
+        // let say that in between the user pressed another tab, then gets back to this again
+        // the fragment has already an instance of viewmodel fragemntState, then changes only in this case
+        if(fragmentState.lastTabPressed != mainViewModel.currentSection!!) findNavController().popBackStack()
 
-        if(fragmentState.fragmentWasPaused) findNavController().popBackStack()
+        mainViewModel.setActionBarTitle("Post details")
 
+        // avoid duplicates when getting back..
+        commentsViewModel.allComments.removeAll(commentsViewModel.allComments)
     }
 
-    override fun onPause() {
-        super.onPause()
-        fragmentState.fragmentWasPaused = true
-    }
+
+
 
 
 

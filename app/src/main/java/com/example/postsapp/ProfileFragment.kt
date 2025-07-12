@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileBinding
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 
@@ -72,7 +74,7 @@ class ProfileFragment : Fragment() {
         rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         val adapterProfiles = ProfilesAdapter(profileViewmodel.followedsList){
                 profile ->
-            val action = HomeFragmentDirections.actionHomeFragmentToProfileDetailsFragment(profile.uid!!)
+            val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
             findNavController().navigate(action)
         }
         rvProfiles.adapter = adapterProfiles
@@ -166,6 +168,13 @@ class ProfileFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         profileViewmodel.followedsList = mutableListOf<Profile>()
+    }
+
+    private val mainViewModel: MainViewModel by activityViewModels()
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.currentSection = getString( R.string.create )
+        mainViewModel.setActionBarTitle("Your profile")
     }
 
 }

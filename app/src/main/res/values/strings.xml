@@ -2,4 +2,11 @@
     <string name="app_name">PostsApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- TITLES -->
+    <string name="home">HOME</string>
+    <string name="search">SEARCH</string>
+    <string name="create">CREATE</string>
+    <string name="profile">PROFILE</string>
+
 </resources>

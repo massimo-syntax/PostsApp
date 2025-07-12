@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentHomeBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
@@ -22,6 +24,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var postsViewmodel: PostViewModel
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +106,11 @@ class HomeFragment : Fragment() {
 
 
     } /* onViewCreated */
-    
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.currentSection = getString( R.string.home)
+        mainViewModel.setActionBarTitle("Browse")
+    }
 
 }

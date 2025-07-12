@@ -23,7 +23,7 @@ class CommentsViewModel : ViewModel() {
     // thats made from the firebase event listener: commentsChildsEventListener = object : ChildEventListener {
     var allComments = mutableListOf<Comment>()
 
-    val _event = MutableLiveData<Pair<String,String>?>(null)
+    private val _event = MutableLiveData<Pair<String,String>?>(null)
     val event : LiveData<Pair<String,String>?>
         get() = _event
 

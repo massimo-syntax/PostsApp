@@ -17,13 +17,13 @@ class PostViewModel : ViewModel() {
 
 
     // single post
-    val _currentPost = MutableLiveData<Post?>(null)
+    private val _currentPost = MutableLiveData<Post?>(null)
     val currentPost : LiveData<Post?>
         get() = _currentPost
 
 
     //      GET LIST OF POSTS
-    val _postsList = MutableLiveData<MutableList<Post>?>(null)
+    private val _postsList = MutableLiveData<MutableList<Post>?>(null)
     val postsList : LiveData<MutableList<Post>?>
         get() = _postsList
 
@@ -49,13 +49,16 @@ class PostViewModel : ViewModel() {
 
     // REQUIRE ONCE ALL POSTS FROM nyPosts of a UID
     // followed rv
-    val _eventPostReceived = MutableLiveData<Post?>(null)
+    private val _eventPostReceived = MutableLiveData<Post?>(null)
     val eventPostReceived : LiveData<Post?>
         get() = _eventPostReceived
 
     var UIDPostsList = mutableListOf<Post>()
 
+
     fun getPostsFromIDList( postIDs : List<String> ){
+        UIDPostsList.removeAll(UIDPostsList)
+
         if (postIDs.isNullOrEmpty() ) return
         postIDs.forEach { postID ->
             firebaseRTDB.getReference("posts/$postID")
@@ -83,7 +86,7 @@ class PostViewModel : ViewModel() {
 
 
     //      CALLBACK FOR OBSERVER SENDING POST
-    val _postSentSuccessfully = MutableLiveData<Boolean>(false)
+    private val _postSentSuccessfully = MutableLiveData<Boolean>(false)
     val postSentSuccessfully : LiveData<Boolean>
         get() = _postSentSuccessfully
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.example.postsapp.databinding.FragmentSearchBinding
 import com.example.postsapp.models.Both
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 
@@ -166,5 +168,14 @@ class SearchFragment : Fragment() {
 
 
     }/* onViewCreated */
+
+
+    private val mainViewModel: MainViewModel by activityViewModels()
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.currentSection = getString( R.string.create)
+        mainViewModel.setActionBarTitle("Search")
+    }
 
 }

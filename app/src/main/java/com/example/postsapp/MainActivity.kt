@@ -8,10 +8,13 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.postsapp.databinding.ActivityMainBinding
+import com.example.postsapp.viewModels.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
 
     private lateinit var navController: NavController
+    private lateinit var viewModel: MainViewModel
 
     fun toast(s:String){ Toast.makeText(this,s, Toast.LENGTH_SHORT).show() }
 
@@ -35,6 +39,15 @@ class MainActivity : AppCompatActivity() {
         if(supportActionBar != null){
             supportActionBar!!.setDisplayHomeAsUpEnabled(true);
             supportActionBar!!.setDisplayShowHomeEnabled(true);
+            supportActionBar!!.title = "this is the title"
+        }
+
+        // this viewmodel is used in fragments by activityViewModels()
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.actionBarTitle.observe(this){
+            title ->
+            if(supportActionBar == null || title == null) return@observe
+            supportActionBar!!.title = title
         }
 
         // Find the NavHostFragment and get its NavController
@@ -51,10 +64,8 @@ class MainActivity : AppCompatActivity() {
         // Set up the BottomNavigationView with the NavController for navigation
         navView.setupWithNavController(navController)
 
-
         firebaseAuth = FirebaseAuth.getInstance()
         toast("firebase user = ${firebaseAuth.currentUser?.uid} Main activity")
-
 
     }
 

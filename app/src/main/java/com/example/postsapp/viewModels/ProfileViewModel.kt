@@ -30,7 +30,7 @@ class ProfileViewModel : ViewModel() {
     val myProfileRef = firebaseRTDB.getReference("profiles/$currentUID")
 
     // profile status when no profile
-    val _myProfile = MutableLiveData<Profile?>(null)
+    private val _myProfile = MutableLiveData<Profile?>(null)
     val myProfile : LiveData<Profile?>
         get() = _myProfile
 
@@ -51,7 +51,7 @@ class ProfileViewModel : ViewModel() {
     }
 
     //      GET LIST OF PROFILES
-    val _profilesList = MutableLiveData<MutableList<Profile>?>(null)
+    private val _profilesList = MutableLiveData<MutableList<Profile>?>(null)
     val profilesList : LiveData<MutableList<Profile>?>
         get() = _profilesList
 
@@ -77,7 +77,7 @@ class ProfileViewModel : ViewModel() {
     }
 
     // followed rv
-    val _eventFollowedReceived = MutableLiveData<Profile?>(null)
+    private val _eventFollowedReceived = MutableLiveData<Profile?>(null)
     val eventFollowedReceived : LiveData<Profile?>
         get() = _eventFollowedReceived
 

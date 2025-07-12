@@ -41,7 +41,11 @@
         android:id="@+id/profileFragment"
         android:name="com.example.postsapp.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_profileDetailsFragment"
+            app:destination="@id/profileDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileDetailsFragment"
         android:name="com.example.postsapp.ProfileDetailsFragment"
@@ -50,6 +54,9 @@
         <argument
             android:name="profileId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_profileDetailsFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/postDetailsFragment"
@@ -59,6 +66,9 @@
         <argument
             android:name="postId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_postDetailsFragment_to_profileDetailsFragment"
+            app:destination="@id/profileDetailsFragment" />
     </fragment>
 
 </navigation>

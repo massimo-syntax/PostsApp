@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide
 import com.example.postsapp.databinding.FragmentCreateBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
@@ -167,9 +169,15 @@ class CreateFragment : Fragment() {
 
         }
 
+    }
 
 
+    private val mainViewModel: MainViewModel by activityViewModels()
 
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.currentSection = getString( R.string.create)
+        mainViewModel.setActionBarTitle("Write your new post")
     }
 
 }

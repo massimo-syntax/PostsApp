@@ -75,7 +75,7 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-
+    // async images load directly in view
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // navigation using arguments
