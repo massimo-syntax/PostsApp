@@ -52,7 +52,7 @@ class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemCli
         viewHolder.title.text = post.title
 
         var body = post.body ?: ""
-        if( body.length > 100) body = post.body!!.slice(0..100) + "..."
+        if( body.length > 170) body = post.body!!.slice(0..170) + "..."
 
         viewHolder.body.text = body
         viewHolder.likesCount.text = post.likesCount.toString()

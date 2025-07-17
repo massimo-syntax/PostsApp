@@ -173,7 +173,7 @@ class ProfileFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
     override fun onResume() {
         super.onResume()
-        mainViewModel.currentSection = getString( R.string.create )
+        mainViewModel.currentSection = getString( R.string.profile )
         mainViewModel.setActionBarTitle("Your profile")
     }
 

@@ -12,9 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.PostsAdapter
-import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
-import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.MainViewModel

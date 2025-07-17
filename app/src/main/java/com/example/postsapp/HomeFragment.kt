@@ -109,7 +109,7 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mainViewModel.currentSection = getString( R.string.home)
+        mainViewModel.currentSection = getString( R.string.home )
         mainViewModel.setActionBarTitle("Browse")
     }
 

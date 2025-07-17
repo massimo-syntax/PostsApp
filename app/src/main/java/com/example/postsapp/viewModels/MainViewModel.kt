@@ -17,5 +17,6 @@ class MainViewModel : ViewModel() {
         _actionBarTitle.value = s
     }
 
+    // useful docks https://developer.android.com/guide/fragments/communicate
 
 }

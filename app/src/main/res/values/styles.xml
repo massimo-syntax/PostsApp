@@ -25,10 +25,10 @@
     </style>
 
     <style name="profileImageView">
-        <item name="cornerFamilyBottomLeft">rounded</item>
-        <item name="cornerSizeBottomLeft">@dimen/margin_width</item>
-        <item name="cornerFamilyBottomRight">rounded</item>
-        <item name="cornerSizeBottomRight">@dimen/margin_width</item>
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeTopRight">20dp</item>
     </style>
 
     <style name="rvItemImageView">

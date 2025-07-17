@@ -176,7 +176,7 @@ class CreateFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mainViewModel.currentSection = getString( R.string.create)
+        mainViewModel.currentSection = getString( R.string.create )
         mainViewModel.setActionBarTitle("Write your new post")
     }
 

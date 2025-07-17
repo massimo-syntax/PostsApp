@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection.
         return when (item.itemId) {
-            R.id.settings -> {
-                toast("settings clicked")
+            R.id.like -> {
+                toast("App liked")
                 true
             }
             R.id.logout -> {

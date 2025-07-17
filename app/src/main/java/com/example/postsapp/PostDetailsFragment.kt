@@ -93,12 +93,6 @@ class PostDetailsFragment : Fragment() {
 
 
 
-
-
-
-
-
-
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
             post = p

@@ -8,20 +8,13 @@
     tools:context=".HomeFragment"
     android:background="@color/white">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Browse"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/darkgrey"
-        android:textAlignment="center"
-        android:layout_marginTop="@dimen/padding_text_heading"/>
+
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_heading"
+        android:textSize="18dp"
         android:layout_margin="@dimen/margin_layout_small"
         android:text="Profiles" />
 
@@ -35,7 +28,7 @@
         android:id="@+id/tv_posts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_heading"
+        android:textSize="18dp"
         android:layout_margin="@dimen/margin_layout_small"
         android:text="Posts" />
 

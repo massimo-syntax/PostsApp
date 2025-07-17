@@ -19,8 +19,8 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_image"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:scaleType="centerCrop"
             android:src="@drawable/user"
             app:srcCompat="@drawable/user"
@@ -33,8 +33,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="profile name"
-            android:layout_margin="4dp"
-            android:textSize="18sp"
+            android:layout_marginStart="4dp"
+            android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/iv_image"
             app:layout_constraintTop_toTopOf="@+id/iv_image" />
 
@@ -43,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="sentence"
+            android:textSize="16sp"
             android:maxWidth="200dp"
             android:layout_margin="4dp"
             app:layout_constraintStart_toEndOf="@+id/iv_image"
@@ -65,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="posts"
             android:layout_margin="4dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/iv_posts_count"
             app:layout_constraintTop_toTopOf="@id/iv_posts_count"
             app:layout_constraintBottom_toBottomOf="@id/iv_posts_count"/>
@@ -89,6 +90,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="flw"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/tv_posts_count"
             app:layout_constraintEnd_toEndOf="@+id/btn_follow"
             app:layout_constraintStart_toStartOf="@+id/btn_follow" />

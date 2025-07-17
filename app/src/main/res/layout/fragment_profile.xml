@@ -31,6 +31,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:layout_constraintStart_toStartOf="@id/iv"
+                    app:layout_constraintTop_toTopOf="@id/iv"
+                    android:background="@drawable/gradient_bottom_dark"/>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -63,14 +70,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Your profile"
-                android:layout_marginBottom="-5dp"
                 android:textSize="@dimen/text_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:padding="10dp"
-                android:background="@drawable/btn_borders"
-                android:backgroundTint="@color/white"/>
+                android:padding="8dp"
+                android:textColor="@color/white" />
 
 
 
@@ -81,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_width"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,20 +98,23 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="6dp"
                     android:src="@drawable/like" />
 
                 <TextView
                     android:id="@+id/tv_followers_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/red"
                     android:text="number" />
 
                 <TextView
@@ -121,21 +129,24 @@
                 android:layout_marginHorizontal="32dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="6dp"
                     android:src="@drawable/posting" />
 
                 <TextView
                     android:id="@+id/tv_posts_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/lightgrey"
                     android:text="number" />
 
                 <TextView
@@ -149,20 +160,23 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="6dp"
                     android:src="@drawable/comment" />
 
                 <TextView
                     android:id="@+id/tv_written_comments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/green"
                     android:text="number" />
 
                 <TextView
@@ -177,8 +191,9 @@
             android:id="@+id/followed_lable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Followed"
-            android:paddingVertical="14dp"
+            android:text="Browse followed profiles"
+            android:textStyle="bold"
+            android:layout_marginVertical="@dimen/et_layout_margin"
             app:layout_constraintTop_toBottomOf="@id/stats_section"
             app:layout_constraintStart_toStartOf="@id/rv_profiles"/>
 
@@ -188,6 +203,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_width"
+        android:layout_marginTop="@dimen/margin_layout_small"
         app:layout_constraintTop_toBottomOf="@id/followed_lable"
         app:layout_constraintStart_toStartOf="parent"/>
 

@@ -5,14 +5,14 @@
 
     <item
         android:id="@+id/overflowMenu"
-        android:icon="@drawable/common_google_signin_btn_icon_light"
+        android:icon="@drawable/menu_dots"
         android:title="menu-click"
         app:showAsAction="always">
         <menu>
             <item
-                android:id="@+id/settings"
-                android:icon="@drawable/settings"
-                android:title="Settings"
+                android:id="@+id/like"
+                android:icon="@drawable/like"
+                android:title="Like the app"
                 />
             <item
                 android:id="@+id/logout"

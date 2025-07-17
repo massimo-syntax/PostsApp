@@ -15,6 +15,7 @@
         android:background="@color/white"
         app:popupTheme="@style/ToolbarStyle"
         app:title="Posts App"
+        android:backgroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingTop="20dp"

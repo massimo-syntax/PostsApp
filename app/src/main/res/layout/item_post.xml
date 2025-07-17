@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/margin_layout_small">
+    android:padding="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,24 +12,35 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <ImageView
+            android:id="@+id/iv_user_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/user"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
         <TextView
             android:id="@+id/tv_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/lightgrey"
-            android:layout_marginBottom="4dp"
             android:text="user"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:padding="0dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@id/iv_user_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_user_icon"
+            app:layout_constraintBottom_toBottomOf="@id/iv_user_icon"/>
 
         <TextView
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/lightgrey"
-            android:layout_marginBottom="4dp"
             android:text="time"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="12dp"
+            app:layout_constraintTop_toTopOf="@id/tv_user"
+            app:layout_constraintBottom_toBottomOf="@id/tv_user"
             app:layout_constraintEnd_toEndOf="parent"
             />
 
@@ -37,10 +48,13 @@
             android:id="@+id/iv_image"
             android:layout_width="@dimen/rv_item_img_size"
             android:layout_height="@dimen/rv_item_img_size"
+            android:layout_marginTop="4dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/user"
-            app:srcCompat="@drawable/user"
+            android:src="@drawable/writing"
+            app:srcCompat="@drawable/writing"
             app:shapeAppearanceOverlay="@style/rvItemImageView"
+            android:elevation="2dp"
+            android:background="@color/white"
             app:layout_constraintTop_toBottomOf="@id/tv_user"
             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -51,7 +65,8 @@
             android:maxWidth="200dp"
             android:text="title"
             android:textSize="16sp"
-            android:layout_margin="4dp"
+            android:paddingVertical="2dp"
+            android:layout_marginLeft="@dimen/margin_layout_small"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toTopOf="@id/iv_image"
             />
@@ -61,8 +76,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="250dp"
+            android:textSize="12sp"
             android:text="body"
-            android:layout_margin="4dp"
+            android:layout_marginLeft="@dimen/margin_layout_small"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             />
