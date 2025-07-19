@@ -21,6 +21,7 @@ class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemCli
         val body = binding.tvBody
         val image = binding.ivImage
         val likesCount = binding.tvLikesCount
+        val tags = binding.tvTags
 
         init {
             // Define click listener for the ViewHolder's View
@@ -53,8 +54,17 @@ class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemCli
 
         var body = post.body ?: ""
         if( body.length > 170) body = post.body!!.slice(0..170) + "..."
-
         viewHolder.body.text = body
+
+        var tags = ""
+        if( post.tags != null && !post.tags.isNullOrEmpty() ){
+            post.tags!!.forEach { tag ->
+                tags += "#${tag.key}  "
+            }
+        }
+
+        viewHolder.tags.text = tags
+
         viewHolder.likesCount.text = post.likesCount.toString()
 
         if(!post.image.isNullOrEmpty()){

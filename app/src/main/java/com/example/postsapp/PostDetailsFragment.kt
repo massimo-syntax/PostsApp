@@ -88,9 +88,7 @@ class PostDetailsFragment : Fragment() {
             binding.ivAuthorImage.setOnClickListener { goToProfile() }
             binding.tvAuthorUsername.setOnClickListener { goToProfile() }
 
-
         } // profile is requested when the post is loaded
-
 
 
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
@@ -104,8 +102,15 @@ class PostDetailsFragment : Fragment() {
             binding.tvPostTitle.text = p.title
             binding.tvDatetime.text = convertTimestampToReadableFormat(p.datetime!!.toLong())
             binding.tvPostBody.text = p.body
-            likesCount = p.likes!!.size
-            binding.tvLikes.text = likesCount.toString()
+
+            var tags = ""
+            if( p.tags != null && !p.tags.isNullOrEmpty() ){
+                p.tags!!.forEach { tag ->
+                    tags += "#${tag.key}  "
+                }
+            }
+            binding.tvTags.text = tags
+            binding.tvLikes.text = p.likes!!.size.toString()
             //toast("observed $p")
             if(alreadyLiked()){
                 binding.btnLike.setImageResource(R.drawable.like)
@@ -120,7 +125,6 @@ class PostDetailsFragment : Fragment() {
             val likedCommentsMap = profileViewModel.myProfile.value!!.likedComments
             return likedCommentsMap!!.containsKey(id)
         }
-
 
 
         val rvComments = binding.rvComments
@@ -177,9 +181,16 @@ class PostDetailsFragment : Fragment() {
                 }
                 "liked" -> {
                     toast("liked comment id ${e.second}")
-                    // @ todo
-                    // add to likedcomments list and map
-                    // notify adapter
+
+                    // find index in rv list e.second is the comment id
+                    val index = commentsViewModel.allComments.indexOfFirst{
+                        it.id == e.second
+                    }
+                    // insert in the current map of _myProfile, in firebase is already sent
+                    profileViewModel.myProfile.value!!.likedComments!![e.second] = postId!!
+
+                    // notify adapter, onBindViewHolder checks the list to choose the icon
+                    adapterComments.notifyItemChanged(index)
                 }
                 "unliked" -> {
                     toast("unliked comment id ${e.second}")
@@ -194,7 +205,6 @@ class PostDetailsFragment : Fragment() {
         // event listener to comments of this postId
         // the event listener also requests every comment 1 by 1 when started
         commentsViewModel.registerCommentsEventListenerForThisPost(postId!!)
-
 
         // WRITE COMMENT
         var formShowing = false
@@ -228,11 +238,9 @@ class PostDetailsFragment : Fragment() {
                 dateTime = dateTime,
                 likesCount = 0
             )
-
             // send to database
             commentsViewModel.writeComment(newComment,postId!!, profileViewModel.currentUID)
             toggleForm()
-
         }
         // WRITE COMMENT [ E N D ]
 
@@ -249,8 +257,6 @@ class PostDetailsFragment : Fragment() {
             }
             binding.tvLikes.text = likesCount.toString()
         }
-
-
 
     }
 

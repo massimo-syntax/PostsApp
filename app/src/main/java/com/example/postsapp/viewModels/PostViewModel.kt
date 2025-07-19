@@ -56,9 +56,15 @@ class PostViewModel : ViewModel() {
     var UIDPostsList = mutableListOf<Post>()
 
 
+    // another way can be :
+    // val postsRef = firefirebaseRTDB.getReference("posts").orderByChild("user").equalTo("userID")
+
     fun getPostsFromIDList( postIDs : List<String> ){
         UIDPostsList.removeAll(UIDPostsList)
-
+        /*
+        val count = postIDs.size
+        var successReceivedCount = 0
+        */
         if (postIDs.isNullOrEmpty() ) return
         postIDs.forEach { postID ->
             firebaseRTDB.getReference("posts/$postID")

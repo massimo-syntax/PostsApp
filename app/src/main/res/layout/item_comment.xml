@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/margin_layout_small">
 
     <TextView
         android:id="@+id/tv_username"
@@ -15,23 +16,53 @@
         android:id="@+id/tv_datetime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/lightgrey"
+        android:textSize="12sp"
         android:text="datetime"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
     <TextView
         android:id="@+id/tv_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="this is the text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_username"/>
-    <Button
-        android:id="@+id/btn_comment_option"
+
+    <TextView
+        android:id="@+id/likes_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="option"
-        app:layout_constraintTop_toBottomOf="@+id/tv_text"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:text="99"
+        android:textSize="16sp"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Likes"
+        android:padding="6dp"
+        app:layout_constraintStart_toEndOf="@id/likes_count"
+        app:layout_constraintBottom_toBottomOf="@id/likes_count"
+        app:layout_constraintTop_toTopOf="@id/likes_count"/>
+
+    <ImageButton
+        android:id="@+id/btn_comment_option"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:padding="@dimen/et_icon_margin"
+        android:scaleType="fitCenter"
+        android:src="@drawable/unliked"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_text"
+        />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

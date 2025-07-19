@@ -3,6 +3,7 @@ package com.example.postsapp.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.postsapp.R
 import com.example.postsapp.convertTimestampToReadableFormat
 import com.example.postsapp.databinding.ItemCommentBinding
 import com.example.postsapp.models.Both
@@ -17,6 +18,7 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val al
         val dateTime = binding.tvDatetime
         val text = binding.tvText
         val btnOption = binding.btnCommentOption
+        val likesCount = binding.likesCount
 
         init {
             btnOption.setOnClickListener {
@@ -40,19 +42,17 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val al
         val date = convertTimestampToReadableFormat(comment.dateTime!!.toLong())
         holder.dateTime.text = date
         holder.text.text = comment.comment
+        holder.likesCount.text = comment.likesCount.toString()
 
-
+        // icon
         if(comment.userId == myUserId){
-            holder.btnOption.text = "Delete"
+            holder.btnOption.setImageResource( R.drawable.delete )
         }else{
-            holder.btnOption.text = "Like"
-
             if(alreadyLikedComments.contains(comment.id)){
-                holder.btnOption.text = "Unlike"
+                holder.btnOption.setImageResource( R.drawable.like )
             }else{
-                holder.btnOption.text = "Like"
+                holder.btnOption.setImageResource( R.drawable.unliked )
             }
-
         }
     }
 

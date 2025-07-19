@@ -1,5 +1,7 @@
 package com.example.postsapp
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -11,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
@@ -79,6 +82,9 @@ class CreateFragment : Fragment() {
 
         // easiest way to upload picture for now
         binding.btnSelectImg.setOnClickListener {
+            // show confirm image layout
+            binding.layoutConfirmImage.visibility = View.VISIBLE
+
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
                 .setMessage("Scroll to COPY ALL after uploading\nCome back, click done! ")
@@ -88,7 +94,6 @@ class CreateFragment : Fragment() {
                     startActivity(openURL)
                 }.show()
         }
-
 
         binding.btnConfirmImg.setOnClickListener {
             val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -110,6 +115,43 @@ class CreateFragment : Fragment() {
         }
 
 
+        val tagsForm = binding.layoutTagForm
+
+        binding.btnAddTag.setOnClickListener {
+            if( tagsForm.isGone ){
+                tagsForm.visibility = View.VISIBLE;
+                tagsForm.alpha = 0.5f
+                tagsForm.scaleX = 0.7f
+                tagsForm.scaleY = 0.7f
+                // Start the animation
+                tagsForm.animate()
+                    .translationY(-10.0f)
+                    .alpha(1.0f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setListener(null)
+                    .setDuration(200)
+            }else{
+                tagsForm.animate()
+                    .translationY(0.0f)
+                    .alpha(0.5f)
+                    .scaleX(0.9f)
+                    .scaleY(0.7f)
+                    .setDuration(200)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            tagsForm.visibility = View.GONE
+                        }
+                    })
+            }
+
+        }
+
+
+
+
+        //      S U B M I T
         binding.btnSend.setOnClickListener {
             if( profile == null){
                 AlertDialog.Builder(ctx)

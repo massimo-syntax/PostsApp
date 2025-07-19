@@ -1,5 +1,7 @@
 package com.example.postsapp
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -8,7 +10,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -23,13 +28,16 @@ import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 
 
-
 class ProfileFragment : Fragment() {
 
     private lateinit var binding : FragmentProfileBinding
     private lateinit var viewModel: SharedViewModel
     private lateinit var profileViewmodel: ProfileViewModel
     private lateinit var ctx : Context
+
+    fun t(s:Any){
+        Toast.makeText(requireContext(),s.toString(),Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +105,7 @@ class ProfileFragment : Fragment() {
             if (profile == null) {
                 binding.tvTitle.text = "-- ! NO PROFILE YET ! --"
                 binding.iv.setImageResource(R.drawable.writing)
+                binding.constraintEditSection.visibility = View.VISIBLE
                 return@observe
             }
             // print profile info in fields
@@ -104,8 +113,8 @@ class ProfileFragment : Fragment() {
             binding.tvTitle.text = p.name
             binding.etUserName.setText(p.name)
             binding.etSay.setText(p.say)
+            binding.constraintEditSection.visibility = View.GONE
             if(profile.followed.isNullOrEmpty()) binding.followedLable.text = "No profile followed"
-
             binding.tvFollowersCount.text = p.followersCount.toString()
             binding.tvPostsCount.text = p.postsCount.toString()
             binding.tvWrittenComments.text = p.myComments!!.size.toString()
@@ -119,6 +128,42 @@ class ProfileFragment : Fragment() {
             }
             // once the profile is loaded retrive followed
             profileViewmodel.getFollowed()
+        }
+
+
+        val vew = binding.constraintEditSection
+
+        binding.btnEdit.setOnClickListener {
+
+            if( vew.isGone ){
+                // Prepare the View for the animation
+
+                vew.visibility = View.VISIBLE;
+                vew.alpha = 0.5f
+                vew.scaleX = 0.7f
+                vew.scaleY = 0.7f
+                // Start the animation
+                vew.animate()
+                    .alpha(1.0f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setListener(null)
+                    .setDuration(100)
+
+            }else{
+                vew.animate()
+                    .alpha(0.5f)
+                    .scaleX(0.7f)
+                    .scaleY(0.7f)
+                    .setDuration(100)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            vew.visibility = View.GONE
+                        }
+                    })
+            }
+
         }
 
 
@@ -176,5 +221,26 @@ class ProfileFragment : Fragment() {
         mainViewModel.currentSection = getString( R.string.profile )
         mainViewModel.setActionBarTitle("Your profile")
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

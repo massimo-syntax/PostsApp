@@ -64,7 +64,6 @@ class CommentsViewModel : ViewModel() {
             "profiles/$uid/likedComments/$commentId" to postId,
             "comments/$postId/$commentId/likesCount" to ServerValue.increment(1)
         )
-
          db.updateChildren(updates).addOnCompleteListener {
              _event.value= Pair("liked", commentId )
          }
