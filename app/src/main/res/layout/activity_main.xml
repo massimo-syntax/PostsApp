@@ -15,11 +15,11 @@
         android:background="@color/white"
         app:popupTheme="@style/ToolbarStyle"
         app:title="Posts App"
+        app:titleTextColor="@color/blue"
         android:backgroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="20dp"
-        />
+        android:paddingTop="20dp" />
 
 
 

@@ -26,6 +26,7 @@ import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
+import java.util.Date
 
 
 class ProfileFragment : Fragment() {
@@ -37,6 +38,13 @@ class ProfileFragment : Fragment() {
 
     fun t(s:Any){
         Toast.makeText(requireContext(),s.toString(),Toast.LENGTH_SHORT).show()
+    }
+
+    private fun clipboardText():String{
+        val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = clipboard.primaryClip
+        val item = clip?.getItemAt(0)
+        return item?.text.toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +77,7 @@ class ProfileFragment : Fragment() {
             name = "",
             say = "",
             image = "",
+            datetime = "",
             postsCount = 0,
             followersCount = 0,
             followers = mutableMapOf<String,Boolean>(),
@@ -171,6 +180,9 @@ class ProfileFragment : Fragment() {
         // easiest way to upload picture for now
         // UPLOAD
         binding.btnSelectImg.setOnClickListener {
+
+
+
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
                 .setMessage("SCROLL to ->COPY ALL<- after uploading\nCome back, click CONFIRM! ")
@@ -180,12 +192,13 @@ class ProfileFragment : Fragment() {
                     startActivity(openURL)
                 }.show()
         }
+
         // CONFIRM UPLOADING SUCCESS
         binding.btnConfirmImg.setOnClickListener {
-            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val abc = clipboard.primaryClip
-            val item = abc?.getItemAt(0)
-            val url = item?.text.toString().split("\n").first()
+
+            val urls = clipboardText()
+            val url = urls.split("\n").first()
+
             Glide.with(ctx)
                 .load(url)
                 .into(binding.iv)
@@ -202,6 +215,7 @@ class ProfileFragment : Fragment() {
             p.name = binding.etUserName.text.toString()
             p.say = binding.etSay.text.toString()
             p.image = image
+            p.datetime = Date().time.toString()
             viewModel.updateProfile(p)
         }
 
@@ -209,7 +223,7 @@ class ProfileFragment : Fragment() {
 
     // when another tab is pressed the list is new
     // when this fragment is displayed again the adapter is populated from 0
-    // otherwise the viewmodel instance has all properties still the same
+    // the viewmodel instance has all properties still the same, followed gets a new list
     override fun onPause() {
         super.onPause()
         profileViewmodel.followedsList = mutableListOf<Profile>()

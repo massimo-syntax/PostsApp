@@ -304,7 +304,6 @@
             android:id="@+id/rv_profiles"
             android:layout_width="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:padding="@dimen/et_icon_margin"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/margin_width"
             android:layout_marginTop="@dimen/margin_layout_small"

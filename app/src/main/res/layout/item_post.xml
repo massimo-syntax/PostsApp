@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="4dp">
+    android:padding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,6 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- first row, icon, user , datetime -->
         <ImageView
             android:id="@+id/iv_user_icon"
             android:layout_width="16dp"
@@ -19,7 +20,6 @@
             android:src="@drawable/user"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-
         <TextView
             android:id="@+id/tv_user"
             android:layout_width="wrap_content"
@@ -30,7 +30,6 @@
             app:layout_constraintStart_toEndOf="@id/iv_user_icon"
             app:layout_constraintTop_toTopOf="@id/iv_user_icon"
             app:layout_constraintBottom_toBottomOf="@id/iv_user_icon"/>
-
         <TextView
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
@@ -40,9 +39,9 @@
             android:textSize="12sp"
             app:layout_constraintTop_toTopOf="@id/tv_user"
             app:layout_constraintBottom_toBottomOf="@id/tv_user"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- image -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_image"
             android:layout_width="@dimen/rv_item_img_size"
@@ -57,6 +56,14 @@
             app:layout_constraintTop_toBottomOf="@id/tv_user"
             app:layout_constraintStart_toStartOf="parent"/>
 
+        <!-- this is a bit of space or the elevation is cut off -->
+        <View
+            android:layout_width="@dimen/rv_item_img_size"
+            android:layout_height="4dp"
+            app:layout_constraintTop_toBottomOf="@id/iv_image"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <!-- title body tags -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
@@ -67,9 +74,7 @@
             android:paddingVertical="2dp"
             android:layout_marginLeft="@dimen/margin_layout_small"
             app:layout_constraintStart_toEndOf="@id/iv_image"
-            app:layout_constraintTop_toTopOf="@id/iv_image"
-            />
-
+            app:layout_constraintTop_toTopOf="@id/iv_image" />
         <TextView
             android:id="@+id/tv_body"
             android:layout_width="wrap_content"
@@ -80,7 +85,6 @@
             android:layout_marginLeft="@dimen/margin_layout_small"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toBottomOf="@id/tv_title" />
-
         <TextView
             android:id="@+id/tv_tags"
             android:layout_width="wrap_content"
@@ -91,7 +95,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_body"
             app:layout_constraintStart_toStartOf="@id/tv_body"/>
 
-
+        <!-- likes -->
         <LinearLayout
             android:id="@+id/layout_likes_count"
             android:layout_width="wrap_content"

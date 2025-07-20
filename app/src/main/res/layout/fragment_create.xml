@@ -47,11 +47,21 @@
             android:layout_marginTop="@dimen/et_layout_margin"
             android:background="@null"
             android:hint="Write your post here"
+            android:inputType="textMultiLine"
             android:maxHeight="500dp"
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_title" />
+
+        <TextView
+            android:id="@+id/tv_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="#"
+            android:layout_marginTop="@dimen/et_layout_margin"
+            android:textColor="@color/lightgrey"
+            android:textSize="16sp"/>
 
     </LinearLayout>
 
@@ -67,15 +77,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/writing"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_tags" />
 
         <Button
             android:id="@+id/btn_confirm_img"
@@ -89,13 +90,22 @@
 
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_images"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layout_options"/>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_tag_form"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:background="@drawable/et_borders"
+        android:backgroundTint="@color/white"
         android:padding="4dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/layout_options"
@@ -107,26 +117,26 @@
             android:layout_width="0dp"
             android:layout_height="46dp"
             android:background="@null"
+            android:inputType="text"
             android:hint="tags separated by space"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/btn_write_tags"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/btn_write_tags"
             android:layout_width="@dimen/et_icon_size"
             android:layout_height="@dimen/et_icon_size"
             android:layout_margin="6dp"
             android:adjustViewBounds="true"
             android:background="@color/white"
             android:scaleType="fitCenter"
-            android:src="@drawable/unliked"
+            android:src="@drawable/posting"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
 
@@ -151,7 +161,7 @@
             android:src="@drawable/add_image" />
 
         <ImageButton
-            android:id="@+id/btn_add_tag"
+            android:id="@+id/btn_add_tags"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:adjustViewBounds="true"

@@ -18,10 +18,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.postsapp.adapters.PicturesAdapter
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentCreateBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
+import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
@@ -35,11 +39,32 @@ class CreateFragment : Fragment() {
 
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var postViewModel: PostViewModel
+    private lateinit var fragmentState: FragmentStateViewModel
 
     private lateinit var ctx : Context
 
+    private val INCOMING_PICTURES = "incoming_pictures"
+    val pictures = mutableListOf<String>()
+
+    private lateinit var adapterPictures: PicturesAdapter
+
+    fun deletePicture(adapterIndex:Int){
+        pictures.removeAt(adapterIndex)
+        adapterPictures.notifyItemRemoved(adapterIndex)
+    }
+
+    fun picturesRV(pictures : MutableList<String>){
+        val rv = binding.rvImages
+        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        adapterPictures = PicturesAdapter(pictures){ index ->
+            toast("clicked on index $index")
+            deletePicture(index)
+        }
+        rv.adapter = adapterPictures
+    }
+
     private fun toast(s:String){
-        Toast.makeText(context,s, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,s, Toast.LENGTH_LONG).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +76,7 @@ class CreateFragment : Fragment() {
 
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
         postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
+        fragmentState = ViewModelProvider(this)[FragmentStateViewModel::class.java]
 
     }
 
@@ -79,11 +105,13 @@ class CreateFragment : Fragment() {
             }
         }
 
-
+        //      I M A G E S
         // easiest way to upload picture for now
         binding.btnSelectImg.setOnClickListener {
             // show confirm image layout
-            binding.layoutConfirmImage.visibility = View.VISIBLE
+            //binding.layoutConfirmImage.visibility = View.VISIBLE
+            fragmentState.incomingPictures = Pair(INCOMING_PICTURES,Date().time)
+
 
             AlertDialog.Builder( ctx )
                 .setTitle("Upload Pictures")
@@ -93,62 +121,91 @@ class CreateFragment : Fragment() {
                     openURL.data = Uri.parse("https://uploadimgur.com/")
                     startActivity(openURL)
                 }.show()
+
         }
 
         binding.btnConfirmImg.setOnClickListener {
+            // get clipboard
             val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val abc = clipboard.primaryClip
             val item = abc?.getItemAt(0)
-            val url = item?.text.toString().split("\n").first()
-            Glide.with(ctx)
-                .load(url)
-                .into(binding.iv)
-            Toast.makeText(ctx , item?.text.toString() , Toast.LENGTH_LONG).show()
-            if(url.isNotEmpty()) image = url
+
+            // pictures list
+            val urls = item?.text.toString().split(' ')
+            pictures.addAll(urls)
+            toast(pictures.toString())
+            picturesRV(pictures)
+            binding.layoutConfirmImage.visibility = View.GONE
+
         }
-
-
-
 
         postViewModel.postSentSuccessfully.observe(viewLifecycleOwner){ success ->
             if(success) Toast.makeText(ctx, "post sent succesfully", Toast.LENGTH_SHORT).show()
         }
 
-
+        var tagsList = mutableListOf<String>()
         val tagsForm = binding.layoutTagForm
 
-        binding.btnAddTag.setOnClickListener {
-            if( tagsForm.isGone ){
-                tagsForm.visibility = View.VISIBLE;
-                tagsForm.alpha = 0.5f
-                tagsForm.scaleX = 0.7f
-                tagsForm.scaleY = 0.7f
-                // Start the animation
-                tagsForm.animate()
-                    .translationY(-10.0f)
-                    .alpha(1.0f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setListener(null)
-                    .setDuration(200)
-            }else{
-                tagsForm.animate()
-                    .translationY(0.0f)
-                    .alpha(0.5f)
-                    .scaleX(0.9f)
-                    .scaleY(0.7f)
-                    .setDuration(200)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            tagsForm.visibility = View.GONE
-                        }
-                    })
-            }
+        fun showTagsForm( tagsList:MutableList<String> ){
 
+            // write in text field the tags in the list if present
+            var etText = ""
+            tagsList.forEach{ tag -> etText += "$tag " }
+
+            binding.etTags.setText(etText)
+
+            tagsForm.visibility = View.VISIBLE;
+            tagsForm.alpha = 0.5f
+            tagsForm.scaleX = 0.7f
+            tagsForm.scaleY = 0.7f
+            tagsForm.translationY = 50.0f
+            // Start the animation
+            tagsForm.animate()
+                .translationY(0.0f)
+                .alpha(1.0f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setListener(null)
+                .setDuration(150)
         }
 
+        fun hideTagsForm(){
+            tagsForm.animate()
+                .translationY(50.0f)
+                .alpha(0.5f)
+                .scaleX(0.9f)
+                .scaleY(0.7f)
+                .setDuration(100)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        tagsForm.visibility = View.GONE
+                    }
+                })
+        }
 
+        binding.btnAddTags.setOnClickListener {
+            if( tagsForm.isGone ){
+                showTagsForm(tagsList)
+            }else{
+                hideTagsForm()
+            }
+        }
+
+        binding.btnWriteTags.setOnClickListener {
+            var tags = binding.etTags.editableText.toString()
+            val re = "[^A-Za-z0-9 ]".toRegex()
+            tags = re.replace(tags, "")
+            tagsList = tags.trim().split(" ").toMutableList()
+            var tagsText = ""
+            tagsList.toSet().forEach { tag->
+                tagsText += "#$tag "
+            }
+            binding.tvTags.text = tagsText
+            // keep no duplicates in the list
+            tagsList = tagsList.toSet().toMutableList()
+            hideTagsForm()
+        }
 
 
         //      S U B M I T
@@ -178,21 +235,15 @@ class CreateFragment : Fragment() {
 
                 val tagsMap : MutableMap<String,Boolean> = mutableMapOf()
 
-                // probably crashes when null
-                if (! binding.etTags.text.isNullOrEmpty()){
-                    // there can be
-                    val tagsList : List<String> = binding.etTags.text.trim().split(" ")
-                    toast(tagsList.toString())
-                    // a null
-                    if (tagsList.isNotEmpty()){
-                    //somewhere
-                        tagsList.forEach{
-                            tag->
-                            tagsMap[tag] = true
-                        }
+
+                if (tagsList.isNotEmpty()){
+                    tagsList.forEach{
+                        tag->
+                        tagsMap[tag] = true
                     }
-                    toast(tagsMap.toString())
                 }
+
+                toast(tagsMap.toString())
 
                 val post = Post(
                     id = "from firebase",
@@ -200,7 +251,7 @@ class CreateFragment : Fragment() {
                     userId = profileViewModel.currentUID,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
-                    image = image,
+                    image = pictures.toString(),
                     datetime = Date().time.toString(),
                     tags = tagsMap,
                     likes = mutableMapOf<String,Boolean>(),
@@ -220,6 +271,15 @@ class CreateFragment : Fragment() {
         super.onResume()
         mainViewModel.currentSection = getString( R.string.create )
         mainViewModel.setActionBarTitle("Write your new post")
+
+        if(
+            fragmentState.incomingPictures.first == INCOMING_PICTURES
+            &&
+            fragmentState.incomingPictures.second < fragmentState.incomingPictures.second + 1000 * 5
+            ){
+            binding.layoutConfirmImage.visibility = View.VISIBLE            // get clipboard
+            toast("coming back with pictures")
+        }
     }
 
 }
