@@ -23,6 +23,7 @@ data class Post(
         return mapOf(
             "id" to id,
             "user" to user,
+            "userId" to userId,
             "title" to title,
             "body" to body,
             "image" to image,

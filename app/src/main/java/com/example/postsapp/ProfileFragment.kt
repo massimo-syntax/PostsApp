@@ -20,10 +20,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileBinding
+import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.MainViewModel
+import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
 import com.example.postsapp.viewModels.SharedViewModel
 import java.util.Date
@@ -34,6 +37,7 @@ class ProfileFragment : Fragment() {
     private lateinit var binding : FragmentProfileBinding
     private lateinit var viewModel: SharedViewModel
     private lateinit var profileViewmodel: ProfileViewModel
+    private lateinit var postsViewModel: PostViewModel
     private lateinit var ctx : Context
 
     fun t(s:Any){
@@ -55,6 +59,7 @@ class ProfileFragment : Fragment() {
         ctx = requireContext()
         viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         profileViewmodel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        postsViewModel = ViewModelProvider(this)[PostViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -85,6 +90,79 @@ class ProfileFragment : Fragment() {
             likedComments = mutableMapOf<String,String>()
         )
 
+
+        //      E D I T     S E C T I O N
+        val vew = binding.constraintEditSection
+        binding.btnEdit.setOnClickListener {
+            if( vew.isGone ){
+                // Prepare the View for the animation
+                vew.visibility = View.VISIBLE;
+                vew.alpha = 0.5f
+                vew.scaleX = 0.7f
+                vew.scaleY = 0.7f
+                // Start the animation
+                vew.animate()
+                    .alpha(1.0f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setListener(null)
+                    .setDuration(100)
+
+            }else{
+                vew.animate()
+                    .alpha(0.5f)
+                    .scaleX(0.7f)
+                    .scaleY(0.7f)
+                    .setDuration(100)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            vew.visibility = View.GONE
+                        }
+                    })
+            }
+
+        }
+
+        //      I M A G E  BUTTONS
+        // easiest way to upload picture for now
+        // UPLOAD
+        binding.btnSelectImg.setOnClickListener {
+            AlertDialog.Builder( ctx )
+                .setTitle("Upload Pictures")
+                .setMessage("SCROLL to ->COPY ALL<- after uploading\nCome back, click CONFIRM! ")
+                .setPositiveButton("go!"){_,_ ->
+                    val openURL = Intent(Intent.ACTION_VIEW)
+                    openURL.data = Uri.parse("https://uploadimgur.com/")
+                    startActivity(openURL)
+                }.show()
+        }
+
+        // CONFIRM UPLOADING SUCCESS
+        binding.btnConfirmImg.setOnClickListener {
+
+            val urls = clipboardText()
+            val url = urls.split("\n").first()
+
+            Glide.with(ctx)
+                .load(url)
+                .into(binding.iv)
+            image = url
+        }
+
+        // BTN      S U B M I T
+        binding.btnSend.setOnClickListener {
+            if(binding.etUserName.text.isEmpty() ){
+                binding.etUserName.setText("PROFILE NAME IS REQUIRED")
+                return@setOnClickListener
+            }
+            p.name = binding.etUserName.text.toString()
+            p.say = binding.etSay.text.toString()
+            p.image = image
+            p.datetime = Date().time.toString()
+            viewModel.updateProfile(p)
+        }
+
         //      F O L L O W E D
         //  rv
         val rvProfiles = binding.rvProfiles
@@ -105,7 +183,6 @@ class ProfileFragment : Fragment() {
             adapterProfiles.notifyItemInserted(profileViewmodel.followedsList.size-1)
         }
         // get followed is in the observer of myProfile
-
 
 
         // load fields of current profile in ui
@@ -140,84 +217,29 @@ class ProfileFragment : Fragment() {
         }
 
 
-        val vew = binding.constraintEditSection
-
-        binding.btnEdit.setOnClickListener {
-
-            if( vew.isGone ){
-                // Prepare the View for the animation
-
-                vew.visibility = View.VISIBLE;
-                vew.alpha = 0.5f
-                vew.scaleX = 0.7f
-                vew.scaleY = 0.7f
-                // Start the animation
-                vew.animate()
-                    .alpha(1.0f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setListener(null)
-                    .setDuration(100)
-
-            }else{
-                vew.animate()
-                    .alpha(0.5f)
-                    .scaleX(0.7f)
-                    .scaleY(0.7f)
-                    .setDuration(100)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            vew.visibility = View.GONE
-                        }
-                    })
-            }
-
+        //  M Y     P O S T S
+        // create rv
+        val rvMyPosts = binding.rvPosts
+        val myPosts = mutableListOf<Post>()
+        rvMyPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val adapterMyPosts = PostsAdapter(myPosts){
+                post ->
+            /*
+            val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
+            findNavController().navigate(action)
+        */
         }
+        rvMyPosts.adapter = adapterMyPosts
+        // avoid duplicates
 
-
-        //      I M A G E  BUTTONS
-        // easiest way to upload picture for now
-        // UPLOAD
-        binding.btnSelectImg.setOnClickListener {
-
-
-
-            AlertDialog.Builder( ctx )
-                .setTitle("Upload Pictures")
-                .setMessage("SCROLL to ->COPY ALL<- after uploading\nCome back, click CONFIRM! ")
-                .setPositiveButton("go!"){_,_ ->
-                    val openURL = Intent(Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://uploadimgur.com/")
-                    startActivity(openURL)
-                }.show()
+        postsViewModel.postsList.observe(viewLifecycleOwner){myPostList ->
+            if(myPostList == null) return@observe
+            myPosts.addAll(myPostList)
+            Toast.makeText(ctx,myPostList.toString(),Toast.LENGTH_LONG).show()
+            adapterMyPosts.notifyItemRangeInserted(0, myPostList.size)
         }
+        postsViewModel.getPostListFromUser(profileViewmodel.currentUID)
 
-        // CONFIRM UPLOADING SUCCESS
-        binding.btnConfirmImg.setOnClickListener {
-
-            val urls = clipboardText()
-            val url = urls.split("\n").first()
-
-            Glide.with(ctx)
-                .load(url)
-                .into(binding.iv)
-            image = url
-        }
-
-
-        // BTN      S U B M I T
-        binding.btnSend.setOnClickListener {
-            if(binding.etUserName.text.isEmpty() ){
-                binding.etUserName.setText("PROFILE NAME IS REQUIRED")
-                return@setOnClickListener
-            }
-            p.name = binding.etUserName.text.toString()
-            p.say = binding.etSay.text.toString()
-            p.image = image
-            p.datetime = Date().time.toString()
-            viewModel.updateProfile(p)
-        }
 
     }
 

@@ -9,6 +9,7 @@ import com.example.postsapp.models.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.database
+import java.util.StringTokenizer
 
 class PostViewModel : ViewModel() {
 
@@ -76,6 +77,45 @@ class PostViewModel : ViewModel() {
                     UIDPostsList.add (0 , p )
                     _eventPostReceived.value = p
                 }
+        }
+    }
+
+
+    // to allow reaching .orderByChild("userId").equalTo(id)
+    // in firebase itself has to be diefined that in "rules" , of the db
+
+    /*
+
+ "rules": {
+    ".read": true, //"now < 1744495200000",  // 2025-4-13
+    ".write": true, //"now < 1744495200000",  // 2025-4-13
+    "posts": {
+      ".indexOn": "userId"
+    },
+  }
+
+    */
+
+    fun getPostListFromUser(id:String){
+        _postsList.value = null
+        val postsRef = firebaseRTDB.getReference("posts").orderByChild("userId").equalTo(id)
+        postsRef.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val snapshot = it.result
+                val posts = mutableListOf<Post>()
+                for (postsSnapshot in snapshot.children) {
+                    val p = postsSnapshot.getValue(Post::class.java)
+                    posts.add(p!!)
+                }
+                //Log.d(TAG, "${profiles.size}")
+                _postsList.value = posts
+            } else {
+                // EROOR
+                Log.d("MY POSTS ARE NOT THERE !!", "${it.exception?.message}")
+                Log.d("MY POSTS ARE NOT THERE !!", "${it.exception?.message}")
+                Log.d("MY POSTS ARE NOT THERE !!", "${it.exception?.message}")
+                Log.d("MY POSTS ARE NOT THERE !!", "${it.exception?.message}")
+            }
         }
     }
 

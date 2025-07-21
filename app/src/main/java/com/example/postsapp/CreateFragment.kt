@@ -245,13 +245,21 @@ class CreateFragment : Fragment() {
 
                 toast(tagsMap.toString())
 
+                var images = ""
+                // make a string separated by comma of images urls
+                if(pictures.isNotEmpty()){
+                    pictures.forEach { pic-> images += "$pic," }
+                    // remove last comma ','
+                    images = images.dropLast(1)
+                }
+
                 val post = Post(
                     id = "from firebase",
                     user = profile!!.name,
                     userId = profileViewModel.currentUID,
                     title = binding.etTitle.text.toString(),
                     body = binding.etBody.text.toString(),
-                    image = pictures.toString(),
+                    image = images,
                     datetime = Date().time.toString(),
                     tags = tagsMap,
                     likes = mutableMapOf<String,Boolean>(),
