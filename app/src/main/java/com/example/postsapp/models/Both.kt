@@ -5,6 +5,7 @@ data class Both(
     val title:String,
     val description:String,
     val image:String,
+    val dateTime:String,
     val count:Int,
     val type:String
-){}
+)

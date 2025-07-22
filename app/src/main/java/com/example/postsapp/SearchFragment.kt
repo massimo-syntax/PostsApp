@@ -1,5 +1,6 @@
 package com.example.postsapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -53,11 +54,18 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //var query = ""
+
+        // for adapter to grab new update of string query, there is need of a pointer
+
+        val query = QueryString()
+
         // recycler view
         val rvSearch = binding.rvSearch
         // adapter
         val bothList = mutableListOf<Both>()
-        val adapterSearch = SearchAdapter(bothList){
+        val adapterSearch = SearchAdapter(bothList , query){
             // adapter click listener
             both ->
             when(both.type){
@@ -81,7 +89,6 @@ class SearchFragment : Fragment() {
             profilesList ->
             // when first viewmodel is init() dbAllProfiles is null
             if(profilesList == null) return@observe
-            // assign pointer to local variable
             profiles = profilesList.toList()
         }
         // get profiles from firebase databse
@@ -94,7 +101,6 @@ class SearchFragment : Fragment() {
             postsList ->
             // when first viewmodel is init() allPosts is null
             if(postsList == null) return@observe
-            // assign pointer to local variable
             posts = postsList
         }
         // request posts from databse
@@ -104,7 +110,7 @@ class SearchFragment : Fragment() {
         // click
         // ADD to LIST matching CHECKBOXES
         binding.btnSearch.setOnClickListener {
-            val query: String = binding.etSearch.text.toString()
+            val quiry = binding.etSearch.text.toString()
             var bothObj:Both? = null
 
             // to remove from adapter
@@ -122,11 +128,12 @@ class SearchFragment : Fragment() {
                             title = profile.name ?: "",
                             image = profile.image ?: "",
                             description = profile.say ?: "",
-                            count = 0,
+                            count = profile.followersCount ?: 0,
+                            dateTime = profile.datetime.toString(),
                             type = "profile"
                         )
                     // add profile if matching query
-                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query)){
+                    if( bothObj!!.title.contains(quiry) || bothObj!!.description.contains(quiry)){
                         bothList.add(bothObj!!)
                         newDatasetSize++
                     }
@@ -137,32 +144,48 @@ class SearchFragment : Fragment() {
             // POSTS CHECKED
             if(binding.checkPosts.isChecked){
                 posts.forEach{post ->
+                    // integrate tags in descriptions for posts
+                    var description = post.body ?: ""
+                    if( ! post.tags.isNullOrEmpty() ){
+                        description+= "\n"
+                        post.tags!!.forEach { tag ->
+                            description += "#${tag.key} "
+                        }
+                        // remove last " "
+                        description.dropLast(1)
+                    }
+
                     bothObj = Both(
                             id = post.id ?: "123",
                             title = post.title ?: "",
                             image = post.image ?: "",
-                            description = post.body ?: "",
-                            count = 0,
+                            description = description,
+                            count = post.likesCount ?: 0,
+                            dateTime = post.datetime.toString(),
                             type = "post"
                         )
                     // add if post matching query
-                    if( bothObj!!.title.contains(query) || bothObj!!.description.contains(query)){
+                    if( bothObj!!.title.contains(quiry) || bothObj!!.description.contains(quiry)){
                         bothList.add(bothObj!!)
                         newDatasetSize++
                     }
                 }
             }
             // completely refresh adapter to the new list
+            //
+            //
+            //
+            query.s = quiry
             adapterSearch.notifyItemRangeRemoved(0 , oldDatasetSize)
             adapterSearch.notifyItemRangeInserted(0 , newDatasetSize )
 
             binding.etSearch.setText("")
 
-            /* this works once but then crashes on click */
+            if(quiry.isEmpty()) return@setOnClickListener // or currentFocus crashes, no keyboard yet
             // hide keyword
-            // Hiding the keyboard from a Fragment
-            //val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            //imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus()!!.getWindowToken(), 0)
+            toast("hiding keyboard")
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
 
         }/* click listener submit */
 

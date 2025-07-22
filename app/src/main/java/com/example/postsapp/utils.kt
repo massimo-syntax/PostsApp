@@ -22,7 +22,9 @@ fun convertTimestampToReadableFormat(timestamp: Long): String {
     return sdf.format(date)
 }
 
-
+data class QueryString (   // Pointer to a String
+    var s:String=""
+)
 
 fun slideView(view: View, currentHeight: Int, newHeight:Int) {
 
