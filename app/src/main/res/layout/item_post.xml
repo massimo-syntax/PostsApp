@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingBottom="2dp">
 
         <!-- first row, icon, user , datetime -->
         <ImageView
@@ -71,7 +72,6 @@
             android:maxWidth="200dp"
             android:text="title"
             android:textSize="16sp"
-            android:paddingVertical="2dp"
             android:layout_marginLeft="@dimen/margin_layout_small"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toTopOf="@id/iv_image" />

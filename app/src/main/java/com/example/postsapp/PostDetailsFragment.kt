@@ -119,13 +119,11 @@ class PostDetailsFragment : Fragment() {
         }
         postViewModel.getCurrentPost(postId!!)
 
-
         val alreadyLikedComments = mutableSetOf<String>()
         fun commentAlreadyLiked(id:String) : Boolean {
             val likedCommentsMap = profileViewModel.myProfile.value!!.likedComments
             return likedCommentsMap!!.containsKey(id)
         }
-
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
@@ -151,7 +149,6 @@ class PostDetailsFragment : Fragment() {
             }
         }
         rvComments.adapter = adapterComments
-
 
 
         // every time that firebase adds a new comment, runs the event listener
@@ -181,14 +178,12 @@ class PostDetailsFragment : Fragment() {
                 }
                 "liked" -> {
                     toast("liked comment id ${e.second}")
-
                     // find index in rv list e.second is the comment id
                     val index = commentsViewModel.allComments.indexOfFirst{
                         it.id == e.second
                     }
                     // insert in the current map of _myProfile, in firebase is already sent
                     profileViewModel.myProfile.value!!.likedComments!![e.second] = postId!!
-
                     // notify adapter, onBindViewHolder checks the list to choose the icon
                     adapterComments.notifyItemChanged(index)
                 }
@@ -208,7 +203,6 @@ class PostDetailsFragment : Fragment() {
 
         // WRITE COMMENT
         var formShowing = false
-
         fun toggleForm(){
             if(formShowing){
                 formShowing = false

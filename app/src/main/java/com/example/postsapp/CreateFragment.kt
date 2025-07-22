@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
@@ -205,6 +206,10 @@ class CreateFragment : Fragment() {
             // keep no duplicates in the list
             tagsList = tagsList.toSet().toMutableList()
             hideTagsForm()
+            // hide keyboard
+            if(requireActivity().currentFocus == null) return@setOnClickListener
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
         }
 
 
@@ -279,14 +284,12 @@ class CreateFragment : Fragment() {
         super.onResume()
         mainViewModel.currentSection = getString( R.string.create )
         mainViewModel.setActionBarTitle("Write your new post")
-
         if(
             fragmentState.incomingPictures.first == INCOMING_PICTURES
             &&
             fragmentState.incomingPictures.second < fragmentState.incomingPictures.second + 1000 * 5
             ){
-            binding.layoutConfirmImage.visibility = View.VISIBLE            // get clipboard
-            toast("coming back with pictures")
+            binding.layoutConfirmImage.visibility = View.VISIBLE
         }
     }
 

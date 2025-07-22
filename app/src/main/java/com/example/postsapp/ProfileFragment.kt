@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
@@ -107,7 +108,6 @@ class ProfileFragment : Fragment() {
                     .scaleY(1f)
                     .setListener(null)
                     .setDuration(100)
-
             }else{
                 vew.animate()
                     .alpha(0.5f)
@@ -161,14 +161,18 @@ class ProfileFragment : Fragment() {
             p.image = image
             p.datetime = Date().time.toString()
             viewModel.updateProfile(p)
+            // hide keyboard
+            if(requireActivity().currentFocus == null) return@setOnClickListener
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
         }
 
         //      F O L L O W E D
         //  rv
         val rvProfiles = binding.rvProfiles
         rvProfiles.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        val adapterProfiles = ProfilesAdapter(profileViewmodel.followedsList){
-                profile ->
+        // adapter + click
+        val adapterProfiles = ProfilesAdapter(profileViewmodel.followedsList){ profile ->
             val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
             findNavController().navigate(action)
         }
@@ -176,8 +180,7 @@ class ProfileFragment : Fragment() {
 
 
         // wait for followed from databse
-        profileViewmodel.eventFollowedReceived.observe(viewLifecycleOwner){
-                followed ->
+        profileViewmodel.eventFollowedReceived.observe(viewLifecycleOwner){ followed ->
             // in viewmodel starting value is null
             if(followed == null) return@observe
             adapterProfiles.notifyItemInserted(profileViewmodel.followedsList.size-1)
@@ -204,7 +207,6 @@ class ProfileFragment : Fragment() {
             binding.tvFollowersCount.text = p.followersCount.toString()
             binding.tvPostsCount.text = p.postsCount.toString()
             binding.tvWrittenComments.text = p.myComments!!.size.toString()
-
             // load image if present
             if( ! p.image.isNullOrEmpty() ){
                 Glide.with(ctx)
@@ -232,15 +234,13 @@ class ProfileFragment : Fragment() {
         rvMyPosts.adapter = adapterMyPosts
         // avoid duplicates
 
-        postsViewModel.postsList.observe(viewLifecycleOwner){myPostList ->
+        postsViewModel.postsList.observe(viewLifecycleOwner){ myPostList ->
             if(myPostList == null) return@observe
             myPosts.addAll(myPostList)
             Toast.makeText(ctx,myPostList.toString(),Toast.LENGTH_LONG).show()
             adapterMyPosts.notifyItemRangeInserted(0, myPostList.size)
         }
         postsViewModel.getPostListFromUser(profileViewmodel.currentUID)
-
-
     }
 
     // when another tab is pressed the list is new

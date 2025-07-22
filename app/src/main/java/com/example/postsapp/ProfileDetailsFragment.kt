@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.PostsAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
+import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.MainViewModel
@@ -72,8 +73,8 @@ class ProfileDetailsFragment : Fragment() {
             val rvPosts = binding.rvPosts
             rvPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-
-            val adapterPosts = PostsAdapter(postsViewModel.UIDPostsList){
+            val posts = mutableListOf<Post>()
+            val adapterPosts = PostsAdapter(posts){
                     post ->
                 val action = ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToPostDetailsFragment(post.id!!)
                 findNavController().navigate(action)
@@ -81,15 +82,15 @@ class ProfileDetailsFragment : Fragment() {
             rvPosts.adapter = adapterPosts
 
 
-
         // add to adapter every post queried
-        postsViewModel.eventPostReceived.observe(viewLifecycleOwner){
-                post ->
+        postsViewModel.postsList.observe(viewLifecycleOwner){
+                postsList ->
             // in viewmodel starting value is null
-            if(post == null) return@observe
-            // prevent erors, profilesViewModel.singleProfile.observe is fired 2 times
-            // even when emptying the list there there is duplicates
-            adapterPosts.notifyItemRangeChanged ( 0 , postsViewModel.UIDPostsList.size )
+            if(postsList == null) return@observe
+            posts.removeAll(posts)
+            adapterPosts.notifyItemRangeRemoved(0, posts.size)
+            posts.addAll(postsList.reversed())
+            adapterPosts.notifyItemRangeChanged ( 0 , postsList.size )
         }
         // when this single profile is loaded from database the posts are also requested
         // see singleProfile.observe ----v
@@ -100,18 +101,18 @@ class ProfileDetailsFragment : Fragment() {
         }
         // REQUESTING PROFILE FROM DB
 
-        var everythingGood = true
+        //var everythingGood = true
 
         profilesViewModel.singleProfile.observe(viewLifecycleOwner){ p ->
             if( p == null) return@observe
             // this observer is called 2 times..
-            if(!everythingGood) return@observe
-            everythingGood = false
+            //if(!everythingGood) return@observe
+            //everythingGood = false
 
             profile = p
             //toast(p.toString())
             likes = p.followersCount!!
-            binding.tvPostsCount.text = p.postsCount.toString() + " posts"
+            binding.tvPostsCount.text = p.postsCount.toString()
             binding.tvFollowersCount.text = likes.toString()
             binding.profileName.text = p.name
             binding.sentence.text = p.say
@@ -125,9 +126,8 @@ class ProfileDetailsFragment : Fragment() {
             }
 
             // make a list of posts from this profile
-            if (p.myPosts.isNullOrEmpty()) return@observe
-
-            postsViewModel.getPostsFromIDList(p.myPosts!!.keys.toList())
+            //if (p.myPosts.isNullOrEmpty()) return@observe
+            postsViewModel.getPostListFromUser(profilesViewModel.currentUID)
 
         }
         // request profile
@@ -136,6 +136,7 @@ class ProfileDetailsFragment : Fragment() {
 
         // btn like profile
         binding.btnFollow.setOnClickListener {
+            if( profile!!.uid!! == profilesViewModel.currentUID) return@setOnClickListener
             if ( ! alreadyFollowed() ){
                 profilesViewModel.likeProfile(profile!!.uid!!)
                 likes ++

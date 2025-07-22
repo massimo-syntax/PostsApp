@@ -178,18 +178,13 @@ class SearchFragment : Fragment() {
             query.s = quiry
             adapterSearch.notifyItemRangeRemoved(0 , oldDatasetSize)
             adapterSearch.notifyItemRangeInserted(0 , newDatasetSize )
-
             binding.etSearch.setText("")
 
-            if(quiry.isEmpty()) return@setOnClickListener // or currentFocus crashes, no keyboard yet
-            // hide keyword
-            toast("hiding keyboard")
+            // hide keyboard
+            if(requireActivity().currentFocus == null) return@setOnClickListener
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
-
         }/* click listener submit */
-
-
     }/* onViewCreated */
 
 
