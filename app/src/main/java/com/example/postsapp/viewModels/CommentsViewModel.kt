@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postsapp.models.Comment
+import com.example.postsapp.models.Profile
 import com.google.firebase.Firebase
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -12,6 +13,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
+import kotlinx.coroutines.runBlocking
 
 class CommentsViewModel : ViewModel() {
 
@@ -26,7 +28,6 @@ class CommentsViewModel : ViewModel() {
     private val _event = MutableLiveData<Pair<String,String>?>(null)
     val event : LiveData<Pair<String,String>?>
         get() = _event
-
 
 
     //  WRITE
@@ -65,70 +66,77 @@ class CommentsViewModel : ViewModel() {
             "comments/$postId/$commentId/likesCount" to ServerValue.increment(1)
         )
          db.updateChildren(updates).addOnCompleteListener {
+             val index = allComments.indexOfFirst{it.id == commentId}
+             allComments[index].likesCount = allComments[index].likesCount!! + 1
              _event.value= Pair("liked", commentId )
          }
-
     }
 
     fun unlikeComment(uid: String , commentId: String, postId: String){
         Firebase.database.getReference("profiles").child(uid).child("likedComments").child(commentId).removeValue()
         commentsRef.child(postId).child(commentId).child("likesCount").setValue(ServerValue.increment(-1)).addOnCompleteListener{
+            val index = allComments.indexOfFirst{it.id == commentId}
+            allComments[index].likesCount = allComments[index].likesCount!! - 1
             _event.value = Pair("unliked" , commentId)
         }
     }
 
 
-    val commentsEventListener = object : ChildEventListener {
 
+
+    val commentsUsers = mutableSetOf<Profile>()
+
+    fun getCommentInfo(c:Comment){
+        Firebase.database.getReference("profiles").child(c.userId!!).get().addOnSuccessListener {
+            val profile = it.getValue<Profile>()
+            commentsUsers.add(profile!!)
+            _event.value = Pair("info",c.id.toString())
+        }
+    }
+
+
+    val commentsEventListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 // A new comment has been added, add it to the displayed list
                 val c = dataSnapshot.getValue<Comment>()
                 // this can replace downloading the whole list
                 // firebase sends all comments 1 by 1 also at starting the listener
-
                 allComments.add(c!!)
-                // event callback changing value
-                // that directly calls the observer (i hope.. didnt read the java code of the observer, jet..)
+                // get profile of this user
                 _event.value = Pair("added", c.id.toString() )
-
+                getCommentInfo(c)
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("comment updated", "onChildChanged: ${dataSnapshot.key}")
-
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so displayed the changed comment.
                 val c = dataSnapshot.getValue<Comment>()
                 val commentKey = dataSnapshot.key
-
                 // ...
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
                 Log.d("comment removed", "onChildRemoved:" + dataSnapshot.key!!)
-
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so remove it.
                 val c = dataSnapshot.getValue<Comment>()
                 val cKey = dataSnapshot.key
-
                 val index = allComments.indexOf(c)
                 //allComments.removeAt(index)
                 allComments.remove(c)
 
+                // notify observer
                 _event.value = Pair("removed", index.toString() )
 
-                // ...
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("comment moved", "onChildMoved:" + dataSnapshot.key!!)
-
                 // A comment has changed position, use the key to determine if we are
                 // displaying this comment and if so move it.
                 val movedComment = dataSnapshot.getValue<Comment>()
                 val commentKey = dataSnapshot.key
-
                 // ...
             }
 

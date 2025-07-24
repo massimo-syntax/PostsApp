@@ -67,33 +67,38 @@
         <!-- title body tags -->
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_layout_small"
             android:maxWidth="200dp"
             android:text="title"
             android:textSize="16sp"
-            android:layout_marginLeft="@dimen/margin_layout_small"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toTopOf="@id/iv_image" />
+
         <TextView
             android:id="@+id/tv_body"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxWidth="250dp"
-            android:textSize="12sp"
-            android:text="body"
             android:layout_marginLeft="@dimen/margin_layout_small"
+            android:maxWidth="250dp"
+            android:text="body"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_image"
             app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
         <TextView
             android:id="@+id/tv_tags"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="####"
             android:textColor="@color/green"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_body"
-            app:layout_constraintStart_toStartOf="@id/tv_body"/>
+            app:layout_constraintEnd_toStartOf="@+id/layout_likes_count"
+            app:layout_constraintStart_toStartOf="@id/tv_body"
+            app:layout_constraintTop_toBottomOf="@id/tv_body" />
 
         <!-- likes -->
         <LinearLayout
@@ -102,7 +107,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="4dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_tags"
+            app:layout_constraintTop_toBottomOf="@id/tv_body"
             app:layout_constraintEnd_toEndOf="parent" >
             <ImageView
                 android:layout_width="16dp"
@@ -114,6 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textColor="@color/red"
                 android:layout_marginLeft="4sp"
                 android:text="1000"/>
 

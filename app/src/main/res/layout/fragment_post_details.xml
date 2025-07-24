@@ -25,7 +25,7 @@
             android:id="@+id/iv_author_image"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_margin="@dimen/padding_text_heading"
+            android:layout_margin="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/user"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,11 +46,11 @@
             android:id="@+id/tv_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_layout_small"
+            android:layout_marginHorizontal="8dp"
             android:text="datetime"
             android:textColor="@color/lightgrey"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_author_username" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_tags" />
 
         <LinearLayout
             android:id="@+id/layout_posts_count"
@@ -106,7 +106,8 @@
             android:id="@+id/tv_post_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_text_heading"
+            android:paddingVertical="@dimen/padding_text_heading"
+            android:layout_marginHorizontal="8dp"
             android:text="post title"
             android:textSize="@dimen/text_heading"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +117,7 @@
             android:id="@+id/tv_post_body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/padding_text_heading"
+            android:layout_marginHorizontal="8dp"
             android:text="post body"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post_title" />
@@ -125,11 +126,11 @@
             android:id="@+id/tv_tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/padding_text_heading"
+            android:layout_marginHorizontal="8dp"
             android:text="#"
             android:textColor="@color/green"
             android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="@id/tv_post_body"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post_body" />
 
 
@@ -160,7 +161,7 @@
             android:id="@+id/rv_comments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/padding_text_heading"
+            android:layout_margin="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_like" />

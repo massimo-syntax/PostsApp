@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.PostsAdapter
+import com.example.postsapp.adapters.ProfilesAdapter
 import com.example.postsapp.databinding.FragmentProfileDetailsBinding
 import com.example.postsapp.models.Post
 import com.example.postsapp.models.Profile
@@ -22,16 +23,16 @@ import com.example.postsapp.viewModels.ProfileViewModel
 
 class ProfileDetailsFragment : Fragment() {
 
-    private var profileId:String? = null
+    private var profileId: String? = null
 
-    private lateinit var binding : FragmentProfileDetailsBinding
+    private lateinit var binding: FragmentProfileDetailsBinding
     private lateinit var profilesViewModel: ProfileViewModel
     private lateinit var postsViewModel: PostViewModel
 
-    private lateinit var fragmentState:FragmentStateViewModel
+    private lateinit var fragmentState: FragmentStateViewModel
 
-    private fun toast(s:String){
-        Toast.makeText(context,s,Toast.LENGTH_SHORT).show()
+    private fun toast(s: String) {
+        Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +50,7 @@ class ProfileDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding =  FragmentProfileDetailsBinding.inflate(layoutInflater, container, false)
+        binding = FragmentProfileDetailsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -57,7 +58,7 @@ class ProfileDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var profile : Profile? = null
+        var profile: Profile? = null
 
         var likes = 0
 
@@ -68,47 +69,81 @@ class ProfileDetailsFragment : Fragment() {
         binding.tvFollowersCount.text = ""
 
 
-            // declare rv
-            // RV FOR POSTS OF THIS UID
-            val rvPosts = binding.rvPosts
-            rvPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-            val posts = mutableListOf<Post>()
-            val adapterPosts = PostsAdapter(posts){
-                    post ->
-                val action = ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToPostDetailsFragment(post.id!!)
-                findNavController().navigate(action)
+        fun alreadyFollowed(): Boolean {
+            return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
+        }
+        // btn like profile
+        binding.btnFollow.setOnClickListener {
+            if (profile!!.uid!! == profilesViewModel.currentUID) return@setOnClickListener
+            if (!alreadyFollowed()) {
+                profilesViewModel.likeProfile(profile!!.uid!!)
+                likes++
+                binding.tvFollowersCount.text = likes.toString()
+                binding.btnFollow.setImageResource(R.drawable.like)
+            } else {
+                profilesViewModel.unlikeProfile(profile!!.uid!!)
+                likes--
+                binding.tvFollowersCount.text = likes.toString()
+                binding.btnFollow.setImageResource(R.drawable.unliked)
             }
-            rvPosts.adapter = adapterPosts
+        }
 
+        //      F O L L O W E D
+        //  rv
+        val rvFollowers = binding.rvFollowers
+        rvFollowers.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        // adapter + click
+        val followersList = mutableListOf<Profile>()
+        val adapterFollowers = ProfilesAdapter( followersList ){ follower ->
+            //val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
+            //findNavController().navigate(action)
+        }
+        rvFollowers.adapter = adapterFollowers
+
+
+        profilesViewModel.followersList.observe(viewLifecycleOwner) { followers ->
+            if(followers == null) return@observe
+            val count = followersList.size
+            followersList.removeAll(followersList)
+            adapterFollowers.notifyItemRangeRemoved(0, count)
+            followersList.addAll(followers)
+            adapterFollowers.notifyItemRangeInserted(0,followersList.size)
+        }
+        //  profilesViewModel.getFollowerListOf(p) is done first when the profile is loaded from db
+        // in profile observer '''''''''v
+
+        // declare rv
+        // RV FOR POSTS OF THIS UID
+        val rvPosts = binding.rvPosts
+        rvPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        val posts = mutableListOf<Post>()
+        val adapterPosts = PostsAdapter(posts) { post ->
+            val action =
+                ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToPostDetailsFragment(
+                    post.id!!
+                )
+            findNavController().navigate(action)
+        }
+        rvPosts.adapter = adapterPosts
 
         // add to adapter every post queried
-        postsViewModel.postsList.observe(viewLifecycleOwner){
-                postsList ->
+        postsViewModel.postsList.observe(viewLifecycleOwner) { postsList ->
             // in viewmodel starting value is null
-            if(postsList == null) return@observe
+            if (postsList == null) return@observe
             posts.removeAll(posts)
             adapterPosts.notifyItemRangeRemoved(0, posts.size)
             posts.addAll(postsList.reversed())
-            adapterPosts.notifyItemRangeChanged ( 0 , postsList.size )
+            adapterPosts.notifyItemRangeChanged(0, postsList.size)
         }
         // when this single profile is loaded from database the posts are also requested
         // see singleProfile.observe ----v
 
 
-        fun alreadyFollowed():Boolean{
-            return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
-        }
-        // REQUESTING PROFILE FROM DB
-
-        //var everythingGood = true
-
-        profilesViewModel.singleProfile.observe(viewLifecycleOwner){ p ->
-            if( p == null) return@observe
-            // this observer is called 2 times..
-            //if(!everythingGood) return@observe
-            //everythingGood = false
-
+        // REQUESTING    P R O F I L E   FROM DB
+        profilesViewModel.singleProfile.observe(viewLifecycleOwner) { p ->
+            if (p == null) return@observe
             profile = p
             //toast(p.toString())
             likes = p.followersCount!!
@@ -116,40 +151,21 @@ class ProfileDetailsFragment : Fragment() {
             binding.tvFollowersCount.text = likes.toString()
             binding.profileName.text = p.name
             binding.sentence.text = p.say
-            if( ! p.image.isNullOrEmpty() ) {
+            if (!p.image.isNullOrEmpty()) {
                 Glide.with(requireContext())
                     .load(p.image)
                     .into(binding.ivImage)
             }
-            if(alreadyFollowed()){
+            if (alreadyFollowed()) {
                 binding.btnFollow.setImageResource(R.drawable.like)
             }
-
             // make a list of posts from this profile
             //if (p.myPosts.isNullOrEmpty()) return@observe
-            postsViewModel.getPostListFromUser(profilesViewModel.currentUID)
-
+            postsViewModel.getPostListFromUser(p.uid!!)
+            profilesViewModel.getFollowerListOf(p)
         }
         // request profile
         profilesViewModel.getSingleProfile(profileId!!)
-
-
-        // btn like profile
-        binding.btnFollow.setOnClickListener {
-            if( profile!!.uid!! == profilesViewModel.currentUID) return@setOnClickListener
-            if ( ! alreadyFollowed() ){
-                profilesViewModel.likeProfile(profile!!.uid!!)
-                likes ++
-                binding.tvFollowersCount.text = likes.toString()
-                binding.btnFollow.setImageResource(R.drawable.like)
-            }else{
-                profilesViewModel.unlikeProfile(profile!!.uid!!)
-                likes --
-                binding.tvFollowersCount.text = likes.toString()
-                binding.btnFollow.setImageResource(R.drawable.unliked)
-            }
-        }
-
 
     }
 
@@ -163,21 +179,19 @@ class ProfileDetailsFragment : Fragment() {
 
         super.onResume()
         // every click on something that navigates, has to be set the last tab pressed
-        if( fragmentState.lastTabPressed == ""){
+        if (fragmentState.lastTabPressed == "") {
             // fragment is fresh on the stack
-            fragmentState.lastTabPressed = mainViewModel.currentSection!! /*this fragment is accessed never directly from menu*/
+            fragmentState.lastTabPressed =
+                mainViewModel.currentSection!! /*this fragment is accessed never directly from menu*/
         }
         // as previous statement, only when the fragment is fresh on the stack gets assigned the root-tab-selected
         // let say that in between the user pressed another tab, then gets back to this again
         // the fragment has already an instance of viewmodel fragemntState, then changes only in this case
-        if(fragmentState.lastTabPressed != mainViewModel.currentSection!!) findNavController().popBackStack()
+        if (fragmentState.lastTabPressed != mainViewModel.currentSection!!) findNavController().popBackStack()
 
         mainViewModel.setActionBarTitle("Profile details")
 
     }
-
-
-
 
 
 }

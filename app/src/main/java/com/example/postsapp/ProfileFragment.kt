@@ -237,7 +237,6 @@ class ProfileFragment : Fragment() {
         postsViewModel.postsList.observe(viewLifecycleOwner){ myPostList ->
             if(myPostList == null) return@observe
             myPosts.addAll(myPostList)
-            Toast.makeText(ctx,myPostList.toString(),Toast.LENGTH_LONG).show()
             adapterMyPosts.notifyItemRangeInserted(0, myPostList.size)
         }
         postsViewModel.getPostListFromUser(profileViewmodel.currentUID)

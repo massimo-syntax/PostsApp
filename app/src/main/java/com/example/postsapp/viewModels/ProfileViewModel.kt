@@ -1,5 +1,8 @@
 package com.example.postsapp.viewModels
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +15,7 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
+import kotlin.coroutines.coroutineContext
 
 class ProfileViewModel : ViewModel() {
 
@@ -86,7 +90,6 @@ class ProfileViewModel : ViewModel() {
     fun getFollowed(){
         val followed = _myProfile.value!!.followed
         if (followed==null) return
-
         followed.forEach { followed ->
             val fID = followed.key
             firebaseRTDB.getReference("profiles/$fID")
@@ -98,6 +101,35 @@ class ProfileViewModel : ViewModel() {
                     _eventFollowedReceived.value = p
                 }
         }
+    }
+
+    // followed rv
+    private val _followersList = MutableLiveData<MutableList<Profile>?>(null)
+    val followersList : LiveData<MutableList<Profile>?>
+        get() = _followersList
+
+    fun getFollowerListOf(p:Profile){
+        val followers = p.followers
+        var count = 0
+        val list = mutableListOf<Profile>()
+        if (followers.isNullOrEmpty()) return
+        followers.forEach { f->
+            val fID = f.key
+            firebaseRTDB.getReference("profiles/$fID")
+                .get()
+                .addOnSuccessListener {
+                    val p = it.getValue(Profile::class.java)!!
+                    list.add( p )
+                    count ++
+                    // when you are an expert thread synchronization is fun ;)
+                    if(count == followers.size){
+                        _followersList.value = list
+                    }
+                }
+
+        }
+
+
     }
 
 

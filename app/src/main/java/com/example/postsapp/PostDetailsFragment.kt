@@ -15,11 +15,14 @@ import com.example.postsapp.adapters.CommentsAdapter
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
+import com.example.postsapp.models.Profile
 import com.example.postsapp.viewModels.CommentsViewModel
 import com.example.postsapp.viewModels.FragmentStateViewModel
 import com.example.postsapp.viewModels.MainViewModel
 import com.example.postsapp.viewModels.PostViewModel
 import com.example.postsapp.viewModels.ProfileViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class PostDetailsFragment : Fragment() {
 
@@ -66,10 +69,10 @@ class PostDetailsFragment : Fragment() {
         // in every case user can also comment posts then they can say something directly there..
         var likesCount = 0
 
+        //  G E T     P R O F I L E
         fun alreadyLiked():Boolean{
             return post!!.likes!!.containsKey(profileViewModel.currentUID)
         }
-
         profileViewModel.singleProfile.observe(viewLifecycleOwner){ profile ->
             if(profile == null) return@observe
             if( ! profile.image.isNullOrEmpty() ) {
@@ -90,7 +93,7 @@ class PostDetailsFragment : Fragment() {
 
         } // profile is requested when the post is loaded
 
-
+        //  P O S T     O B S E R V E R
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
             post = p
@@ -119,7 +122,7 @@ class PostDetailsFragment : Fragment() {
         }
         postViewModel.getCurrentPost(postId!!)
 
-        val alreadyLikedComments = mutableSetOf<String>()
+        //  C O M M E N T S      R E C Y C L E R     V I E W
         fun commentAlreadyLiked(id:String) : Boolean {
             val likedCommentsMap = profileViewModel.myProfile.value!!.likedComments
             return likedCommentsMap!!.containsKey(id)
@@ -127,81 +130,75 @@ class PostDetailsFragment : Fragment() {
 
         val rvComments = binding.rvComments
         rvComments.layoutManager = LinearLayoutManager(context)
-        // adapter has the comments from viewmodel
-        val adapterComments = CommentsAdapter( commentsViewModel.allComments, alreadyLikedComments, profileViewModel.currentUID ){
+        // used to choose the icon
+        val alreadyLikedComments = mutableSetOf<String>()
+
+        val adapterComments = CommentsAdapter(
+            commentsViewModel.allComments,
+            alreadyLikedComments,
+            commentsViewModel.commentsUsers,
+            profileViewModel.currentUID
+        ){
             comment ->
             // the COMMENT is YOURS, you can delete the comment
             if(comment.userId == profileViewModel.currentUID){
-                // DELETE COMMENT (if yours)
-                //toast("commented from you -> delete")
                 commentsViewModel.deleteComment(comment , postId!! , profileViewModel.currentUID)
-                //toast("deleting comment ${comment.userId}")
-
-            }else{ // SOMEONE ELSE S COMMENT, you can like
-                /*
+            }else{
+                // SOMEONE ELSE S COMMENT, you can like
                 if(commentAlreadyLiked(comment.id!!)){
                     commentsViewModel.unlikeComment(profileViewModel.currentUID , comment.id!!,postId!!)
                 }else{
                     commentsViewModel.likeComment(profileViewModel.currentUID, comment.id!! , postId!!)
                 }
-
-                 */
             }
         }
         rvComments.adapter = adapterComments
 
 
+        //  C O M M E N T S       E V E N T S
         // every time that firebase adds a new comment, runs the event listener
-        // the same event listener runs for every comment 1 by 1 at first request
-        // that is in the viewmodel, there is notified also the event live data, that calls this observer
-        //var lastIndex = 0
-        commentsViewModel.event.observe(viewLifecycleOwner){e->
+        // the same event listener runs for every comment 1 by 1 at registerCommentsEventListenerForThisPost(postId!!)
+        // view model -> firebase listener
+        commentsViewModel.event.observe(viewLifecycleOwner){ e ->
             if (e == null) return@observe
             when( e.first ){
+                "info" ->{
+                    val commentId:String = e.second
+                    if(commentAlreadyLiked(commentId)) alreadyLikedComments.add(commentId)
+                    val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
+                    adapterComments.notifyItemChanged(index)
+                }
                 "added" ->{
-                    // been loaded first when started the event listener
-                    // then every time that firebase receives a new comment
-                    toast(e.second + "  at last index [${commentsViewModel.allComments.size-1}]")
-                    // the viewmodel adds the comment from databse in the list
-                    // then calls the observer
-                    // the list is in the viewmodel, just for avoid cpu overload th index is just increased instead to count all the list every comment added
-
-                    if(commentAlreadyLiked(e.second)){
-                        // add to list for adapter, already 1 by 1 receiving from database
-                        alreadyLikedComments.add(e.second)
-                    }
-                    adapterComments.notifyItemInserted(commentsViewModel.allComments.size-1)
+                    val commentId:String = e.second
+                    if(commentAlreadyLiked(commentId)) alreadyLikedComments.add(commentId)
+                    val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
+                    adapterComments.notifyItemInserted(index)
                 }
                 "removed" -> {
-                    toast("index = ${e.second}")
-                    adapterComments.notifyItemRemoved(e.second.toInt())
+                    val index:Int = e.second.toInt()
+                    adapterComments.notifyItemRemoved(index)
                 }
                 "liked" -> {
-                    toast("liked comment id ${e.second}")
-                    // find index in rv list e.second is the comment id
-                    val index = commentsViewModel.allComments.indexOfFirst{
-                        it.id == e.second
-                    }
-                    // insert in the current map of _myProfile, in firebase is already sent
-                    profileViewModel.myProfile.value!!.likedComments!![e.second] = postId!!
-                    // notify adapter, onBindViewHolder checks the list to choose the icon
+                    val commentId:String = e.second
+                    val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
+                    // ADD TO local data, is not updated the whole comment in firebase, no listener.
+                    profileViewModel.myProfile.value!!.likedComments!![commentId] = postId!!
                     adapterComments.notifyItemChanged(index)
                 }
                 "unliked" -> {
-                    toast("unliked comment id ${e.second}")
-                    // @todo
-                    // add to likedcomments list and map
-                    // notify adapter
+                    val commentId:String = e.second
+                    val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
+                    // REMOVE FROM local data, is not updated the whole comment in firebase, no listener.
+                    profileViewModel.myProfile.value!!.likedComments!!.remove(commentId)
+                    adapterComments.notifyItemChanged(index)
                 }
                 else -> toast("event fired, e.first is not added")
             }
         }
-
-        // event listener to comments of this postId
         // the event listener also requests every comment 1 by 1 when started
         commentsViewModel.registerCommentsEventListenerForThisPost(postId!!)
 
-        // WRITE COMMENT
+        //  W R I T E       C O M M E N T
         var formShowing = false
         fun toggleForm(){
             if(formShowing){
@@ -238,7 +235,7 @@ class PostDetailsFragment : Fragment() {
         }
         // WRITE COMMENT [ E N D ]
 
-        // LIKE
+        //  L I K E     C O M M E N T
         binding.btnLike.setOnClickListener {
             if(!alreadyLiked()){
                 postViewModel.likePost(profileViewModel.currentUID)
@@ -253,7 +250,6 @@ class PostDetailsFragment : Fragment() {
         }
 
     }
-
 
 
     // some fragments are used navigating from different tabs of bottom navbar
@@ -271,9 +267,7 @@ class PostDetailsFragment : Fragment() {
         // let say that in between the user pressed another tab, then gets back to this again
         // the fragment has already an instance of viewmodel fragemntState, then changes only in this case
         if(fragmentState.lastTabPressed != mainViewModel.currentSection!!) findNavController().popBackStack()
-
         mainViewModel.setActionBarTitle("Post details")
-
         // avoid duplicates when getting back..
         commentsViewModel.allComments.removeAll(commentsViewModel.allComments)
     }

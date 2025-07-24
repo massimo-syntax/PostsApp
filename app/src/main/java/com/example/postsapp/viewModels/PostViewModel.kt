@@ -19,17 +19,17 @@ class PostViewModel : ViewModel() {
 
     // single post
     private val _currentPost = MutableLiveData<Post?>(null)
-    val currentPost : LiveData<Post?>
+    val currentPost: LiveData<Post?>
         get() = _currentPost
 
 
     //      GET LIST OF POSTS
     private val _postsList = MutableLiveData<MutableList<Post>?>(null)
-    val postsList : LiveData<MutableList<Post>?>
+    val postsList: LiveData<MutableList<Post>?>
         get() = _postsList
 
     // REQUIRE ONCE LIST OF POSTS
-    fun getPostsList(){
+    fun getPostsList() {
         val postsRef = firebaseRTDB.getReference("posts")
         postsRef.get().addOnCompleteListener {
             if (it.isSuccessful) {
@@ -48,18 +48,13 @@ class PostViewModel : ViewModel() {
         }
     }
 
+    /*
     // REQUIRE ONCE ALL POSTS FROM nyPosts of a UID
     // followed rv
     private val _eventPostReceived = MutableLiveData<Post?>(null)
     val eventPostReceived : LiveData<Post?>
         get() = _eventPostReceived
-
     var UIDPostsList = mutableListOf<Post>()
-
-
-    // another way can be :
-    // val postsRef = firefirebaseRTDB.getReference("posts").orderByChild("user").equalTo("userID")
-
     fun getPostsFromIDList( postIDs : List<String> ){
         UIDPostsList.removeAll(UIDPostsList)
         /*
@@ -79,13 +74,12 @@ class PostViewModel : ViewModel() {
                 }
         }
     }
-
+*/
 
     // to allow reaching .orderByChild("userId").equalTo(id)
     // in firebase itself has to be diefined that in "rules" , of the db
 
     /*
-
  "rules": {
     ".read": true, //"now < 1744495200000",  // 2025-4-13
     ".write": true, //"now < 1744495200000",  // 2025-4-13
@@ -93,10 +87,8 @@ class PostViewModel : ViewModel() {
       ".indexOn": "userId"
     },
   }
-
     */
-
-    fun getPostListFromUser(id:String){
+    fun getPostListFromUser(id: String) {
         _postsList.value = null
         val postsRef = firebaseRTDB.getReference("posts").orderByChild("userId").equalTo(id)
         postsRef.get().addOnCompleteListener {
@@ -107,7 +99,6 @@ class PostViewModel : ViewModel() {
                     val p = postsSnapshot.getValue(Post::class.java)
                     posts.add(p!!)
                 }
-                //Log.d(TAG, "${profiles.size}")
                 _postsList.value = posts
             } else {
                 // EROOR
@@ -119,10 +110,8 @@ class PostViewModel : ViewModel() {
         }
     }
 
-    fun getCurrentPost(id:String){
+    fun getCurrentPost(id: String) {
         val currentPostRef = firebaseRTDB.getReference("posts/$id")
-
-        // get current Post
         currentPostRef.get().addOnSuccessListener {
             _currentPost.value = it.getValue(Post::class.java)
         }.addOnFailureListener {
@@ -133,11 +122,10 @@ class PostViewModel : ViewModel() {
 
     //      CALLBACK FOR OBSERVER SENDING POST
     private val _postSentSuccessfully = MutableLiveData<Boolean>(false)
-    val postSentSuccessfully : LiveData<Boolean>
+    val postSentSuccessfully: LiveData<Boolean>
         get() = _postSentSuccessfully
 
-
-    fun post( p:Post , uid:String){
+    fun post(p: Post, uid: String) {
         // let create an id from firebase
         val key = firebaseRTDB.getReference("posts").push().key
         if (key == null) return
@@ -152,9 +140,7 @@ class PostViewModel : ViewModel() {
         }
     }
 
-
-
-    fun likePost(currentUID:String){
+    fun likePost(currentUID: String) {
         // add element to map
         currentPost.value!!.likes!![currentUID] = true
         // get firebase reference for this post / likes
@@ -163,18 +149,13 @@ class PostViewModel : ViewModel() {
         firebaseRTDB.getReference("posts/$postId/likesCount").setValue(ServerValue.increment(1))
     }
 
-    fun unlikePost(currentUID:String){
+    fun unlikePost(currentUID: String) {
         // remove key from live data
         currentPost.value!!.likes!!.remove(currentUID)
         val postId = currentPost.value!!.id
         firebaseRTDB.getReference("posts/$postId/likes/$currentUID").removeValue()
         firebaseRTDB.getReference("posts/$postId/likesCount").setValue(ServerValue.increment(-1))
 
-    }
-
-
-    init{
-        // nothing at viewmodel instanciation for now
     }
 
 
