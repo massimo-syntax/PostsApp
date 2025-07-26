@@ -123,10 +123,11 @@ class SearchFragment : Fragment() {
             // PROFILES CHECKED
             if(binding.checkProfiles.isChecked){
                 profiles.forEach{ profile ->
+                    if(profile.image.isNullOrEmpty()) profile.image = ""
                     bothObj = Both(
                             id = profile.uid ?: "123",
                             title = profile.name ?: "",
-                            image = profile.image ?: "",
+                            image =  profile.image!!,
                             description = profile.say ?: "",
                             count = profile.followersCount ?: 0,
                             dateTime = profile.datetime.toString(),
@@ -154,7 +155,7 @@ class SearchFragment : Fragment() {
                         // remove last " "
                         description.dropLast(1)
                     }
-
+                    if(post.image.isNullOrEmpty()) post.image = ""
                     bothObj = Both(
                             id = post.id ?: "123",
                             title = post.title ?: "",

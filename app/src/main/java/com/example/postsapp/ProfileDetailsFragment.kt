@@ -96,8 +96,8 @@ class ProfileDetailsFragment : Fragment() {
         // adapter + click
         val followersList = mutableListOf<Profile>()
         val adapterFollowers = ProfilesAdapter( followersList ){ follower ->
-            //val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
-            //findNavController().navigate(action)
+            val action = ProfileDetailsFragmentDirections.actionProfileDetailsFragmentSelf(follower.uid!!)
+            findNavController().navigate(action)
         }
         rvFollowers.adapter = adapterFollowers
 
@@ -120,10 +120,7 @@ class ProfileDetailsFragment : Fragment() {
 
         val posts = mutableListOf<Post>()
         val adapterPosts = PostsAdapter(posts) { post ->
-            val action =
-                ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToPostDetailsFragment(
-                    post.id!!
-                )
+            val action = ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToPostDetailsFragment(post.id!!)
             findNavController().navigate(action)
         }
         rvPosts.adapter = adapterPosts

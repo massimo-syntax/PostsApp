@@ -218,18 +218,14 @@ class ProfileFragment : Fragment() {
             profileViewmodel.getFollowed()
         }
 
-
         //  M Y     P O S T S
         // create rv
         val rvMyPosts = binding.rvPosts
         val myPosts = mutableListOf<Post>()
         rvMyPosts.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val adapterMyPosts = PostsAdapter(myPosts){
-                post ->
-            /*
-            val action = ProfileFragmentDirections.actionProfileFragmentToProfileDetailsFragment(profile.uid!!)
+        val adapterMyPosts = PostsAdapter(myPosts){ post ->
+            val action = ProfileFragmentDirections.actionProfileFragmentToPostDetailsFragment (post.id!!)
             findNavController().navigate(action)
-        */
         }
         rvMyPosts.adapter = adapterMyPosts
         // avoid duplicates

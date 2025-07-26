@@ -140,10 +140,6 @@ class CreateFragment : Fragment() {
 
         }
 
-        postViewModel.postSentSuccessfully.observe(viewLifecycleOwner){ success ->
-            if(success) Toast.makeText(ctx, "post sent succesfully", Toast.LENGTH_SHORT).show()
-        }
-
         var tagsList = mutableListOf<String>()
         val tagsForm = binding.layoutTagForm
 
@@ -212,6 +208,11 @@ class CreateFragment : Fragment() {
             imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
         }
 
+        postViewModel.postSentSuccessfully.observe(viewLifecycleOwner){ post ->
+            if (post == null) return@observe
+            val action = CreateFragmentDirections.actionCreateFragmentToPostDetailsFragment(post.id!!)
+            findNavController().navigate(action)
+        }
 
         //      S U B M I T
         binding.btnSend.setOnClickListener {

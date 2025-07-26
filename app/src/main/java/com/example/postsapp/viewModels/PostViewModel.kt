@@ -121,8 +121,8 @@ class PostViewModel : ViewModel() {
 
 
     //      CALLBACK FOR OBSERVER SENDING POST
-    private val _postSentSuccessfully = MutableLiveData<Boolean>(false)
-    val postSentSuccessfully: LiveData<Boolean>
+    private val _postSentSuccessfully = MutableLiveData<Post?>(null)
+    val postSentSuccessfully: LiveData<Post?>
         get() = _postSentSuccessfully
 
     fun post(p: Post, uid: String) {
@@ -135,9 +135,10 @@ class PostViewModel : ViewModel() {
             "profiles/$uid/postsCount" to ServerValue.increment(1),
             "profiles/$uid/myPosts/$key" to true
         )
-        Firebase.database.reference.updateChildren(updates).addOnCompleteListener {
-            _postSentSuccessfully.value = true
+        Firebase.database.reference.updateChildren(updates).addOnSuccessListener {
+            _postSentSuccessfully.value = p
         }
+        _postSentSuccessfully.value = null
     }
 
     fun likePost(currentUID: String) {

@@ -44,6 +44,7 @@
             android:id="@+id/et_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="7"
             android:layout_marginTop="@dimen/et_layout_margin"
             android:background="@null"
             android:hint="Write your post here"
@@ -68,8 +69,8 @@
 
     <LinearLayout
         android:id="@+id/layout_confirm_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -77,16 +78,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
-        <Button
+        <TextView
             android:id="@+id/btn_confirm_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="500dp"
             android:layout_gravity="center"
+            android:textAlignment="center"
+            android:background="@null"
             android:text="confirm image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv" />
+            android:textColor="@color/green" />
 
     </LinearLayout>
 
@@ -103,9 +104,9 @@
         android:id="@+id/layout_tag_form"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:backgroundTint="@color/white"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/et_borders"
+        android:elevation="2dp"
         android:padding="4dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/layout_options"
@@ -146,6 +147,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_send"
         app:layout_constraintStart_toStartOf="parent">

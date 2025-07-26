@@ -53,7 +53,7 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val al
             val user = commentsUsers.elementAt(userIndex)
             userName = user.name ?: ""
             userImage = user.image ?: ""
-            Glide.with(ctx).load(userImage).into(holder.image)
+            if (! user.image.isNullOrEmpty() ) Glide.with(ctx).load(userImage).into(holder.image)
         }
 
 
