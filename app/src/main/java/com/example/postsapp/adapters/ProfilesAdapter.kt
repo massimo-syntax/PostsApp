@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.postsapp.R
 import com.example.postsapp.databinding.ItemProfileBinding
 import com.example.postsapp.models.Profile
 
@@ -56,6 +57,8 @@ class ProfilesAdapter (private val profiles: MutableList<Profile> , private val 
             Glide.with(ctx)
                 .load(item.image)
                 .into(viewHolder.image)
+        }else{
+            viewHolder.image.setImageResource(R.drawable.user)
         }
 
     }

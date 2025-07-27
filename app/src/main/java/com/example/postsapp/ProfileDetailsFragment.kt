@@ -31,10 +31,6 @@ class ProfileDetailsFragment : Fragment() {
 
     private lateinit var fragmentState: FragmentStateViewModel
 
-    private fun toast(s: String) {
-        Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -60,8 +56,6 @@ class ProfileDetailsFragment : Fragment() {
 
         var profile: Profile? = null
 
-        var likes = 0
-
         // init text waiting for server response
         // useful in the case that no profile is created yet
         binding.profileName.text = ""
@@ -72,21 +66,6 @@ class ProfileDetailsFragment : Fragment() {
 
         fun alreadyFollowed(): Boolean {
             return profile!!.followers!!.containsKey(profilesViewModel.myProfile.value!!.uid.toString())
-        }
-        // btn like profile
-        binding.btnFollow.setOnClickListener {
-            if (profile!!.uid!! == profilesViewModel.currentUID) return@setOnClickListener
-            if (!alreadyFollowed()) {
-                profilesViewModel.likeProfile(profile!!.uid!!)
-                likes++
-                binding.tvFollowersCount.text = likes.toString()
-                binding.btnFollow.setImageResource(R.drawable.like)
-            } else {
-                profilesViewModel.unlikeProfile(profile!!.uid!!)
-                likes--
-                binding.tvFollowersCount.text = likes.toString()
-                binding.btnFollow.setImageResource(R.drawable.unliked)
-            }
         }
 
         //      F O L L O W E D
@@ -100,7 +79,6 @@ class ProfileDetailsFragment : Fragment() {
             findNavController().navigate(action)
         }
         rvFollowers.adapter = adapterFollowers
-
 
         profilesViewModel.followersList.observe(viewLifecycleOwner) { followers ->
             if(followers == null) return@observe
@@ -138,14 +116,51 @@ class ProfileDetailsFragment : Fragment() {
         // see singleProfile.observe ----v
 
 
+        var followers = 0
+        var myProfile : Profile ? = null
+
+        profilesViewModel.myProfile.observe(viewLifecycleOwner){ myProfileFromDB ->
+            if (myProfileFromDB == null) return@observe
+            myProfile = myProfileFromDB
+        }
+        profilesViewModel.getMyProfile()
+
+
+        // btn follow profile
+        binding.btnFollow.setOnClickListener {
+            // dont follow yourself
+            if (profile!!.uid!! == profilesViewModel.currentUID) return@setOnClickListener
+            if (!alreadyFollowed()) {
+                // follow !!
+                profilesViewModel.likeProfile(profile!!.uid!!)
+                followers++
+                binding.tvFollowersCount.text = followers.toString()
+                binding.btnFollow.setImageResource(R.drawable.like)
+                // add to rv
+                followersList.add(0, myProfile!!)
+                adapterFollowers.notifyItemInserted(0)
+            } else {
+                // unfollow :(
+                profilesViewModel.unlikeProfile(profile!!.uid!!)
+                followers--
+                binding.tvFollowersCount.text = followers.toString()
+                binding.btnFollow.setImageResource(R.drawable.unliked)
+                // find my profile
+                val index = followersList.indexOfFirst { it.uid == myProfile!!.uid }
+                followersList.removeAt(index)
+                // remove from rv
+                adapterFollowers.notifyItemRemoved(index)
+            }
+        }
+
+
         // REQUESTING    P R O F I L E   FROM DB
         profilesViewModel.singleProfile.observe(viewLifecycleOwner) { p ->
             if (p == null) return@observe
             profile = p
-            //toast(p.toString())
-            likes = p.followersCount!!
+            followers = p.followersCount!!
             binding.tvPostsCount.text = p.postsCount.toString()
-            binding.tvFollowersCount.text = likes.toString()
+            binding.tvFollowersCount.text = followers.toString()
             binding.profileName.text = p.name
             binding.sentence.text = p.say
             if (!p.image.isNullOrEmpty()) {

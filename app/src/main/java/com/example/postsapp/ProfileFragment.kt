@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -36,14 +35,11 @@ import java.util.Date
 class ProfileFragment : Fragment() {
 
     private lateinit var binding : FragmentProfileBinding
-    private lateinit var viewModel: SharedViewModel
+    //private lateinit var viewModel: SharedViewModel
     private lateinit var profileViewmodel: ProfileViewModel
     private lateinit var postsViewModel: PostViewModel
     private lateinit var ctx : Context
 
-    fun t(s:Any){
-        Toast.makeText(requireContext(),s.toString(),Toast.LENGTH_SHORT).show()
-    }
 
     private fun clipboardText():String{
         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -58,7 +54,7 @@ class ProfileFragment : Fragment() {
             // no params
         }
         ctx = requireContext()
-        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        //viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         profileViewmodel = ViewModelProvider(this)[ProfileViewModel::class.java]
         postsViewModel = ViewModelProvider(this)[PostViewModel::class.java]
     }
@@ -79,7 +75,7 @@ class ProfileFragment : Fragment() {
 
         var p = Profile(
             // login is required to access the app
-            uid = viewModel.userId.value,
+            uid = profileViewmodel.currentUID,
             name = "",
             say = "",
             image = "",
@@ -160,7 +156,7 @@ class ProfileFragment : Fragment() {
             p.say = binding.etSay.text.toString()
             p.image = image
             p.datetime = Date().time.toString()
-            viewModel.updateProfile(p)
+            profileViewmodel.updateProfile(p)
             // hide keyboard
             if(requireActivity().currentFocus == null) return@setOnClickListener
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -217,6 +213,7 @@ class ProfileFragment : Fragment() {
             // once the profile is loaded retrive followed
             profileViewmodel.getFollowed()
         }
+        //profileViewmodel.getMyProfile()
 
         //  M Y     P O S T S
         // create rv
@@ -252,9 +249,6 @@ class ProfileFragment : Fragment() {
         mainViewModel.currentSection = getString( R.string.profile )
         mainViewModel.setActionBarTitle("Your profile")
     }
-
-
-
 
 
 

@@ -157,13 +157,15 @@
             app:layout_constraintTop_toBottomOf="@id/tv_tags" />
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_comments"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_show_form"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_margin="@dimen/margin_layout_small"
+            android:background="@drawable/btn_borders"
+            android:text="Write comment"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_like" />
 
 
@@ -176,7 +178,7 @@
             android:minHeight="46dp"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rv_comments">
+            app:layout_constraintTop_toBottomOf="@id/btn_show_form">
 
             <EditText
                 android:id="@+id/et_write_comment"
@@ -201,16 +203,15 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/btn_show_form"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_layout_small"
-            android:background="@drawable/btn_borders"
-            android:text="Write comment"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/comment_form"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_comments"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_margin="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/comment_form" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,10 +1,12 @@
 package com.example.postsapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -64,10 +66,6 @@ class PostDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         var post: Post? = null
-        // for now just count.. users can also comment, in future updates of the app may be also see which users liked..
-        // being an app for posts can be nice to like without that your like is seen..
-        // in every case user can also comment posts then they can say something directly there..
-        var likesCount = 0
 
         //  G E T     P R O F I L E
         fun alreadyLiked():Boolean{
@@ -93,7 +91,12 @@ class PostDetailsFragment : Fragment() {
 
         } // profile is requested when the post is loaded
 
-        //  P O S T     O B S E R V E R
+        // for now just count.. users can also comment, in future updates of the app may be also see which users liked..
+        // being an app for posts can be nice to like without that your like is seen..
+        // in every case user can also comment posts then they can say something directly there..
+        var likesCount = 0
+
+        //  G E T       P O S T
         postViewModel.currentPost.observe(viewLifecycleOwner){ p ->
             if(p == null) return@observe
             post = p
@@ -113,8 +116,9 @@ class PostDetailsFragment : Fragment() {
                 }
             }
             binding.tvTags.text = tags
-            binding.tvLikes.text = p.likes!!.size.toString()
-            //toast("observed $p")
+            likesCount = p.likesCount ?: 0
+            binding.tvLikes.text = likesCount.toString()
+
             if(alreadyLiked()){
                 binding.btnLike.setImageResource(R.drawable.like)
             }
@@ -164,7 +168,6 @@ class PostDetailsFragment : Fragment() {
             when( e.first ){
                 "info" ->{
                     val commentId:String = e.second
-                    if(commentAlreadyLiked(commentId)) alreadyLikedComments.add(commentId)
                     val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
                     adapterComments.notifyItemChanged(index)
                 }
@@ -173,6 +176,7 @@ class PostDetailsFragment : Fragment() {
                     if(commentAlreadyLiked(commentId)) alreadyLikedComments.add(commentId)
                     val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
                     adapterComments.notifyItemInserted(index)
+                    rvComments.scrollToPosition(0)
                 }
                 "removed" -> {
                     val index:Int = e.second.toInt()
@@ -183,6 +187,7 @@ class PostDetailsFragment : Fragment() {
                     val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
                     // ADD TO local data, is not updated the whole comment in firebase, no listener.
                     profileViewModel.myProfile.value!!.likedComments!![commentId] = postId!!
+                    alreadyLikedComments.add(commentId)
                     adapterComments.notifyItemChanged(index)
                 }
                 "unliked" -> {
@@ -190,6 +195,7 @@ class PostDetailsFragment : Fragment() {
                     val index = commentsViewModel.allComments.indexOfFirst{ it.id == commentId }
                     // REMOVE FROM local data, is not updated the whole comment in firebase, no listener.
                     profileViewModel.myProfile.value!!.likedComments!!.remove(commentId)
+                    alreadyLikedComments.remove(commentId)
                     adapterComments.notifyItemChanged(index)
                 }
                 else -> toast("event fired, e.first is not added")
@@ -219,19 +225,23 @@ class PostDetailsFragment : Fragment() {
         // BTN      S U B M I T  comment
         binding.btnWriteComment.setOnClickListener{
             if (binding.etWriteComment.text.isNullOrBlank()) return@setOnClickListener
-            val dateTime = System.currentTimeMillis().toString()
-
             val newComment = Comment(
                 id = "from firebase",
                 userName = profileViewModel.myProfile.value!!.name,
                 userId = profileViewModel.myProfile.value!!.uid,
                 comment = binding.etWriteComment.editableText.toString().trim(),
-                dateTime = dateTime,
+                dateTime = System.currentTimeMillis().toString(),
                 likesCount = 0
             )
             // send to database
             commentsViewModel.writeComment(newComment,postId!!, profileViewModel.currentUID)
+            // hide keyboard
+            if(requireActivity().currentFocus == null) return@setOnClickListener
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireActivity().currentFocus!!.windowToken, 0)
+
             toggleForm()
+
         }
         // WRITE COMMENT [ E N D ]
 

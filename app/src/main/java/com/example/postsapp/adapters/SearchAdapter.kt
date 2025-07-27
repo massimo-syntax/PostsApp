@@ -70,14 +70,13 @@ class SearchAdapter (private val both: MutableList<Both> , private var query:Que
     }
 
 
-
-
     class ViewHolder(binding: ItemSearchBinding , onItemClicked: (Int)->Unit ) : RecyclerView.ViewHolder(binding.root) {
         val name = binding.tvTitle
         val image = binding.ivImage
         val description = binding.tvDescription
         val datetime = binding.tvDatetime
         val count = binding.tvCount
+        val type = binding.tvType
 
         init {
             binding.root.setOnClickListener{
@@ -86,9 +85,7 @@ class SearchAdapter (private val both: MutableList<Both> , private var query:Que
         }
     }
 
-    // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Create a new view, which defines the UI of the list item
         ctx = parent.context
         val itemBinding = ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(itemBinding){
@@ -97,15 +94,9 @@ class SearchAdapter (private val both: MutableList<Both> , private var query:Que
 
     }
 
-
-
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
         val item = both[position]
-
         val query = query.s
 
         // higligting TITLE
@@ -122,16 +113,28 @@ class SearchAdapter (private val both: MutableList<Both> , private var query:Que
             viewHolder.description.text = item.description
         }
 
-        var time:Long = 0
-        if(!item.dateTime.isNullOrEmpty()) time = item.dateTime.toLong()
-        viewHolder.datetime.text = convertTimestampToReadableFormat(time)
-        viewHolder.count.text = item.count.toString()
+        // type
+        viewHolder.type.text = item.type
+        if(item.type == "profile") {
+            viewHolder.count.text = "${item.count} Followers"
+            viewHolder.image.setImageResource(R.drawable.user)
+        }
+        if(item.type == "post") {
+            viewHolder.count.text = "${item.count} Likes"
+            viewHolder.image.setImageResource(R.drawable.writing)
+        }
 
-        if(!item.image.isNullOrEmpty()){
+        // image
+        if(! item.image.isNullOrEmpty() ){
             Glide.with(ctx)
                 .load(item.image)
                 .into(viewHolder.image)
         }
+
+        // timestamp
+        var time:Long = 0
+        if(!item.dateTime.isNullOrEmpty()) time = item.dateTime.toLong()
+        viewHolder.datetime.text = convertTimestampToReadableFormat(time)
 
     }
 

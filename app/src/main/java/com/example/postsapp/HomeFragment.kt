@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
             //is also needed a profileViewModel.clearProfileList(), even with the list assigned = not .add()
 
             // for this fragment this is the best solution
-            refreshProfilesRv(profilesList.toMutableList())
+            refreshProfilesRv( profilesList.toMutableList() )
         }
         // request profiles once from databse
         profileViewModel.getProfilesList()
@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
         postsViewmodel.postsList.observe(viewLifecycleOwner){
             postsList ->
             if(postsList == null) return@observe
-            refreshPostsRv(postsList)
+            refreshPostsRv( postsList.sortedBy{ it.likesCount }.reversed().toMutableList() )
         }
         // request posts once from databse
         postsViewmodel.getPostsList()

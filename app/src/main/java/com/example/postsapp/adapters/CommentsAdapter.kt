@@ -47,17 +47,21 @@ class CommentsAdapter(private val comments: MutableList<Comment>, private val al
         val comment = comments[position]
 
         val userIndex = commentsUsers.indexOfFirst { it.uid == comment.userId }
+
         var userName = ""
         var userImage = ""
         if (userIndex != -1){
             val user = commentsUsers.elementAt(userIndex)
             userName = user.name ?: ""
             userImage = user.image ?: ""
-            if (! user.image.isNullOrEmpty() ) Glide.with(ctx).load(userImage).into(holder.image)
+            if (userImage == "" ){
+                holder.image.setImageResource(R.drawable.user)
+            }else{
+                Glide.with(ctx).load(userImage).into(holder.image)
+            }
         }
 
-
-        holder.user.text = comment.userName
+        holder.user.text = userName
 
         val date = convertTimestampToReadableFormat(comment.dateTime!!.toLong())
         holder.dateTime.text = date

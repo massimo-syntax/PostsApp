@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.postsapp.R
 import com.example.postsapp.convertTimestampToReadableFormat
 import com.example.postsapp.databinding.ItemPostBinding
 import com.example.postsapp.models.Post
@@ -71,6 +72,8 @@ class PostsAdapter(private val posts: MutableList<Post> ,  private val onItemCli
             Glide.with( ctx )
                 .load(post.image)
                 .into(viewHolder.image)
+        }else{
+            viewHolder.image.setImageResource(R.drawable.writing)
         }
 
     }

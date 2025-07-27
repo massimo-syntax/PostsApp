@@ -101,7 +101,7 @@ class CommentsViewModel : ViewModel() {
                 val c = dataSnapshot.getValue<Comment>()
                 // this can replace downloading the whole list
                 // firebase sends all comments 1 by 1 also at starting the listener
-                allComments.add(c!!)
+                allComments.add(0,c!!)
                 // get profile of this user
                 _event.value = Pair("added", c.id.toString() )
                 getCommentInfo(c)

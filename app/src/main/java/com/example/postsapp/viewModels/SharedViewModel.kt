@@ -24,6 +24,9 @@ import kotlinx.coroutines.launch
 
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
+/*
+
+// nothing..
 
     // FIREBASE AUTH                                                        FIREBASE AUTH
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -244,6 +247,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
 
-
+*/
 
 }

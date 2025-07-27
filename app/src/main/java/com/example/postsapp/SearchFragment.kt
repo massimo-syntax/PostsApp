@@ -110,7 +110,7 @@ class SearchFragment : Fragment() {
         // click
         // ADD to LIST matching CHECKBOXES
         binding.btnSearch.setOnClickListener {
-            val quiry = binding.etSearch.text.toString()
+            val quiry = binding.etSearch.text.toString().trim()
             var bothObj:Both? = null
 
             // to remove from adapter
@@ -119,6 +119,19 @@ class SearchFragment : Fragment() {
             var newDatasetSize = 0
             // refresh the whole list
             bothList.removeAll(bothList)
+
+            fun truncate(quiry:String , text:String ):String{
+                var txt = ""
+                val len = 150
+                if( text.length > len){
+                    txt = text.slice(0..len) + "..."
+                    if(text.contains(quiry) && !txt.contains(quiry)) txt += "$quiry..."
+                }else{
+                    txt = text
+                }
+            return txt
+            }
+
 
             // PROFILES CHECKED
             if(binding.checkProfiles.isChecked){
@@ -147,6 +160,9 @@ class SearchFragment : Fragment() {
                 posts.forEach{post ->
                     // integrate tags in descriptions for posts
                     var description = post.body ?: ""
+
+                    description = truncate(quiry, description)
+
                     if( ! post.tags.isNullOrEmpty() ){
                         description+= "\n"
                         post.tags!!.forEach { tag ->

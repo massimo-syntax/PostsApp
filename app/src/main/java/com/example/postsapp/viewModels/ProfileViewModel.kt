@@ -1,8 +1,5 @@
 package com.example.postsapp.viewModels
 
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +12,6 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
-import kotlin.coroutines.coroutineContext
 
 class ProfileViewModel : ViewModel() {
 
@@ -25,7 +21,6 @@ class ProfileViewModel : ViewModel() {
     val currentUID = firebaseAuth.currentUser?.uid!!
 
     // FIREBASE AUTH    /END
-
 
     // FIREBASE INSTANCE
     val firebaseRTDB = Firebase.database
@@ -37,6 +32,16 @@ class ProfileViewModel : ViewModel() {
     private val _myProfile = MutableLiveData<Profile?>(null)
     val myProfile : LiveData<Profile?>
         get() = _myProfile
+
+    fun getMyProfile(){
+        myProfileRef.get().addOnSuccessListener {
+            _myProfile.value = it.getValue(Profile::class.java)
+        }
+    }
+
+    fun updateProfile(p:Profile){
+        myProfileRef.setValue(p)
+    }
 
 
     //      GET SINGLE USER
@@ -88,6 +93,7 @@ class ProfileViewModel : ViewModel() {
     var followedsList = mutableListOf<Profile>()
 
     fun getFollowed(){
+        followedsList.removeAll(followedsList)
         val followed = _myProfile.value!!.followed
         if (followed==null) return
         followed.forEach { followed ->
@@ -177,6 +183,7 @@ class ProfileViewModel : ViewModel() {
         // retrive my profile at viewmodel instanciation ..
         // on data change receives the data form firebase also first when started
         // in the case of the profile fragment, to update the profile, is also useful a listener on change
+
         myProfileRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profile = snapshot.getValue<Profile>()
