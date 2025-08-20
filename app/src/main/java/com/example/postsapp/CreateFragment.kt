@@ -58,8 +58,8 @@ class CreateFragment : Fragment() {
         val rv = binding.rvImages
         rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         adapterPictures = PicturesAdapter(pictures){ index ->
-            toast("clicked on index $index")
-            deletePicture(index)
+            //toast("clicked on index $index")
+            //deletePicture(index)
         }
         rv.adapter = adapterPictures
     }
@@ -134,7 +134,7 @@ class CreateFragment : Fragment() {
             // pictures list
             val urls = item?.text.toString().split(' ')
             pictures.addAll(urls)
-            toast(pictures.toString())
+            //toast(pictures.toString())
             picturesRV(pictures)
             binding.layoutConfirmImage.visibility = View.GONE
 
@@ -275,7 +275,6 @@ class CreateFragment : Fragment() {
             }
 
         }
-
     }
 
 

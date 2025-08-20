@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.postsapp.adapters.CommentsAdapter
+import com.example.postsapp.adapters.PicturesAdapter
 import com.example.postsapp.databinding.FragmentPostDetailsBinding
 import com.example.postsapp.models.Comment
 import com.example.postsapp.models.Post
@@ -67,6 +68,20 @@ class PostDetailsFragment : Fragment() {
 
         var post: Post? = null
 
+        val rv = binding.rvImages
+        val pictures = mutableListOf<String>()
+        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        val adapterPictures = PicturesAdapter(pictures){ index ->
+            //toast("clicked on index $index")
+            //deletePicture(index)
+            Glide.with(requireContext())
+                .load(pictures[index])
+                .into(binding.ivPostImage)
+        }
+        rv.adapter = adapterPictures
+
+
+
         //  G E T     P R O F I L E
         fun alreadyLiked():Boolean{
             return post!!.likes!!.containsKey(profileViewModel.currentUID)
@@ -101,9 +116,16 @@ class PostDetailsFragment : Fragment() {
             if(p == null) return@observe
             post = p
             if( ! p.image.isNullOrEmpty() ) {
+                val images = p.image!!.split(",")
+
                 Glide.with(requireContext())
-                    .load(p.image)
+                    .load(images[0])
                     .into(binding.ivPostImage)
+
+                // notify adapter
+                pictures.addAll(images)
+                adapterPictures.notifyItemRangeInserted(0, images.size)
+
             }
             binding.tvPostTitle.text = p.title
             binding.tvDatetime.text = convertTimestampToReadableFormat(p.datetime!!.toLong())

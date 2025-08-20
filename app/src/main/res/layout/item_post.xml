@@ -45,8 +45,8 @@
         <!-- image -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_image"
-            android:layout_width="@dimen/rv_item_img_size"
-            android:layout_height="@dimen/rv_item_img_size"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginTop="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/writing"

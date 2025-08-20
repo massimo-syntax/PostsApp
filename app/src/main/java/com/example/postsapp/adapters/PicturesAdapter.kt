@@ -22,7 +22,7 @@ class PicturesAdapter( private val pictures: MutableList<String> , private val o
 
         init {
             // Define click listener for the ViewHolder's View
-            binding.btnDelete.setOnClickListener {
+            binding.root.setOnClickListener {
                 onItemClicked(adapterPosition)
             }
         }
